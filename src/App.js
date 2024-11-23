@@ -1,40 +1,44 @@
-import React, { useState } from 'react';
-import './App.css';
-import Sidebar from './components/Sidebar';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Overview from './pages/Overview';
-import Admin from './pages/Admin';
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
+import Layout from './components/Layout/Layout';
+
+// Pages
+import Dashboard from './pages/Dashboard';
+import ProductList from './pages/products/ProductList';
+import ProductGroups from './pages/products/ProductGroups';
+import ProductTypes from './pages/products/ProductTypes';
+import ProductAttributes from './pages/products/ProductAttributes';
+import InventoryList from './pages/inventory/InventoryList';
+import InventoryAttributes from './pages/inventory/InventoryAttributes';
+import Regions from './pages/reference/Regions';
+import Ratings from './pages/reference/Ratings';
+import ProductSites from './pages/reference/ProductSites';
+import CollectionCompletion from './pages/statistics/CollectionCompletion';
+import CollectionValue from './pages/statistics/CollectionValue';
 
 function App() {
-  const [darkMode, setDarkMode] = useState(true);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.style.setProperty(
-      '--background-color',
-      darkMode ? '#ffffff' : '#282c34'
-    );
-    document.documentElement.style.setProperty(
-      '--text-color',
-      darkMode ? '#000000' : '#ffffff'
-    );
-  };
-
   return (
-    <Router>
-      <div className="App">
-        <Sidebar />
-        <div className="Content">
-          <button onClick={toggleDarkMode} style={{ margin: '20px' }}>
-            Toggle Dark Mode
-          </button>
+    <ThemeProvider>
+      <BrowserRouter>
+        <Layout>
           <Routes>
-            <Route path="/overview" element={<Overview />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/products" element={<ProductList />} />
+            <Route path="/products/groups" element={<ProductGroups />} />
+            <Route path="/products/types" element={<ProductTypes />} />
+            <Route path="/products/attributes" element={<ProductAttributes />} />
+            <Route path="/inventory" element={<InventoryList />} />
+            <Route path="/inventory/attributes" element={<InventoryAttributes />} />
+            <Route path="/regions" element={<Regions />} />
+            <Route path="/ratings" element={<Ratings />} />
+            <Route path="/sites" element={<ProductSites />} />
+            <Route path="/statistics/completion" element={<CollectionCompletion />} />
+            <Route path="/statistics/value" element={<CollectionValue />} />
           </Routes>
-        </div>
-      </div>
-    </Router>
+        </Layout>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

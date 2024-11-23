@@ -1,0 +1,26 @@
+/* Custom styles to enhance Bootstrap dark theme */
+.table th {
+  border-top: none;
+}
+
+.card {
+  border-color: rgba(255, 255, 255, 0.125);
+}
+
+.page-link:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-group .btn:focus {
+  box-shadow: none;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.075);
+} 
