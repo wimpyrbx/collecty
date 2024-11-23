@@ -1,0 +1,2996 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Collecty API",
+    "version": "1.0.0",
+    "description": "API documentation for the Collecty project"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Product Groups",
+      "description": "Operations about product groups"
+    },
+    {
+      "name": "Product Types",
+      "description": "Operations about product types"
+    },
+    {
+      "name": "Regions",
+      "description": "Operations about regions"
+    },
+    {
+      "name": "Rating Groups",
+      "description": "Operations about rating groups"
+    },
+    {
+      "name": "Ratings",
+      "description": "Operations about ratings"
+    },
+    {
+      "name": "Products",
+      "description": "Operations about products"
+    },
+    {
+      "name": "Inventory",
+      "description": "Operations about inventory"
+    },
+    {
+      "name": "Product Attribute Values",
+      "description": "Operations about product attribute values"
+    },
+    {
+      "name": "Inventory Attribute Values",
+      "description": "Operations about inventory attribute values"
+    },
+    {
+      "name": "Pricecharting Prices",
+      "description": "Operations about pricecharting prices"
+    },
+    {
+      "name": "Product Sites",
+      "description": "Operations about product sites"
+    },
+    {
+      "name": "Product Site Links",
+      "description": "Operations about product site links"
+    },
+    {
+      "name": "Attributes",
+      "description": "Operations about attributes"
+    },
+    {
+      "name": "UI",
+      "description": "Operations about Swagger UI themes"
+    }
+  ],
+  "paths": {
+    "/api/product-groups": {
+      "get": {
+        "tags": ["Product Groups"],
+        "summary": "Get all product groups",
+        "parameters": [
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "asc"
+            },
+            "description": "Sort order for name field"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of product groups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductGroup"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Product Groups"],
+        "summary": "Create a new product group",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductGroupInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product group created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductGroup"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/product-groups/{id}": {
+      "put": {
+        "tags": ["Product Groups"],
+        "summary": "Update a product group",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductGroupInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product group updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductGroup"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Product Groups"],
+        "summary": "Delete a product group",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product group deleted"
+          }
+        }
+      }
+    },
+    "/api/product-types": {
+      "get": {
+        "tags": ["Product Types"],
+        "summary": "Get all product types",
+        "parameters": [
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "asc"
+            },
+            "description": "Sort order for name field"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of product types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductType"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Product Types"],
+        "summary": "Create a new product type",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductTypeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product type created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductType"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/product-types/{id}": {
+      "put": {
+        "tags": ["Product Types"],
+        "summary": "Update a product type",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductTypeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product type updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductType"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Product Types"],
+        "summary": "Delete a product type",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product type deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/regions": {
+      "get": {
+        "tags": ["Regions"],
+        "summary": "Get all regions",
+        "parameters": [
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "asc"
+            },
+            "description": "Sort order for name field"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of regions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Region"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Regions"],
+        "summary": "Create a new region",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Region created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Region"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/regions/{id}": {
+      "put": {
+        "tags": ["Regions"],
+        "summary": "Update a region",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Region updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Region"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Regions"],
+        "summary": "Delete a region",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Region deleted"
+          }
+        }
+      }
+    },
+    "/api/rating-groups": {
+      "get": {
+        "tags": ["Rating Groups"],
+        "summary": "Get rating groups with optional filters",
+        "parameters": [
+          {
+            "name": "regionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by region ID"
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "asc"
+            },
+            "description": "Sort order for name field"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of filtered rating groups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RatingGroup"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Rating Groups"],
+        "summary": "Create a new rating group",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RatingGroupInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Rating group created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatingGroup"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/rating-groups/{id}": {
+      "put": {
+        "tags": ["Rating Groups"],
+        "summary": "Update a rating group",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RatingGroupInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rating group updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatingGroup"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Rating Groups"],
+        "summary": "Delete a rating group",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Rating group deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/ratings": {
+      "get": {
+        "tags": ["Ratings"],
+        "summary": "Get ratings with optional filters",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by rating group ID"
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "asc"
+            },
+            "description": "Sort order for name field"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of filtered ratings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rating"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Ratings"],
+        "summary": "Create a new rating",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RatingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Rating created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rating"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ratings/{id}": {
+      "put": {
+        "tags": ["Ratings"],
+        "summary": "Update a rating",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RatingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rating updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rating"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Ratings"],
+        "summary": "Delete a rating",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Rating deleted"
+          }
+        }
+      }
+    },
+    "/api/products": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get products with optional filters",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product group ID"
+          },
+          {
+            "name": "typeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product type ID"
+          },
+          {
+            "name": "regionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by region ID"
+          },
+          {
+            "name": "ratingId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by rating ID"
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "asc"
+            },
+            "description": "Sort order for title field"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of filtered products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Products"],
+        "summary": "Create a new product",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/products/{id}": {
+      "put": {
+        "tags": ["Products"],
+        "summary": "Update a product",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Products"],
+        "summary": "Delete a product",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/inventory": {
+      "get": {
+        "tags": ["Inventory"],
+        "summary": "Get inventory items with optional filters",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product ID"
+          },
+          {
+            "name": "isActive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter by active status"
+          },
+          {
+            "name": "barcode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by barcode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of filtered inventory items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Inventory"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Inventory"],
+        "summary": "Create a new inventory",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Inventory created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Inventory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inventory/{id}": {
+      "put": {
+        "tags": ["Inventory"],
+        "summary": "Update an inventory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inventory updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Inventory"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Inventory"],
+        "summary": "Delete an inventory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Inventory deleted"
+          }
+        }
+      }
+    },
+    "/api/product-attribute-values": {
+      "get": {
+        "tags": ["Product Attribute Values"],
+        "summary": "Get product attribute values with optional filters",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product ID"
+          },
+          {
+            "name": "attributeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by attribute ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of filtered product attribute values",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductAttributeValue"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Product Attribute Values"],
+        "summary": "Create a new product attribute value",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductAttributeValueInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product attribute value created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductAttributeValue"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/product-attribute-values/{id}": {
+      "put": {
+        "tags": ["Product Attribute Values"],
+        "summary": "Update a product attribute value",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductAttributeValueInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product attribute value updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductAttributeValue"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Product Attribute Values"],
+        "summary": "Delete a product attribute value",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product attribute value deleted"
+          }
+        }
+      }
+    },
+    "/api/inventory-attribute-values": {
+      "get": {
+        "tags": ["Inventory Attribute Values"],
+        "summary": "Get inventory attribute values with optional filters",
+        "parameters": [
+          {
+            "name": "inventoryId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by inventory ID"
+          },
+          {
+            "name": "attributeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by attribute ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of filtered inventory attribute values",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InventoryAttributeValue"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Inventory Attribute Values"],
+        "summary": "Create a new inventory attribute value",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryAttributeValueInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Inventory attribute value created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryAttributeValue"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inventory-attribute-values/{id}": {
+      "put": {
+        "tags": ["Inventory Attribute Values"],
+        "summary": "Update an inventory attribute value",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryAttributeValueInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inventory attribute value updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryAttributeValue"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Inventory Attribute Values"],
+        "summary": "Delete an inventory attribute value",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Inventory attribute value deleted"
+          }
+        }
+      }
+    },
+    "/api/pricecharting-prices": {
+      "get": {
+        "tags": ["Pricecharting Prices"],
+        "summary": "Get pricecharting prices with optional filters",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product ID"
+          },
+          {
+            "name": "isActive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter by active status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of filtered pricecharting prices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PricechartingPrice"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Pricecharting Prices"],
+        "summary": "Create a new pricecharting price",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PricechartingPriceInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pricecharting price created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PricechartingPrice"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pricecharting-prices/{id}": {
+      "put": {
+        "tags": ["Pricecharting Prices"],
+        "summary": "Update a pricecharting price",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PricechartingPriceInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pricecharting price updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PricechartingPrice"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Pricecharting Prices"],
+        "summary": "Delete a pricecharting price",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Pricecharting price deleted"
+          }
+        }
+      }
+    },
+    "/api/product-sites": {
+      "get": {
+        "tags": ["Product Sites"],
+        "summary": "Get all product sites",
+        "parameters": [
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "asc"
+            },
+            "description": "Sort order for name field"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of product sites",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductSite"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Product Sites"],
+        "summary": "Create a new product site",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductSiteInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product site created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductSite"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/product-sites/{id}": {
+      "put": {
+        "tags": ["Product Sites"],
+        "summary": "Update a product site",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductSiteInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product site updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductSite"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Product Sites"],
+        "summary": "Delete a product site",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product site deleted"
+          }
+        }
+      }
+    },
+    "/api/product-site-links": {
+      "get": {
+        "tags": ["Product Site Links"],
+        "summary": "Get product site links with optional filters",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product ID"
+          },
+          {
+            "name": "siteId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by site ID"
+          },
+          {
+            "name": "isActive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter by active status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of filtered product site links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductSiteLink"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Product Site Links"],
+        "summary": "Create a new product site link",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductSiteLinkInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product site link created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductSiteLink"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/product-site-links/{id}": {
+      "put": {
+        "tags": ["Product Site Links"],
+        "summary": "Update a product site link",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductSiteLinkInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product site link updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductSiteLink"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Product Site Links"],
+        "summary": "Delete a product site link",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product site link deleted"
+          }
+        }
+      }
+    },
+    "/api/attributes": {
+      "get": {
+        "tags": ["Attributes"],
+        "summary": "Get attributes with optional filters",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["boolean", "string", "number", "set"]
+            },
+            "description": "Filter by attribute type"
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["product", "inventory"]
+            },
+            "description": "Filter by attribute scope"
+          },
+          {
+            "name": "isActive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter by active status"
+          },
+          {
+            "name": "productTypeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product type ID"
+          },
+          {
+            "name": "productGroupId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product group ID"
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "asc"
+            },
+            "description": "Sort order for name field"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of filtered attributes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Attribute"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Attributes"],
+        "summary": "Create a new attribute",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttributeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Attribute created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Attribute"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/attributes/{id}": {
+      "put": {
+        "tags": ["Attributes"],
+        "summary": "Update an attribute",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttributeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Attribute updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Attribute"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Attributes"],
+        "summary": "Delete an attribute",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Attribute deleted"
+          }
+        }
+      }
+    },
+    "/api/products/{id}/extended": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get extended product information",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Extended product information including related data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "title": { "type": "string" },
+                        "product_group_name": { "type": "string" },
+                        "product_type_name": { "type": "string" },
+                        "region_name": { "type": "string" },
+                        "rating_name": { "type": "string" },
+                        "rating_group_name": { "type": "string" },
+                        "attributes": {
+                          "type": "object",
+                          "additionalProperties": { "type": "string" }
+                        },
+                        "site_links": {
+                          "type": "object",
+                          "additionalProperties": { "type": "string" }
+                        },
+                        "loose_usd": { "type": "number", "nullable": true },
+                        "cib_usd": { "type": "number", "nullable": true },
+                        "new_usd": { "type": "number", "nullable": true }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/inventory/{id}/extended": {
+      "get": {
+        "tags": ["Inventory"],
+        "summary": "Get extended inventory information",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Extended inventory information including related data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "product_id": { "type": "integer" },
+                        "product_title": { "type": "string" },
+                        "product_image_url": { "type": "string", "nullable": true },
+                        "product_group_name": { "type": "string" },
+                        "product_type_name": { "type": "string" },
+                        "region_name": { "type": "string" },
+                        "rating_name": { "type": "string", "nullable": true },
+                        "rating_group_name": { "type": "string", "nullable": true },
+                        "barcode": { "type": "string", "nullable": true },
+                        "price_override": { "type": "number", "nullable": true },
+                        "comment": { "type": "string", "nullable": true },
+                        "attributes": {
+                          "type": "object",
+                          "additionalProperties": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/regions/{id}/extended": {
+      "get": {
+        "tags": ["Regions"],
+        "summary": "Get extended region information",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Extended region information including related data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" },
+                        "rating_groups": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        },
+                        "products": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/ratings/{id}/extended": {
+      "get": {
+        "tags": ["Ratings"],
+        "summary": "Get extended rating information",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Extended rating information including related data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" },
+                        "rating_group_name": { "type": "string" },
+                        "region_name": { "type": "string" },
+                        "products": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/rating-groups/{id}/extended": {
+      "get": {
+        "tags": ["Rating Groups"],
+        "summary": "Get extended rating group information",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Extended rating group information including related data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" },
+                        "region_name": { "type": "string" },
+                        "ratings": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        },
+                        "products": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/statistics/attribute-distribution": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get attribute value distribution",
+        "parameters": [
+          {
+            "name": "attributeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "productTypeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "productGroupId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attribute distribution statistics"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/statistics/attribute-usage": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get attribute usage statistics",
+        "parameters": [
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["product", "inventory"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attribute usage statistics"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/statistics/price-ranges": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get price range distribution",
+        "parameters": [
+          {
+            "name": "productGroupId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "condition",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["loose_usd", "cib_usd", "new_usd"],
+              "default": "loose_usd"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Price range distribution"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/statistics/collection-value": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get collection value summary",
+        "parameters": [
+          {
+            "name": "productGroupId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "regionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection value summary"
+          }
+        }
+      }
+    },
+    "/api/products/{id}": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get a product by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/rating-groups/{id}": {
+      "get": {
+        "tags": ["Rating Groups"],
+        "summary": "Get a rating group by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rating group found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatingGroup"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/ratings/{id}": {
+      "get": {
+        "tags": ["Ratings"],
+        "summary": "Get a rating by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rating found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rating"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/DatabaseError"
+          }
+        }
+      }
+    },
+    "/api/statistics/completeness": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get completeness statistics (CIB status)",
+        "parameters": [
+          {
+            "name": "productTypeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product type ID"
+          },
+          {
+            "name": "productGroupId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product group ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Completeness statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "status": { "type": "string" },
+                      "count": { "type": "integer" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/statistics/price-analysis": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get price analysis statistics",
+        "parameters": [
+          {
+            "name": "productGroupId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product group ID"
+          },
+          {
+            "name": "productTypeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product type ID"
+          },
+          {
+            "name": "regionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by region ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Price analysis statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "condition": { "type": "string" },
+                      "avg_price_usd": { "type": "number" },
+                      "min_price_usd": { "type": "number" },
+                      "max_price_usd": { "type": "number" },
+                      "count": { "type": "integer" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/statistics/inventory-health": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Get inventory health statistics",
+        "parameters": [
+          {
+            "name": "productGroupId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product group ID"
+          },
+          {
+            "name": "productTypeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by product type ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inventory health statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer" },
+                      "title": { "type": "string" },
+                      "status": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/themes": {
+      "get": {
+        "tags": ["UI"],
+        "summary": "Get available Swagger UI themes",
+        "responses": {
+          "200": {
+            "description": "List of available themes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "current": { "type": "string" },
+                    "available": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/theme/{name}": {
+      "get": {
+        "tags": ["UI"],
+        "summary": "Switch Swagger UI theme",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["muted", "feeling_blue", "flattop", "material", "monokai", "newspaper", "outline"]
+            },
+            "description": "Theme name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Theme updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "theme": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid theme name"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProductGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProductGroupInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "ProductType": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProductTypeInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "Region": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RegionInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "RatingGroup": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean" }
+        }
+      },
+      "RatingGroupInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean", "default": true }
+        }
+      },
+      "Rating": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean" }
+        }
+      },
+      "RatingInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean", "default": true }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "product_group_id": { "type": "integer" },
+          "product_type_id": { "type": "integer" },
+          "region_id": { "type": "integer" },
+          "rating_id": { "type": "integer", "nullable": true },
+          "pricecharting_id": { "type": "integer", "nullable": true },
+          "title": { "type": "string" },
+          "image_url": { "type": "string", "nullable": true },
+          "developer": { "type": "string", "nullable": true },
+          "publisher": { "type": "string", "nullable": true },
+          "release_year": { "type": "integer", "nullable": true },
+          "genre": { "type": "string", "nullable": true },
+          "description": { "type": "string", "nullable": true },
+          "is_active": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ProductInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean", "default": true }
+        }
+      },
+      "Inventory": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "product_id": { "type": "integer" },
+          "barcode": { "type": "string", "nullable": true },
+          "price_override": { "type": "number", "nullable": true },
+          "comment": { "type": "string", "nullable": true },
+          "is_active": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "InventoryInput": {
+        "type": "object",
+        "required": ["product_id"],
+        "properties": {
+          "product_id": { "type": "integer" },
+          "barcode": { "type": "string", "nullable": true },
+          "price_override": { "type": "number", "nullable": true },
+          "comment": { "type": "string", "nullable": true },
+          "is_active": { "type": "boolean", "default": true }
+        }
+      },
+      "ProductAttributeValue": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "product_id": { "type": "integer" },
+          "attribute_id": { "type": "integer" },
+          "value": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ProductAttributeValueInput": {
+        "type": "object",
+        "required": ["product_id", "attribute_id", "value"],
+        "properties": {
+          "product_id": { "type": "integer" },
+          "attribute_id": { "type": "integer" },
+          "value": { "type": "string" }
+        }
+      },
+      "InventoryAttributeValue": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "inventory_id": { "type": "integer" },
+          "attribute_id": { "type": "integer" },
+          "value": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "InventoryAttributeValueInput": {
+        "type": "object",
+        "required": ["inventory_id", "attribute_id", "value"],
+        "properties": {
+          "inventory_id": { "type": "integer" },
+          "attribute_id": { "type": "integer" },
+          "value": { "type": "string" }
+        }
+      },
+      "PricechartingPrice": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "product_id": { "type": "integer" },
+          "loose_usd": { "type": "number", "nullable": true },
+          "cib_usd": { "type": "number", "nullable": true },
+          "new_usd": { "type": "number", "nullable": true },
+          "manual_only_usd": { "type": "number", "nullable": true },
+          "box_only_usd": { "type": "number", "nullable": true },
+          "loose_nok": { "type": "number", "nullable": true },
+          "cib_nok": { "type": "number", "nullable": true },
+          "new_nok": { "type": "number", "nullable": true },
+          "manual_only_nok": { "type": "number", "nullable": true },
+          "box_only_nok": { "type": "number", "nullable": true },
+          "loose_nok_fixed": { "type": "number", "nullable": true },
+          "cib_nok_fixed": { "type": "number", "nullable": true },
+          "new_nok_fixed": { "type": "number", "nullable": true },
+          "manual_only_nok_fixed": { "type": "number", "nullable": true },
+          "box_only_nok_fixed": { "type": "number", "nullable": true },
+          "usd_nok_rate": { "type": "number" },
+          "is_active": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PricechartingPriceInput": {
+        "type": "object",
+        "required": ["product_id", "usd_nok_rate"],
+        "properties": {
+          "product_id": { "type": "integer" },
+          "loose_usd": { "type": "number", "nullable": true },
+          "cib_usd": { "type": "number", "nullable": true },
+          "new_usd": { "type": "number", "nullable": true },
+          "manual_only_usd": { "type": "number", "nullable": true },
+          "box_only_usd": { "type": "number", "nullable": true },
+          "loose_nok": { "type": "number", "nullable": true },
+          "cib_nok": { "type": "number", "nullable": true },
+          "new_nok": { "type": "number", "nullable": true },
+          "manual_only_nok": { "type": "number", "nullable": true },
+          "box_only_nok": { "type": "number", "nullable": true },
+          "loose_nok_fixed": { "type": "number", "nullable": true },
+          "cib_nok_fixed": { "type": "number", "nullable": true },
+          "new_nok_fixed": { "type": "number", "nullable": true },
+          "manual_only_nok_fixed": { "type": "number", "nullable": true },
+          "box_only_nok_fixed": { "type": "number", "nullable": true },
+          "usd_nok_rate": { "type": "number" },
+          "is_active": { "type": "boolean", "default": true }
+        }
+      },
+      "ProductSite": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "base_url": { "type": "string" },
+          "description": { "type": "string", "nullable": true },
+          "is_active": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ProductSiteInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean", "default": true }
+        }
+      },
+      "ProductSiteLink": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "product_id": { "type": "integer" },
+          "site_id": { "type": "integer" },
+          "url_path": { "type": "string" },
+          "is_active": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ProductSiteLinkInput": {
+        "type": "object",
+        "required": ["product_id", "site_id", "url_path"],
+        "properties": {
+          "product_id": { "type": "integer" },
+          "site_id": { "type": "integer" },
+          "url_path": { "type": "string" },
+          "is_active": { "type": "boolean", "default": true }
+        }
+      },
+      "Attribute": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "ui_name": { "type": "string" },
+          "type": { 
+            "type": "string",
+            "enum": ["boolean", "string", "number", "set"]
+          },
+          "scope": {
+            "type": "string",
+            "enum": ["product", "inventory"]
+          },
+          "allowed_values": { "type": "string", "nullable": true },
+          "product_type_ids": { "type": "string", "nullable": true },
+          "product_group_ids": { "type": "string", "nullable": true },
+          "is_required": { "type": "boolean" },
+          "default_value": { "type": "string", "nullable": true },
+          "description": { "type": "string", "nullable": true },
+          "is_active": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "AttributeInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean", "default": true }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request - validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Invalid input data"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Resource not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "DatabaseError": {
+        "description": "Database operation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Database operation failed"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} 
