@@ -1,0 +1,59 @@
+/* Scale down base font size and spacers */
+:root {
+  --bs-root-font-size: 14px;
+  --bs-body-font-size: 0.875rem;
+  --bs-body-line-height: 1.4;
+  
+  /* Adjust spacers */
+  --bs-spacer: 0.75rem;
+  --bs-spacers-0: 0;
+  --bs-spacers-1: calc(var(--bs-spacer) * 0.25);
+  --bs-spacers-2: calc(var(--bs-spacer) * 0.5);
+  --bs-spacers-3: var(--bs-spacer);
+  --bs-spacers-4: calc(var(--bs-spacer) * 1.5);
+  --bs-spacers-5: calc(var(--bs-spacer) * 3);
+  
+  /* Adjust component sizes */
+  --bs-nav-link-padding-y: 0.375rem;
+  --bs-nav-link-padding-x: 0.75rem;
+  --bs-navbar-padding-y: 0.375rem;
+  --bs-card-spacer-y: 0.75rem;
+  --bs-card-spacer-x: 0.75rem;
+  --bs-modal-header-padding: 0.75rem;
+  --bs-modal-padding: 0.75rem;
+}
+
+/* Scale down form controls */
+.form-control,
+.form-select,
+.input-group-text {
+  min-height: 34px;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Scale down buttons */
+.btn {
+  padding: 0.25rem 0.75rem;
+}
+
+.btn-sm {
+  padding: 0.2rem 0.4rem;
+}
+
+/* Adjust table padding */
+.table > :not(caption) > * > * {
+  padding: 0.5rem 0.75rem;
+}
+
+/* Adjust card padding */
+.card-body {
+  padding: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
+}
+
+/* Scale down headings */
+h1, .h1 { font-size: calc(1.275rem + 0.3vw); }
+h2, .h2 { font-size: calc(1.25rem + 0.1vw); }
+h3, .h3 { font-size: 1.25rem; }
+h4, .h4 { font-size: 1.125rem; }
+h5, .h5 { font-size: 1rem; }
+h6, .h6 { font-size: 0.875rem; } 

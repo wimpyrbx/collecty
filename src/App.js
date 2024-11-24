@@ -16,6 +16,7 @@ import Ratings from './pages/reference/Ratings';
 import ProductSites from './pages/reference/ProductSites';
 import CollectionCompletion from './pages/statistics/CollectionCompletion';
 import CollectionValue from './pages/statistics/CollectionValue';
+import UITest from './pages/UITest';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/ui-test" element={<UITest />} />
             <Route path="/products" element={<ProductList />} />
             <Route path="/products/groups" element={<ProductGroups />} />
             <Route path="/products/types" element={<ProductTypes />} />

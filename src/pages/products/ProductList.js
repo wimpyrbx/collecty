@@ -17,6 +17,9 @@ const ProductList = () => {
     region: '',
     searchTerm: '',
   });
+  const [productGroups, setProductGroups] = useState([]);
+  const [productTypes, setProductTypes] = useState([]);
+  const [regions, setRegions] = useState([]);
 
   // Fetch products
   useEffect(() => {
@@ -42,6 +45,27 @@ const ProductList = () => {
 
     fetchProducts();
   }, [filters, sortDirection]);
+
+  // Fetch reference data
+  useEffect(() => {
+    const fetchReferenceData = async () => {
+      try {
+        const [groupsRes, typesRes, regionsRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/product-groups'),
+          axios.get('http://localhost:5000/api/product-types'),
+          axios.get('http://localhost:5000/api/regions')
+        ]);
+
+        setProductGroups(groupsRes.data.data);
+        setProductTypes(typesRes.data.data);
+        setRegions(regionsRes.data.data);
+      } catch (err) {
+        console.error('Failed to fetch reference data:', err);
+      }
+    };
+
+    fetchReferenceData();
+  }, []);
 
   // Filter and sort products
   const filteredProducts = products
@@ -109,12 +133,12 @@ const ProductList = () => {
       </div>
 
       {/* Filters Section */}
-      <div className="card bg-dark mb-4">
+      <div className="card mb-4">
         <div className="card-body">
           <div className="row g-3">
             <div className="col-12">
               <div className="input-group">
-                <span className="input-group-text bg-dark border-secondary">
+                <span className="input-group-text">
                   <FaSearch />
                 </span>
                 <input
@@ -123,7 +147,7 @@ const ProductList = () => {
                   placeholder="Search products..."
                   value={filters.searchTerm}
                   onChange={handleFilterChange}
-                  className="form-control bg-dark border-secondary"
+                  className="form-control"
                 />
               </div>
             </div>
@@ -132,7 +156,7 @@ const ProductList = () => {
                 name="entriesPerPage"
                 value={entriesPerPage}
                 onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                className="form-select bg-dark border-secondary"
+                className="form-select"
               >
                 <option value={10}>10 entries</option>
                 <option value={25}>25 entries</option>
@@ -145,9 +169,14 @@ const ProductList = () => {
                 name="productGroup"
                 value={filters.productGroup}
                 onChange={handleFilterChange}
-                className="form-select bg-dark border-secondary"
+                className="form-select"
               >
                 <option value="">All Product Groups</option>
+                {productGroups.map(group => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="col-md-3">
@@ -155,9 +184,14 @@ const ProductList = () => {
                 name="productType"
                 value={filters.productType}
                 onChange={handleFilterChange}
-                className="form-select bg-dark border-secondary"
+                className="form-select"
               >
                 <option value="">All Product Types</option>
+                {productTypes.map(type => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="col-md-3">
@@ -165,9 +199,14 @@ const ProductList = () => {
                 name="region"
                 value={filters.region}
                 onChange={handleFilterChange}
-                className="form-select bg-dark border-secondary"
+                className="form-select"
               >
                 <option value="">All Regions</option>
+                {regions.map(region => (
+                  <option key={region.id} value={region.id}>
+                    {region.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -190,9 +229,9 @@ const ProductList = () => {
         </div>
       ) : viewMode === 'table' ? (
         /* Table View */
-        <div className="card bg-dark">
+        <div className="card">
           <div className="table-responsive">
-            <table className="table table-dark table-hover mb-0">
+            <table className="table table-hover mb-0">
               <thead>
                 <tr>
                   <th onClick={() => handleSort('title')} style={{cursor: 'pointer'}}>
@@ -235,9 +274,9 @@ const ProductList = () => {
                         </div>
                       )}
                     </td>
-                    <td>{product.product_group_id}</td>
-                    <td>{product.product_type_id}</td>
-                    <td>{product.region_id}</td>
+                    <td>{productGroups.find(g => g.id === product.product_group_id)?.name || '-'}</td>
+                    <td>{productTypes.find(t => t.id === product.product_type_id)?.name || '-'}</td>
+                    <td>{regions.find(r => r.id === product.region_id)?.name || '-'}</td>
                     <td>{product.developer || '-'}</td>
                     <td>{product.release_year || '-'}</td>
                     <td>
@@ -257,8 +296,8 @@ const ProductList = () => {
         <div className="row g-4">
           {currentProducts.map(product => (
             <div key={product.id} className="col-sm-6 col-md-4 col-lg-3">
-              <div className="card h-100 bg-dark">
-                <div className="card-img-top bg-secondary" style={{height: '200px'}}>
+              <div className="card h-100">
+                <div className="card-img-top" style={{height: '200px'}}>
                   {product.image_url ? (
                     <img 
                       src={product.image_url} 
@@ -289,7 +328,7 @@ const ProductList = () => {
       )}
 
       {/* Pagination */}
-      <div className="card bg-dark mt-4">
+      <div className="card mt-4">
         <div className="card-body d-flex justify-content-between align-items-center">
           <div>
             Showing {indexOfFirstProduct + 1} to {Math.min(indexOfLastProduct, filteredProducts.length)} of {filteredProducts.length} entries

@@ -1,11 +1,11 @@
 :root {
-  --sidebar-width: 80px;
+  --sidebar-width: 200px;
+  --sidebar-collapsed-width: 80px;
 }
 
 .app-container {
   display: flex;
   min-height: 100vh;
-  background-color: #1a1a1a;
 }
 
 .sidebar {
@@ -14,40 +14,49 @@
   left: 0;
   top: 0;
   height: 100vh;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-x: hidden;
   overflow-y: auto;
   z-index: 1030;
+  transition: width 0.3s ease;
+  white-space: nowrap;
 }
 
 .sidebar-header {
-  padding: 1rem 0;
+  padding: 1rem;
   text-align: center;
 }
 
 .sidebar .nav-link {
-  padding: 0.75rem 0;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
   transition: all 0.2s;
 }
 
-.sidebar .nav-link:hover {
-  color: rgba(255, 255, 255, 0.75);
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.sidebar .nav-link.active {
-  color: #fff;
-  background-color: rgba(255, 255, 255, 0.1);
+.section-title {
+  padding: 0 1rem;
+  opacity: 0.65;
 }
 
 .main-content {
   margin-left: var(--sidebar-width);
   flex: 1;
-  background-color: #1a1a1a;
+  transition: margin-left 0.3s ease;
 }
 
-/* Add vertical centering to table cells */
-.table td {
-  vertical-align: middle;
+/* Mobile/Tablet Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: var(--sidebar-collapsed-width);
+  }
+
+  .sidebar .nav-text,
+  .section-title {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: var(--sidebar-collapsed-width);
+  }
 } 
