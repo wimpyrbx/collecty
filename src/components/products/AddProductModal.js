@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Form, Button, Row, Col, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import './AddProductModal.css';
 import ChainedSelect from '../common/ChainedSelect';
+import ProductAttributeBox from './ProductAttributeBox';
+import AttributesSection from './AttributesSection';
 
 const initialFormState = {
   title: '',
@@ -36,6 +38,7 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
   const [attributeValues, setAttributeValues] = useState({});
   const [touched, setTouched] = useState(false);
   const [availableRatingGroups, setAvailableRatingGroups] = useState([]);
+  const nameInputRef = useRef(null);
 
   // Fetch reference data
   useEffect(() => {
@@ -73,6 +76,13 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
       
       // Fetch reference data
       fetchReferenceData();
+
+      // Focus the name input after a short delay to ensure modal is fully rendered
+      setTimeout(() => {
+        if (nameInputRef.current) {
+          nameInputRef.current.focus();
+        }
+      }, 100);
     }
   }, [show]);
 
@@ -316,53 +326,6 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
     }
   };
 
-  const renderAttributeInput = (attribute) => {
-    switch (attribute.type) {
-      case 'boolean':
-        return (
-          <Form.Check
-            type="switch"
-            id={`switch-${attribute.id}`}
-            checked={attributeValues[attribute.id] === '1'}
-            onChange={(e) => handleAttributeChange(attribute.id, e.target.checked ? '1' : '0')}
-            label={attributeValues[attribute.id] === '1' ? 'Yes' : 'No'}
-          />
-        );
-      
-      case 'set':
-        const allowedValues = JSON.parse(attribute.allowed_values || '[]');
-        return (
-          <Form.Select
-            value={attributeValues[attribute.id] || ''}
-            onChange={(e) => handleAttributeChange(attribute.id, e.target.value)}
-          >
-            <option value="">Select {attribute.ui_name}</option>
-            {allowedValues.map(value => (
-              <option key={value} value={value}>{value}</option>
-            ))}
-          </Form.Select>
-        );
-
-      case 'number':
-        return (
-          <Form.Control
-            type="number"
-            value={attributeValues[attribute.id] || ''}
-            onChange={(e) => handleAttributeChange(attribute.id, e.target.value)}
-          />
-        );
-
-      default: // string
-        return (
-          <Form.Control
-            type="text"
-            value={attributeValues[attribute.id] || ''}
-            onChange={(e) => handleAttributeChange(attribute.id, e.target.value)}
-          />
-        );
-    }
-  };
-
   // Update the form JSX to group region and rating fields
   const renderRegionAndRatingFields = () => (
     <Row className="mb-3">
@@ -441,12 +404,13 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
         <Modal.Body className="bg-light">
           {error && <Alert variant="danger">{error}</Alert>}
           
-          {/* First row: Name (full width) */}
+          {/* First row: Name, Product Group and Type */}
           <Row className="mb-3">
-            <Col md={12}>
+            <Col md={4}>
               <Form.Group>
                 <Form.Label>Name *</Form.Label>
                 <Form.Control
+                  ref={nameInputRef}
                   type="text"
                   name="title"
                   value={formData.title}
@@ -458,11 +422,7 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
-          </Row>
-
-          {/* Second row: Product Group and Type */}
-          <Row className="mb-3">
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group>
                 <Form.Label>Product Group *</Form.Label>
                 <Form.Select
@@ -481,7 +441,7 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group>
                 <Form.Label>Product Type *</Form.Label>
                 <Form.Select
@@ -502,11 +462,20 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
             </Col>
           </Row>
 
-          {/* Third row: Image URL */}
+          {/* Product Attributes Section */}
+          <AttributesSection 
+            show={!!(formData.product_group_id && formData.product_type_id && attributes.length > 0)}
+            attributes={attributes}
+            attributeValues={attributeValues}
+            handleAttributeChange={handleAttributeChange}
+            touched={touched}
+          />
+
+          {/* Rest of the form fields */}
           <Row className="mb-3">
             <Col md={12}>
               <Form.Group>
-                <Form.Label>Image URL</Form.Label>
+                <Form.Label>Product Image URL</Form.Label>
                 <Form.Control
                   type="url"
                   name="image_url"
@@ -590,31 +559,6 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
               </Form.Group>
             </Col>
           </Row>
-
-          {/* Product Attributes Section */}
-          {formData.product_group_id && formData.product_type_id && attributes.length > 0 && (
-            <>
-              <h5 className="mt-4">Product Attributes</h5>
-              <Row>
-                {attributes.map(attribute => (
-                  <Col md={6} key={attribute.id} className="mb-3">
-                    <Form.Group>
-                      <Form.Label>
-                        {attribute.ui_name}
-                        {attribute.is_required && ' *'}
-                      </Form.Label>
-                      {renderAttributeInput(attribute)}
-                      {touched && attribute.is_required && !attributeValues[attribute.id] && (
-                        <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
-                          This field is required
-                        </Form.Control.Feedback>
-                      )}
-                    </Form.Group>
-                  </Col>
-                ))}
-              </Row>
-            </>
-          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={onHide}>

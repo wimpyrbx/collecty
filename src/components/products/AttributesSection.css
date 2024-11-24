@@ -1,0 +1,23 @@
+.attributes-section {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  transform-origin: top;
+  transform: scaleY(0);
+}
+
+.attributes-section.show {
+  max-height: 2000px; /* Large enough to accommodate content */
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.attributes-section .attribute-card {
+  transform: translateY(-20px);
+  transition: transform 0.3s ease-in-out;
+}
+
+.attributes-section.show .attribute-card {
+  transform: translateY(0);
+} 
