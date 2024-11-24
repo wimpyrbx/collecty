@@ -7,6 +7,8 @@ import { FaEuroSign, FaDollarSign, FaYenSign } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import AddProductModal from '../../components/products/AddProductModal';
 import AttributeDisplay from '../../components/attributes/AttributeDisplay';
+import RegionImage from '../../components/common/RegionImage';
+import ProductTypeImage from '../../components/common/ProductTypeImage';
 
 const IMAGE_SIZE = {
   width: 60,  // DVD case proportions (approximately 7.5:11)
@@ -148,41 +150,6 @@ const ProductList = () => {
       [name]: value
     }));
     setCurrentPage(1); // Reset to first page when filtering
-  };
-
-  const getRegionIcon = (regionId) => {
-    const region = regions.find(r => r.id === regionId);
-    if (!region) return <FaFlag title="Unknown Region" size={24} />;
-    
-    switch(region.name.toLowerCase()) {
-      case 'pal':
-      case 'eu':
-        return <FaEuroSign title="PAL/EU" className="text-primary" size={24} />;
-      case 'ntsc':
-      case 'usa':
-        return <FaDollarSign title="NTSC/USA" className="text-success" size={24} />;
-      case 'ntsc-j':
-      case 'japan':
-        return <FaYenSign title="NTSC-J/Japan" className="text-danger" size={24} />;
-      default:
-        return <FaFlag title={region.name} size={24} />;
-    }
-  };
-
-  const getTypeIcon = (typeId) => {
-    const type = productTypes.find(t => t.id === typeId);
-    if (!type) return <FaGamepad title="Unknown Type" size={24} />;
-    
-    switch(type.name.toLowerCase()) {
-      case 'game':
-        return <FaCompactDisc title="Game" className="text-primary" size={24} />;
-      case 'console':
-        return <FaDesktop title="Console" className="text-success" size={24} />;
-      case 'peripheral':
-        return <FaKeyboard title="Peripheral" className="text-warning" size={24} />;
-      default:
-        return <FaGamepad title={type.name} size={24} />;
-    }
   };
 
   const handleEdit = async (productId) => {
@@ -482,16 +449,10 @@ const ProductList = () => {
                     ) : '-'}
                   </td>
                   <td className="text-center">
-                    {getTypeIcon(product.product_type_id)}
-                    <div className="small text-muted mt-1">
-                      {product.product_type_name}
-                    </div>
+                    <ProductTypeImage typeName={product.product_type_name} />
                   </td>
                   <td className="text-center">
-                    {getRegionIcon(product.region_id)}
-                    <div className="small text-muted mt-1">
-                      {product.region_name}
-                    </div>
+                    <RegionImage regionName={product.region_name} />
                   </td>
                   <td>
                     <div className="d-flex flex-column">

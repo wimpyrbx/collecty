@@ -18,7 +18,6 @@ router.post('/', async (req, res) => {
     is_active
   } = req.body;
 
-  // Validate required fields
   if (!title || !product_group_id || !product_type_id || !region_id) {
     return res.status(400).json({
       error: 'Missing required fields: title, product_group_id, product_type_id, and region_id are required'
@@ -26,36 +25,42 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    const result = await db.run(
-      `INSERT INTO products (
-        title,
-        product_group_id,
-        product_type_id,
-        region_id,
-        rating_id,
-        image_url,
-        developer,
-        publisher,
-        release_year,
-        genre,
-        description,
-        is_active
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        title,
-        product_group_id,
-        product_type_id,
-        region_id,
-        rating_id || null,
-        image_url || null,
-        developer || null,
-        publisher || null,
-        release_year || null,
-        genre || null,
-        description || null,
-        is_active !== undefined ? is_active : 1
-      ]
-    );
+    const result = await new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO products (
+          title,
+          product_group_id,
+          product_type_id,
+          region_id,
+          rating_id,
+          image_url,
+          developer,
+          publisher,
+          release_year,
+          genre,
+          description,
+          is_active
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          title,
+          product_group_id,
+          product_type_id,
+          region_id,
+          rating_id || null,
+          image_url || null,
+          developer || null,
+          publisher || null,
+          release_year || null,
+          genre || null,
+          description || null,
+          is_active !== undefined ? is_active : 1
+        ],
+        function(err) {
+          if (err) reject(err);
+          resolve(this);
+        }
+      );
+    });
 
     res.status(201).json({
       message: 'Product created successfully',

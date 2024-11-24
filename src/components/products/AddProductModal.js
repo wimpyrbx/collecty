@@ -3,23 +3,26 @@ import { Modal, Form, Button, Row, Col, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import './AddProductModal.css';
+import ChainedSelect from '../common/ChainedSelect';
+
+const initialFormState = {
+  title: '',
+  product_group_id: '',
+  product_type_id: '',
+  region_id: '',
+  rating_id: '',
+  rating_group_id: '',
+  image_url: '',
+  developer: '',
+  publisher: '',
+  release_year: '',
+  genre: '',
+  description: '',
+  is_active: true
+};
 
 const AddProductModal = ({ show, onHide, onProductAdded }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    product_group_id: '',
-    product_type_id: '',
-    region_id: '',
-    rating_id: '',
-    rating_group_id: '',
-    image_url: '',
-    developer: '',
-    publisher: '',
-    release_year: '',
-    genre: '',
-    description: '',
-    is_active: true
-  });
+  const [formData, setFormData] = useState(initialFormState);
 
   const [attributes, setAttributes] = useState([]);
   const [productGroups, setProductGroups] = useState([]);
@@ -58,25 +61,18 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
     };
 
     if (show) {
-      fetchReferenceData();
-      // Reset form data when modal opens
-      setFormData({
-        title: '',
-        product_group_id: '',
-        product_type_id: '',
-        region_id: '',
-        rating_id: '',
-        rating_group_id: '',
-        image_url: '',
-        developer: '',
-        publisher: '',
-        release_year: '',
-        genre: '',
-        description: '',
-        is_active: true
-      });
+      // Reset all form state when modal opens
+      setFormData(initialFormState);
       setAttributeValues({});
       setAttributes([]);
+      setError(null);
+      setTouched(false);
+      setLoading(false);
+      setAvailableRatings([]);
+      setAvailableRatingGroups([]);
+      
+      // Fetch reference data
+      fetchReferenceData();
     }
   }, [show]);
 
@@ -283,20 +279,26 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
         release_year: formData.release_year ? parseInt(formData.release_year, 10) : null
       };
 
-      console.log('Sending payload:', payload); // Debug log
+      console.log('Sending product payload:', payload);
 
       // Create product
       const response = await axios.post('http://localhost:5000/api/products', payload);
+      console.log('Full product creation response:', response);
+      console.log('Response data:', response.data);
+      console.log('Response data.data:', response.data.data);
       const productId = response.data.data.id;
+      console.log('Extracted productId:', productId);
 
       // Create attribute values if any
       if (Object.keys(attributeValues).length > 0) {
         const attributePromises = Object.entries(attributeValues).map(([attributeId, value]) => {
-          return axios.post('http://localhost:5000/api/product-attribute-values', {
+          const attributePayload = {
             product_id: productId,
             attribute_id: parseInt(attributeId, 10),
             value: value.toString()
-          });
+          };
+          console.log('Sending attribute value payload:', attributePayload);
+          return axios.post('http://localhost:5000/api/product-attribute-values', attributePayload);
         });
 
         await Promise.all(attributePromises);
@@ -365,55 +367,67 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
   const renderRegionAndRatingFields = () => (
     <Row className="mb-3">
       <Col md={4}>
-        <Form.Group>
-          <Form.Label>Region *</Form.Label>
-          <Form.Select
-            name="region_id"
-            value={formData.region_id}
-            onChange={handleInputChange}
-            isInvalid={touched && !formData.region_id}
-          >
-            <option value="">Select Region</option>
-            {regions.map(region => (
-              <option key={region.id} value={region.id}>{region.name}</option>
-            ))}
-          </Form.Select>
-          <Form.Control.Feedback type="invalid">
-            Please select a region
-          </Form.Control.Feedback>
-        </Form.Group>
+        <ChainedSelect
+          name="region_id"
+          value={formData.region_id}
+          onChange={handleInputChange}
+          options={regions}
+          label="Region"
+          isRequired
+          isInvalid={touched && !formData.region_id}
+          onAutoProgress={(value) => {
+            const regionRatingGroups = ratingGroups.filter(
+              group => group.region_id === Number(value)
+            );
+            setAvailableRatingGroups(regionRatingGroups);
+            
+            // If only one rating group, auto-select it
+            if (regionRatingGroups.length === 1) {
+              handleInputChange({
+                target: {
+                  name: 'rating_group_id',
+                  value: String(regionRatingGroups[0].id)
+                }
+              });
+            }
+          }}
+        />
       </Col>
       <Col md={4}>
-        <Form.Group>
-          <Form.Label>Rating Group</Form.Label>
-          <Form.Select
-            name="rating_group_id"
-            value={formData.rating_group_id}
-            onChange={handleInputChange}
-            disabled={!formData.region_id}
-          >
-            <option value="">Select Rating Group</option>
-            {availableRatingGroups.map(group => (
-              <option key={group.id} value={group.id}>{group.name}</option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+        <ChainedSelect
+          name="rating_group_id"
+          value={formData.rating_group_id}
+          onChange={handleInputChange}
+          options={availableRatingGroups}
+          label="Rating Group"
+          disabled={!formData.region_id}
+          onAutoProgress={(value) => {
+            const groupRatings = ratings.filter(
+              rating => rating.rating_group_id === Number(value)
+            );
+            setAvailableRatings(groupRatings);
+            
+            // If only one rating, auto-select it
+            if (groupRatings.length === 1) {
+              handleInputChange({
+                target: {
+                  name: 'rating_id',
+                  value: String(groupRatings[0].id)
+                }
+              });
+            }
+          }}
+        />
       </Col>
       <Col md={4}>
-        <Form.Group>
-          <Form.Label>Rating</Form.Label>
-          <Form.Select
-            name="rating_id"
-            value={formData.rating_id}
-            onChange={handleInputChange}
-            disabled={!formData.rating_group_id}
-          >
-            <option value="">Select Rating</option>
-            {availableRatings.map(rating => (
-              <option key={rating.id} value={rating.id}>{rating.name}</option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+        <ChainedSelect
+          name="rating_id"
+          value={formData.rating_id}
+          onChange={handleInputChange}
+          options={availableRatings}
+          label="Rating"
+          disabled={!formData.rating_group_id}
+        />
       </Col>
     </Row>
   );
@@ -427,10 +441,11 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
         <Modal.Body className="bg-light">
           {error && <Alert variant="danger">{error}</Alert>}
           
+          {/* First row: Name (full width) */}
           <Row className="mb-3">
-            <Col md={6}>
+            <Col md={12}>
               <Form.Group>
-                <Form.Label>Title *</Form.Label>
+                <Form.Label>Name *</Form.Label>
                 <Form.Control
                   type="text"
                   name="title"
@@ -439,24 +454,13 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
                   isInvalid={touched && !formData.title}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Please enter a title
+                  Please enter a name
                 </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Image URL</Form.Label>
-                <Form.Control
-                  type="url"
-                  name="image_url"
-                  value={formData.image_url}
-                  onChange={handleInputChange}
-                  placeholder="https://"
-                />
               </Form.Group>
             </Col>
           </Row>
 
+          {/* Second row: Product Group and Type */}
           <Row className="mb-3">
             <Col md={6}>
               <Form.Group>
@@ -498,8 +502,26 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
             </Col>
           </Row>
 
+          {/* Third row: Image URL */}
+          <Row className="mb-3">
+            <Col md={12}>
+              <Form.Group>
+                <Form.Label>Image URL</Form.Label>
+                <Form.Control
+                  type="url"
+                  name="image_url"
+                  value={formData.image_url}
+                  onChange={handleInputChange}
+                  placeholder="https://"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          {/* Region and Rating fields */}
           {renderRegionAndRatingFields()}
 
+          {/* Developer and Publisher */}
           <Row className="mb-3">
             <Col md={6}>
               <Form.Group>
@@ -525,8 +547,9 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
             </Col>
           </Row>
 
+          {/* Release Year and Genre */}
           <Row className="mb-3">
-            <Col md={4}>
+            <Col md={6}>
               <Form.Group>
                 <Form.Label>Release Year</Form.Label>
                 <Form.Control
@@ -539,7 +562,7 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
                 />
               </Form.Group>
             </Col>
-            <Col md={4}>
+            <Col md={6}>
               <Form.Group>
                 <Form.Label>Genre</Form.Label>
                 <Form.Control
@@ -552,17 +575,23 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
             </Col>
           </Row>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Description</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
+          {/* Description */}
+          <Row className="mb-3">
+            <Col md={12}>
+              <Form.Group>
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
+          {/* Product Attributes Section */}
           {formData.product_group_id && formData.product_type_id && attributes.length > 0 && (
             <>
               <h5 className="mt-4">Product Attributes</h5>
@@ -587,7 +616,7 @@ const AddProductModal = ({ show, onHide, onProductAdded }) => {
             </>
           )}
         </Modal.Body>
-        <Modal.Footer className="bg-light">
+        <Modal.Footer>
           <Button variant="secondary" onClick={onHide}>
             Cancel
           </Button>

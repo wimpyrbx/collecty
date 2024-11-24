@@ -1,0 +1,6 @@
+.product-type-image {
+  display: inline-block;
+  vertical-align: middle;
+  max-width: 24px !important;
+  max-height: 24px !important;
+} 

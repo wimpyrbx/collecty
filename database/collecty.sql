@@ -96,9 +96,7 @@ CREATE TABLE IF NOT EXISTS "product_attribute_values" (
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("attribute_id") REFERENCES "attributes"("id") ON DELETE RESTRICT,
-	FOREIGN KEY("product_id") REFERENCES "products"("id") ON DELETE RESTRICT,
-	UNIQUE("product_id","attribute_id")
+	FOREIGN KEY("attribute_id") REFERENCES "attributes"("id") ON DELETE RESTRICT
 );
 CREATE TABLE IF NOT EXISTS "inventory_attribute_values" (
 	"id"	INTEGER,
@@ -235,6 +233,16 @@ INSERT INTO "products" VALUES (5,4,1,2,21,NULL,'Wii Sports',NULL,'Nintendo','Nin
 INSERT INTO "products" VALUES (6,4,1,3,6,NULL,'Wii Sports',NULL,'Nintendo','Nintendo',2006,'Sports',NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "products" VALUES (7,1,3,1,NULL,NULL,'Xbox 360 Elite Console',NULL,'Microsoft','Microsoft',2007,NULL,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "products" VALUES (8,2,3,1,NULL,NULL,'PlayStation 3 Slim Console',NULL,'Sony','Sony',2009,NULL,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
+INSERT INTO "attributes" VALUES (10,'isKinect','Kinect Support','boolean','product',NULL,'[1]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-24 15:08:09',1,0,1);
+INSERT INTO "attributes" VALUES (11,'hasHDD','Hard Drive','boolean','product',NULL,'[1,3]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (12,'hasXboxLive','Xbox Live','boolean','product',NULL,'[1]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (13,'hasMove','PlayStation Move','boolean','product',NULL,'[1]','[2]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (14,'hasPlus','PlayStation Plus','boolean','product',NULL,'[1]','[2]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (15,'installSize','Install Size','set','product','["1GB", "2GB", "4GB", "8GB"]','[1]','[2]',1,'1GB',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (16,'hasMotionPlus','Motion Plus','boolean','product',NULL,'[1,2]','[4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (17,'hasGamecube','Gamecube Support','boolean','product',NULL,'[1,3]','[4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (18,'hasWifi','Built-in WiFi','boolean','product',NULL,'[3]','[1,2,4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (19,'modelNumber','Model Number','string','product',NULL,'[3]',NULL,1,NULL,NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
 INSERT INTO "product_attribute_values" VALUES (1,1,12,'1','2024-11-23 23:32:14','2024-11-23 23:32:14');
 INSERT INTO "product_attribute_values" VALUES (2,1,10,'0','2024-11-23 23:32:14','2024-11-23 23:32:14');
 INSERT INTO "product_attribute_values" VALUES (3,1,11,'1','2024-11-23 23:32:14','2024-11-23 23:32:14');
@@ -265,16 +273,6 @@ INSERT INTO "product_site_links" VALUES (5,4,1,'/wii/wii-sports-pal',1,'2024-11-
 INSERT INTO "product_site_links" VALUES (6,4,2,'/game/3847/wii-sports',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "product_site_links" VALUES (7,7,1,'/xbox-360/elite-console',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "product_site_links" VALUES (8,8,1,'/playstation-3/slim-console',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "attributes" VALUES (10,'isKinect','Kinect Support','boolean','product',NULL,'[1]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-24 15:08:09',1,0,1);
-INSERT INTO "attributes" VALUES (11,'hasHDD','Hard Drive','boolean','product',NULL,'[1,3]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
-INSERT INTO "attributes" VALUES (12,'hasXboxLive','Xbox Live','boolean','product',NULL,'[1]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
-INSERT INTO "attributes" VALUES (13,'hasMove','PlayStation Move','boolean','product',NULL,'[1]','[2]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
-INSERT INTO "attributes" VALUES (14,'hasPlus','PlayStation Plus','boolean','product',NULL,'[1]','[2]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
-INSERT INTO "attributes" VALUES (15,'installSize','Install Size','set','product','["1GB", "2GB", "4GB", "8GB"]','[1]','[2]',1,'1GB',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
-INSERT INTO "attributes" VALUES (16,'hasMotionPlus','Motion Plus','boolean','product',NULL,'[1,2]','[4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
-INSERT INTO "attributes" VALUES (17,'hasGamecube','Gamecube Support','boolean','product',NULL,'[1,3]','[4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
-INSERT INTO "attributes" VALUES (18,'hasWifi','Built-in WiFi','boolean','product',NULL,'[3]','[1,2,4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
-INSERT INTO "attributes" VALUES (19,'modelNumber','Model Number','string','product',NULL,'[3]',NULL,1,NULL,NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
 CREATE INDEX IF NOT EXISTS "idx_product_groups_active" ON "product_groups" (
 	"is_active"
 );
@@ -368,245 +366,4 @@ CREATE INDEX IF NOT EXISTS "idx_attributes_scope" ON "attributes" (
 CREATE INDEX IF NOT EXISTS "idx_attributes_active" ON "attributes" (
 	"is_active"
 );
-CREATE TRIGGER update_product_groups_timestamp 
-   AFTER UPDATE ON product_groups
-BEGIN
-   UPDATE product_groups SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER update_product_types_timestamp 
-   AFTER UPDATE ON product_types
-BEGIN
-   UPDATE product_types SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER update_regions_timestamp 
-   AFTER UPDATE ON regions
-BEGIN
-   UPDATE regions SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER update_rating_groups_timestamp 
-   AFTER UPDATE ON rating_groups
-BEGIN
-   UPDATE rating_groups SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER update_ratings_timestamp 
-   AFTER UPDATE ON ratings
-BEGIN
-   UPDATE ratings SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER update_products_timestamp 
-   AFTER UPDATE ON products
-BEGIN
-   UPDATE products SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER update_inventory_timestamp 
-   AFTER UPDATE ON inventory
-BEGIN
-   UPDATE inventory SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER update_product_attribute_values_timestamp 
-   AFTER UPDATE ON product_attribute_values
-BEGIN
-   UPDATE product_attribute_values SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER update_inventory_attribute_values_timestamp 
-   AFTER UPDATE ON inventory_attribute_values
-BEGIN
-   UPDATE inventory_attribute_values SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER update_pricecharting_prices_timestamp 
-   AFTER UPDATE ON pricecharting_prices
-BEGIN
-   UPDATE pricecharting_prices SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER update_product_sites_timestamp 
-   AFTER UPDATE ON product_sites
-BEGIN
-   UPDATE product_sites SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER update_product_site_links_timestamp 
-   AFTER UPDATE ON product_site_links
-BEGIN
-   UPDATE product_site_links SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
-CREATE TRIGGER validate_product_rating_region
-   BEFORE INSERT ON products
-   WHEN NEW.rating_id IS NOT NULL
-BEGIN
-   SELECT CASE 
-       WHEN NOT EXISTS (
-           SELECT 1 FROM ratings r
-           JOIN rating_groups rg ON r.rating_group_id = rg.id
-           WHERE r.id = NEW.rating_id 
-           AND rg.region_id = NEW.region_id
-       )
-       THEN RAISE(ABORT, 'Rating must belong to the specified region')
-   END;
-END;
-CREATE TRIGGER validate_product_rating_region_update
-   BEFORE UPDATE ON products
-   WHEN NEW.rating_id IS NOT NULL
-BEGIN
-   SELECT CASE 
-       WHEN NOT EXISTS (
-           SELECT 1 FROM ratings r
-           JOIN rating_groups rg ON r.rating_group_id = rg.id
-           WHERE r.id = NEW.rating_id 
-           AND rg.region_id = NEW.region_id
-       )
-       THEN RAISE(ABORT, 'Rating must belong to the specified region')
-   END;
-END;
-CREATE TRIGGER validate_attribute_value_insert
-   BEFORE INSERT ON product_attribute_values
-BEGIN
-   SELECT CASE
-       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'boolean'
-           AND NEW.value NOT IN ('0', '1')
-           THEN RAISE(ABORT, 'Boolean attribute must be 0 or 1')
-           
-       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'number'
-           AND NOT NEW.value GLOB '[0-9]*[.][0-9]*' 
-           AND NOT NEW.value GLOB '[0-9]*'
-           THEN RAISE(ABORT, 'Number attribute must be numeric')
-           
-       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'set'
-           AND NOT EXISTS (
-               SELECT 1 FROM json_each(
-                   (SELECT allowed_values FROM attributes WHERE id = NEW.attribute_id)
-               ) 
-               WHERE value = NEW.value
-           )
-           THEN RAISE(ABORT, 'Set attribute value must be one of the allowed values')
-   END;
-END;
-CREATE TRIGGER validate_inventory_attribute_value_insert
-   BEFORE INSERT ON inventory_attribute_values
-BEGIN
-   SELECT CASE
-       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'boolean'
-           AND NEW.value NOT IN ('0', '1')
-           THEN RAISE(ABORT, 'Boolean attribute must be 0 or 1')
-           
-       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'number'
-           AND NOT NEW.value GLOB '[0-9]*[.][0-9]*' 
-           AND NOT NEW.value GLOB '[0-9]*'
-           THEN RAISE(ABORT, 'Number attribute must be numeric')
-           
-       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'set'
-           AND NOT EXISTS (
-               SELECT 1 FROM json_each(
-                   (SELECT allowed_values FROM attributes WHERE id = NEW.attribute_id)
-               ) 
-               WHERE value = NEW.value
-           )
-           THEN RAISE(ABORT, 'Set attribute value must be one of the allowed values')
-   END;
-END;
-CREATE TRIGGER validate_attribute_scope_product
-   BEFORE INSERT ON product_attribute_values
-BEGIN
-   SELECT CASE
-       WHEN (SELECT scope FROM attributes WHERE id = NEW.attribute_id) != 'product'
-       THEN RAISE(ABORT, 'This attribute cannot be used for products')
-   END;
-END;
-CREATE TRIGGER validate_attribute_scope_inventory
-   BEFORE INSERT ON inventory_attribute_values
-BEGIN
-   SELECT CASE
-       WHEN (SELECT scope FROM attributes WHERE id = NEW.attribute_id) != 'inventory'
-       THEN RAISE(ABORT, 'This attribute cannot be used for inventory items')
-   END;
-END;
-CREATE TRIGGER validate_product_attribute_constraints
-   BEFORE INSERT ON product_attribute_values
-   WHEN (SELECT product_type_ids FROM attributes WHERE id = NEW.attribute_id) IS NOT NULL 
-   OR (SELECT product_group_ids FROM attributes WHERE id = NEW.attribute_id) IS NOT NULL
-BEGIN
-   SELECT CASE
-       WHEN (SELECT product_type_ids FROM attributes WHERE id = NEW.attribute_id) IS NOT NULL
-       AND NOT EXISTS (
-           SELECT 1 FROM products p
-           WHERE p.id = NEW.product_id
-           AND p.product_type_id IN (
-               SELECT value FROM json_each(
-                   (SELECT product_type_ids FROM attributes WHERE id = NEW.attribute_id)
-               )
-           )
-       )
-       THEN RAISE(ABORT, 'This attribute is not allowed for this product type')
-       
-       WHEN (SELECT product_group_ids FROM attributes WHERE id = NEW.attribute_id) IS NOT NULL
-       AND NOT EXISTS (
-           SELECT 1 FROM products p
-           WHERE p.id = NEW.product_id
-           AND p.product_group_id IN (
-               SELECT value FROM json_each(
-                   (SELECT product_group_ids FROM attributes WHERE id = NEW.attribute_id)
-               )
-           )
-       )
-       THEN RAISE(ABORT, 'This attribute is not allowed for this product group')
-   END;
-END;
-CREATE TRIGGER validate_required_product_attributes
-    AFTER INSERT ON products
-BEGIN
-    SELECT CASE
-        WHEN EXISTS (
-            SELECT 1 FROM attributes a
-            WHERE a.is_required = 1 
-            AND a.scope = 'product'
-            AND a.is_active = 1
-            AND (
-                a.product_type_ids IS NULL 
-                OR NEW.product_type_id IN (SELECT value FROM json_each(a.product_type_ids))
-            )
-            AND (
-                a.product_group_ids IS NULL 
-                OR NEW.product_group_id IN (SELECT value FROM json_each(a.product_group_ids))
-            )
-            AND NOT EXISTS (
-                SELECT 1 FROM product_attribute_values
-                WHERE product_id = NEW.id AND attribute_id = a.id
-            )
-        )
-        THEN RAISE(ABORT, 'Required product attributes must be set')
-    END;
-END;
-CREATE TRIGGER validate_required_inventory_attributes
-    AFTER INSERT ON inventory
-BEGIN
-    SELECT CASE
-        WHEN EXISTS (
-            SELECT 1 FROM attributes a
-            WHERE a.is_required = 1 
-            AND a.scope = 'inventory'
-            AND a.is_active = 1
-            AND NOT EXISTS (
-                SELECT 1 FROM inventory_attribute_values
-                WHERE inventory_id = NEW.id AND attribute_id = a.id
-            )
-        )
-        THEN RAISE(ABORT, 'Required inventory attributes must be set')
-    END;
-END;
-CREATE TRIGGER update_attributes_timestamp 
-   AFTER UPDATE ON attributes
-BEGIN
-   UPDATE attributes SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
 COMMIT;
