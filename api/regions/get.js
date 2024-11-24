@@ -2,20 +2,31 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db');
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const { sortOrder = 'asc' } = req.query;
-  const sql = `SELECT * FROM regions ORDER BY name ${sortOrder.toUpperCase()}`;
 
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
-    }
+  try {
+    const sql = `
+      SELECT 
+        id,
+        name,
+        description,
+        is_active,
+        '/assets/images/regions/' || LOWER(REPLACE(name, '-', '_')) || '.webp' as image_url
+      FROM regions 
+      WHERE is_active = 1 
+      ORDER BY name ${sortOrder.toUpperCase()}
+    `;
+
+    const results = await db.allAsync(sql);
     res.json({
       message: 'success',
-      data: rows
+      data: results
     });
-  });
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(400).json({ error: err.message });
+  }
 });
 
 router.get('/:id', (req, res) => {

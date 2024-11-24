@@ -34,9 +34,9 @@ CREATE TABLE IF NOT EXISTS "rating_groups" (
 	"is_active"	BOOLEAN NOT NULL DEFAULT 1,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE("region_id","name"),
 	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("region_id") REFERENCES "regions"("id") ON DELETE RESTRICT
+	FOREIGN KEY("region_id") REFERENCES "regions"("id") ON DELETE RESTRICT,
+	UNIQUE("region_id","name")
 );
 CREATE TABLE IF NOT EXISTS "ratings" (
 	"id"	INTEGER,
@@ -47,9 +47,9 @@ CREATE TABLE IF NOT EXISTS "ratings" (
 	"is_active"	BOOLEAN NOT NULL DEFAULT 1,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE("rating_group_id","name"),
 	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("rating_group_id") REFERENCES "rating_groups"("id") ON DELETE RESTRICT
+	FOREIGN KEY("rating_group_id") REFERENCES "rating_groups"("id") ON DELETE RESTRICT,
+	UNIQUE("rating_group_id","name")
 );
 CREATE TABLE IF NOT EXISTS "products" (
 	"id"	INTEGER,
@@ -68,12 +68,12 @@ CREATE TABLE IF NOT EXISTS "products" (
 	"is_active"	BOOLEAN NOT NULL DEFAULT 1,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE("title","product_group_id","region_id"),
 	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("rating_id") REFERENCES "ratings"("id") ON DELETE RESTRICT,
 	FOREIGN KEY("product_type_id") REFERENCES "product_types"("id") ON DELETE RESTRICT,
-	FOREIGN KEY("region_id") REFERENCES "regions"("id") ON DELETE RESTRICT,
 	FOREIGN KEY("product_group_id") REFERENCES "product_groups"("id") ON DELETE RESTRICT,
-	FOREIGN KEY("rating_id") REFERENCES "ratings"("id") ON DELETE RESTRICT
+	FOREIGN KEY("region_id") REFERENCES "regions"("id") ON DELETE RESTRICT,
+	UNIQUE("title","product_group_id","region_id")
 );
 CREATE TABLE IF NOT EXISTS "inventory" (
 	"id"	INTEGER,
@@ -84,9 +84,9 @@ CREATE TABLE IF NOT EXISTS "inventory" (
 	"is_active"	BOOLEAN NOT NULL DEFAULT 1,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE("barcode"),
 	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("product_id") REFERENCES "products"("id") ON DELETE RESTRICT
+	FOREIGN KEY("product_id") REFERENCES "products"("id") ON DELETE RESTRICT,
+	UNIQUE("barcode")
 );
 CREATE TABLE IF NOT EXISTS "product_attribute_values" (
 	"id"	INTEGER,
@@ -95,10 +95,10 @@ CREATE TABLE IF NOT EXISTS "product_attribute_values" (
 	"value"	TEXT NOT NULL,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE("product_id","attribute_id"),
 	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY("attribute_id") REFERENCES "attributes"("id") ON DELETE RESTRICT,
-	FOREIGN KEY("product_id") REFERENCES "products"("id") ON DELETE RESTRICT
+	FOREIGN KEY("product_id") REFERENCES "products"("id") ON DELETE RESTRICT,
+	UNIQUE("product_id","attribute_id")
 );
 CREATE TABLE IF NOT EXISTS "inventory_attribute_values" (
 	"id"	INTEGER,
@@ -107,10 +107,10 @@ CREATE TABLE IF NOT EXISTS "inventory_attribute_values" (
 	"value"	TEXT NOT NULL,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE("inventory_id","attribute_id"),
 	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("attribute_id") REFERENCES "attributes"("id") ON DELETE RESTRICT,
 	FOREIGN KEY("inventory_id") REFERENCES "inventory"("id") ON DELETE RESTRICT,
-	FOREIGN KEY("attribute_id") REFERENCES "attributes"("id") ON DELETE RESTRICT
+	UNIQUE("inventory_id","attribute_id")
 );
 CREATE TABLE IF NOT EXISTS "pricecharting_prices" (
 	"id"	INTEGER,
@@ -134,8 +134,8 @@ CREATE TABLE IF NOT EXISTS "pricecharting_prices" (
 	"is_active"	BOOLEAN NOT NULL DEFAULT 1,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("product_id") REFERENCES "products"("id") ON DELETE RESTRICT
+	FOREIGN KEY("product_id") REFERENCES "products"("id") ON DELETE RESTRICT,
+	PRIMARY KEY("id" AUTOINCREMENT)
 );
 CREATE TABLE IF NOT EXISTS "product_sites" (
 	"id"	INTEGER,
@@ -155,10 +155,10 @@ CREATE TABLE IF NOT EXISTS "product_site_links" (
 	"is_active"	BOOLEAN NOT NULL DEFAULT 1,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	UNIQUE("product_id","site_id"),
-	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("site_id") REFERENCES "product_sites"("id") ON DELETE RESTRICT,
 	FOREIGN KEY("product_id") REFERENCES "products"("id") ON DELETE RESTRICT,
-	FOREIGN KEY("site_id") REFERENCES "product_sites"("id") ON DELETE RESTRICT
+	PRIMARY KEY("id" AUTOINCREMENT),
+	UNIQUE("product_id","site_id")
 );
 CREATE TABLE IF NOT EXISTS "attributes" (
 	"id"	INTEGER,
@@ -175,6 +175,9 @@ CREATE TABLE IF NOT EXISTS "attributes" (
 	"is_active"	BOOLEAN NOT NULL DEFAULT 1,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"show_in_ui"	BOOLEAN NOT NULL DEFAULT 1,
+	"show_if_empty"	BOOLEAN NOT NULL DEFAULT 0,
+	"use_image"	BOOLEAN NOT NULL DEFAULT 0,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 INSERT INTO "product_groups" VALUES (1,'Xbox 360','Microsoft Xbox 360 gaming console and related items',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
@@ -232,6 +235,19 @@ INSERT INTO "products" VALUES (5,4,1,2,21,NULL,'Wii Sports',NULL,'Nintendo','Nin
 INSERT INTO "products" VALUES (6,4,1,3,6,NULL,'Wii Sports',NULL,'Nintendo','Nintendo',2006,'Sports',NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "products" VALUES (7,1,3,1,NULL,NULL,'Xbox 360 Elite Console',NULL,'Microsoft','Microsoft',2007,NULL,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "products" VALUES (8,2,3,1,NULL,NULL,'PlayStation 3 Slim Console',NULL,'Sony','Sony',2009,NULL,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
+INSERT INTO "product_attribute_values" VALUES (1,1,12,'1','2024-11-23 23:32:14','2024-11-23 23:32:14');
+INSERT INTO "product_attribute_values" VALUES (2,1,10,'0','2024-11-23 23:32:14','2024-11-23 23:32:14');
+INSERT INTO "product_attribute_values" VALUES (3,1,11,'1','2024-11-23 23:32:14','2024-11-23 23:32:14');
+INSERT INTO "product_attribute_values" VALUES (4,2,12,'1','2024-11-23 23:32:48','2024-11-23 23:32:48');
+INSERT INTO "product_attribute_values" VALUES (5,2,10,'0','2024-11-23 23:32:48','2024-11-23 23:32:48');
+INSERT INTO "product_attribute_values" VALUES (6,2,11,'1','2024-11-23 23:32:48','2024-11-23 23:32:48');
+INSERT INTO "product_attribute_values" VALUES (7,4,16,'1','2024-11-23 23:32:53','2024-11-23 23:32:53');
+INSERT INTO "product_attribute_values" VALUES (8,4,17,'0','2024-11-23 23:32:53','2024-11-23 23:32:53');
+INSERT INTO "product_attribute_values" VALUES (9,7,18,'1','2024-11-23 23:32:53','2024-11-23 23:32:53');
+INSERT INTO "product_attribute_values" VALUES (10,7,19,'1439','2024-11-23 23:32:53','2024-11-23 23:32:53');
+INSERT INTO "product_attribute_values" VALUES (11,7,11,'1','2024-11-23 23:32:53','2024-11-23 23:32:53');
+INSERT INTO "product_attribute_values" VALUES (12,8,18,'1','2024-11-23 23:32:53','2024-11-23 23:32:53');
+INSERT INTO "product_attribute_values" VALUES (13,8,19,'CECH-2000','2024-11-23 23:32:53','2024-11-23 23:32:53');
 INSERT INTO "pricecharting_prices" VALUES (1,1,10.0,20.0,100.0,5.0,5.0,100.0,200.0,1000.0,50.0,50.0,99.0,199.0,999.0,49.0,49.0,10.0,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "pricecharting_prices" VALUES (2,2,10.0,20.0,100.0,5.0,5.0,100.0,200.0,1000.0,50.0,50.0,99.0,199.0,999.0,49.0,49.0,10.0,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "pricecharting_prices" VALUES (3,3,20.0,30.0,60.0,NULL,5.0,200.0,300.0,600.0,NULL,50.0,199.0,299.0,599.0,NULL,49.0,10.0,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
@@ -249,16 +265,16 @@ INSERT INTO "product_site_links" VALUES (5,4,1,'/wii/wii-sports-pal',1,'2024-11-
 INSERT INTO "product_site_links" VALUES (6,4,2,'/game/3847/wii-sports',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "product_site_links" VALUES (7,7,1,'/xbox-360/elite-console',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "product_site_links" VALUES (8,8,1,'/playstation-3/slim-console',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "attributes" VALUES (10,'isKinect','Kinect Support','boolean','product',NULL,'[1]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08');
-INSERT INTO "attributes" VALUES (11,'hasHDD','Hard Drive','boolean','product',NULL,'[1,3]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08');
-INSERT INTO "attributes" VALUES (12,'hasXboxLive','Xbox Live','boolean','product',NULL,'[1]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08');
-INSERT INTO "attributes" VALUES (13,'hasMove','PlayStation Move','boolean','product',NULL,'[1]','[2]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08');
-INSERT INTO "attributes" VALUES (14,'hasPlus','PlayStation Plus','boolean','product',NULL,'[1]','[2]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08');
-INSERT INTO "attributes" VALUES (15,'installSize','Install Size','set','product','["1GB", "2GB", "4GB", "8GB"]','[1]','[2]',1,'1GB',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08');
-INSERT INTO "attributes" VALUES (16,'hasMotionPlus','Motion Plus','boolean','product',NULL,'[1,2]','[4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08');
-INSERT INTO "attributes" VALUES (17,'hasGamecube','Gamecube Support','boolean','product',NULL,'[1,3]','[4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08');
-INSERT INTO "attributes" VALUES (18,'hasWifi','Built-in WiFi','boolean','product',NULL,'[3]','[1,2,4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08');
-INSERT INTO "attributes" VALUES (19,'modelNumber','Model Number','string','product',NULL,'[3]',NULL,1,NULL,NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08');
+INSERT INTO "attributes" VALUES (10,'isKinect','Kinect Support','boolean','product',NULL,'[1]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-24 15:08:09',1,0,1);
+INSERT INTO "attributes" VALUES (11,'hasHDD','Hard Drive','boolean','product',NULL,'[1,3]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (12,'hasXboxLive','Xbox Live','boolean','product',NULL,'[1]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (13,'hasMove','PlayStation Move','boolean','product',NULL,'[1]','[2]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (14,'hasPlus','PlayStation Plus','boolean','product',NULL,'[1]','[2]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (15,'installSize','Install Size','set','product','["1GB", "2GB", "4GB", "8GB"]','[1]','[2]',1,'1GB',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (16,'hasMotionPlus','Motion Plus','boolean','product',NULL,'[1,2]','[4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (17,'hasGamecube','Gamecube Support','boolean','product',NULL,'[1,3]','[4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (18,'hasWifi','Built-in WiFi','boolean','product',NULL,'[3]','[1,2,4]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
+INSERT INTO "attributes" VALUES (19,'modelNumber','Model Number','string','product',NULL,'[3]',NULL,1,NULL,NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
 CREATE INDEX IF NOT EXISTS "idx_product_groups_active" ON "product_groups" (
 	"is_active"
 );

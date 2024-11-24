@@ -10,7 +10,7 @@ const getConnection = () => {
   }
 
   console.log('Creating new database connection');
-  db = new sqlite3.Database('./database.sqlite', (err) => {
+  db = new sqlite3.Database('database/db/collecty.db', (err) => {
     if (err) {
       console.error('Error connecting to the database:', err);
     } else {

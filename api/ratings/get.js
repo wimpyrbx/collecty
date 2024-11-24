@@ -2,47 +2,34 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db');
 
-router.get('/', (req, res) => {
-  const { groupId, sortOrder = 'asc' } = req.query;
-  let sql = 'SELECT * FROM ratings WHERE 1=1';
-  const params = [];
+router.get('/', async (req, res) => {
+  const { sortOrder = 'asc' } = req.query;
 
-  if (groupId) {
-    sql += ' AND rating_group_id = ?';
-    params.push(groupId);
+  try {
+    const sql = `
+      SELECT 
+        r.*,
+        rg.name as rating_group_name,
+        CASE 
+          WHEN rg.name IS NOT NULL 
+          THEN '/assets/images/ratings/' || LOWER(rg.name) || '/' || LOWER(r.name) || '.webp'
+          ELSE NULL 
+        END as image_url
+      FROM ratings r
+      LEFT JOIN rating_groups rg ON r.rating_group_id = rg.id
+      WHERE r.is_active = 1 
+      ORDER BY r.name ${sortOrder.toUpperCase()}
+    `;
+
+    const results = await db.allAsync(sql);
+    res.json({
+      message: 'success',
+      data: results
+    });
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(400).json({ error: err.message });
   }
-
-  sql += ` ORDER BY name ${sortOrder.toUpperCase()}`;
-
-  db.all(sql, params, (err, rows) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
-    }
-    res.json({
-      message: 'success',
-      data: rows
-    });
-  });
-});
-
-router.get('/:id', (req, res) => {
-  const id = req.params.id;
-  
-  db.get('SELECT * FROM ratings WHERE id = ?', [id], (err, row) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
-    }
-    if (!row) {
-      res.status(404).json({ error: 'Rating not found' });
-      return;
-    }
-    res.json({
-      message: 'success',
-      data: row
-    });
-  });
 });
 
 module.exports = router; 

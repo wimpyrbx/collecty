@@ -59,4 +59,31 @@
 
 .table td .d-flex.flex-column > *:last-child {
   margin-bottom: 0;
+}
+
+/* Remove focus outlines completely */
+input:focus,
+select:focus,
+textarea:focus,
+button:focus,
+.btn:focus,
+.form-control:focus,
+.form-select:focus,
+*:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+}
+
+/* Override Bootstrap's focus styles */
+.form-control:focus,
+.form-select:focus {
+  border-color: inherit !important;
+  box-shadow: none !important;
+}
+
+/* Override for buttons */
+.btn.focus,
+.btn:focus {
+  box-shadow: none !important;
 } 

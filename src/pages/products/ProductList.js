@@ -5,6 +5,8 @@ import { Badge, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import CustomTableCell from '../../components/Table/CustomTableCell';
 import { FaEuroSign, FaDollarSign, FaYenSign } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
+import AddProductModal from '../../components/products/AddProductModal';
+import AttributeDisplay from '../../components/attributes/AttributeDisplay';
 
 const IMAGE_SIZE = {
   width: 60,  // DVD case proportions (approximately 7.5:11)
@@ -29,13 +31,16 @@ const ProductList = () => {
   const [productGroups, setProductGroups] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
   const [regions, setRegions] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [attributes, setAttributes] = useState([]);
 
   // Define fetchProducts as a function reference
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/products/extended/', {
+      const response = await axios.get('http://localhost:5000/api/products', {
         params: {
+          extended: true,
           groupId: filters.productGroup || undefined,
           typeId: filters.productType || undefined,
           regionId: filters.region || undefined,
@@ -64,17 +69,42 @@ const ProductList = () => {
   useEffect(() => {
     const fetchReferenceData = async () => {
       try {
-        const [groupsRes, typesRes, regionsRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/product-groups'),
-          axios.get('http://localhost:5000/api/product-types'),
-          axios.get('http://localhost:5000/api/regions')
+        const [groupsRes, typesRes, regionsRes, attributesRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/product-groups', {
+            params: {
+              sortOrder: 'asc'
+            }
+          }),
+          axios.get('http://localhost:5000/api/product-types', {
+            params: {
+              sortOrder: 'asc'
+            }
+          }),
+          axios.get('http://localhost:5000/api/regions', {
+            params: {
+              sortOrder: 'asc'
+            }
+          }),
+          axios.get('http://localhost:5000/api/attributes', {
+            params: { 
+              scope: 'product',
+              sortOrder: 'asc'
+            }
+          })
         ]);
 
-        setProductGroups(groupsRes.data.data);
-        setProductTypes(typesRes.data.data);
-        setRegions(regionsRes.data.data);
+        setProductGroups(groupsRes.data.data || []);
+        setProductTypes(typesRes.data.data || []);
+        setRegions(regionsRes.data.data || []);
+        setAttributes(attributesRes.data.data || []);
+
+        console.log('Product Groups:', groupsRes.data.data);
+        console.log('Product Types:', typesRes.data.data);
+        console.log('Regions:', regionsRes.data.data);
       } catch (err) {
         console.error('Failed to fetch reference data:', err);
+        console.error('Error details:', err.response?.data || err.message);
+        toast.error('Failed to load reference data');
       }
     };
 
@@ -176,13 +206,17 @@ const ProductList = () => {
     }
   };
 
+  const handleAddClick = () => {
+    setShowAddModal(true);
+  };
+
   return (
     <div className="container-fluid py-4">
       {/* Header Section */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h3 mb-0">Product List</h1>
         <div className="d-flex gap-2">
-          <button className="btn btn-primary">
+          <button className="btn btn-primary" onClick={handleAddClick}>
             Add New Product
           </button>
           <div className="btn-group">
@@ -411,13 +445,39 @@ const ProductList = () => {
                     ) : '-'}
                   </td>
                   <td>
-                    {product.attributes && Object.keys(product.attributes).length > 0 ? (
-                      <div className="d-flex flex-wrap gap-2">
-                        {Object.entries(product.attributes).map(([key, value]) => (
-                          <div key={key} className="small">
-                            {key}: <strong>{value}</strong>
-                          </div>
-                        ))}
+                    {product.attributes && Object.entries(product.attributes).length > 0 ? (
+                      <div className="attributes-container">
+                        {/* Text attributes */}
+                        <div className="flex-grow-1">
+                          {Object.entries(product.attributes).map(([key, value]) => {
+                            const attribute = attributes.find(a => a.name === key);
+                            if (!attribute || attribute.use_image) return null;
+                            
+                            return (
+                              <div key={key} className="attribute-row">
+                                <AttributeDisplay 
+                                  attribute={attribute} 
+                                  value={value} 
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {/* Image attributes in vertical stack */}
+                        <div className="attribute-images">
+                          {Object.entries(product.attributes).map(([key, value]) => {
+                            const attribute = attributes.find(a => a.name === key);
+                            if (!attribute || !attribute.use_image) return null;
+                            
+                            return (
+                              <AttributeDisplay 
+                                key={key}
+                                attribute={attribute} 
+                                value={value} 
+                              />
+                            );
+                          })}
+                        </div>
                       </div>
                     ) : '-'}
                   </td>
@@ -555,6 +615,12 @@ const ProductList = () => {
           </nav>
         </div>
       </div>
+
+      <AddProductModal
+        show={showAddModal}
+        onHide={() => setShowAddModal(false)}
+        onProductAdded={fetchProducts}
+      />
     </div>
   );
 };

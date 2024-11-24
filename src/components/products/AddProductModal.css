@@ -1,0 +1,106 @@
+.product-modal .modal-content {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.product-modal .modal-header {
+  border-bottom: none;
+}
+
+.product-modal .modal-header .close {
+  color: white;
+}
+
+.product-modal .modal-body {
+  padding: 1.5rem;
+}
+
+.product-modal .form-control,
+.product-modal .form-select {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 0.5rem 0.75rem;
+}
+
+.product-modal .form-control:focus,
+.product-modal .form-select:focus {
+  background-color: #fff;
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.product-modal .form-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.product-modal .form-text {
+  color: #6c757d;
+}
+
+.product-modal .form-group {
+  margin-bottom: 1rem;
+}
+
+.product-modal h5 {
+  color: #495057;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e9ecef;
+  margin-bottom: 1rem;
+}
+
+.product-modal .modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem 1.5rem;
+}
+
+.product-modal .form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.product-modal .form-switch .form-check-input {
+  background-color: rgba(13, 110, 253, 0.25);
+}
+
+.product-modal .form-switch .form-check-input:checked {
+  background-color: #0d6efd;
+}
+
+/* Style disabled form controls */
+.product-modal .form-control:disabled,
+.product-modal .form-select:disabled {
+  background-color: #e9ecef;
+  opacity: 0.75;
+}
+
+/* Add subtle transition effects */
+.product-modal .form-control,
+.product-modal .form-select,
+.product-modal .form-check-input {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Make switches bigger */
+.product-modal .form-switch {
+  padding-left: 3rem; /* Increase padding to accommodate bigger switch */
+}
+
+.product-modal .form-switch .form-check-input {
+  width: 3rem;  /* Make switch wider */
+  height: 1.5rem;  /* Make switch taller */
+  margin-left: -3rem; /* Align with increased padding */
+}
+
+/* Adjust the switch knob size */
+.product-modal .form-switch .form-check-input:after {
+  width: calc(1.5rem - 4px);  /* Match height with padding */
+  height: calc(1.5rem - 4px);
+}
+
+/* Adjust label alignment for bigger switches */
+.product-modal .form-switch .form-check-label {
+  padding-top: 0.25rem;  /* Center label vertically with bigger switch */
+  font-size: 1rem;
+} 
