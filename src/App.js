@@ -1,7 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
-import Layout from './components/Layout/Layout';
+import Sidebar from './components/Layout/Sidebar/Sidebar';
+import './styles/layout.css';
+import './styles/custom.css';
+import ThemeSwitcher from './components/ThemeSwitcher/ThemeSwitcher';
 
 // Pages
 import Dashboard from './pages/Dashboard';
@@ -17,28 +20,36 @@ import ProductSites from './pages/reference/ProductSites';
 import CollectionCompletion from './pages/statistics/CollectionCompletion';
 import CollectionValue from './pages/statistics/CollectionValue';
 import UITest from './pages/UITest';
+import StatsTest from './pages/StatsTest';
 
 function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/ui-test" element={<UITest />} />
-            <Route path="/products" element={<ProductList />} />
-            <Route path="/products/groups" element={<ProductGroups />} />
-            <Route path="/products/types" element={<ProductTypes />} />
-            <Route path="/products/attributes" element={<ProductAttributes />} />
-            <Route path="/inventory" element={<InventoryList />} />
-            <Route path="/inventory/attributes" element={<InventoryAttributes />} />
-            <Route path="/regions" element={<Regions />} />
-            <Route path="/ratings" element={<Ratings />} />
-            <Route path="/sites" element={<ProductSites />} />
-            <Route path="/statistics/completion" element={<CollectionCompletion />} />
-            <Route path="/statistics/value" element={<CollectionValue />} />
-          </Routes>
-        </Layout>
+        <div className="app-container">
+          <Sidebar />
+          <div className="main-content">
+            <div className="d-flex justify-content-end p-2">
+              <ThemeSwitcher />
+            </div>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/ui-test" element={<UITest />} />
+              <Route path="/products" element={<ProductList />} />
+              <Route path="/products/groups" element={<ProductGroups />} />
+              <Route path="/products/types" element={<ProductTypes />} />
+              <Route path="/products/attributes" element={<ProductAttributes />} />
+              <Route path="/inventory" element={<InventoryList />} />
+              <Route path="/inventory/attributes" element={<InventoryAttributes />} />
+              <Route path="/regions" element={<Regions />} />
+              <Route path="/ratings" element={<Ratings />} />
+              <Route path="/sites" element={<ProductSites />} />
+              <Route path="/statistics/completion" element={<CollectionCompletion />} />
+              <Route path="/statistics/value" element={<CollectionValue />} />
+              <Route path="/stats-test" element={<StatsTest />} />
+            </Routes>
+          </div>
+        </div>
       </BrowserRouter>
     </ThemeProvider>
   );

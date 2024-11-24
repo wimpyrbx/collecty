@@ -112,7 +112,30 @@ This project provides a RESTful API for managing product groups and related enti
 
 ### Products
 
-- **GET /api/products**: List all products.
+- **GET /api/products**: List all products with basic information.
+  - Query Parameters:
+    - groupId: Filter by product group
+    - typeId: Filter by product type
+    - regionId: Filter by region
+    - sortField: Field to sort by
+    - sortOrder: 'asc' or 'desc'
+    - page: Page number
+    - limit: Items per page
+
+- **GET /api/products/extended/:id?**: Get extended product information.
+  - Optional URL Parameter:
+    - id: Specific product ID
+  - Query Parameters:
+    - Same as /api/products endpoint
+  - Returns additional data:
+    - Product group name
+    - Product type name
+    - Region name
+    - Rating information
+    - Attributes
+    - Site links
+    - Pricing information
+
 - **POST /api/products**: Create a new product.
 - **PUT /api/products/:id**: Update a product by ID.
 - **DELETE /api/products/:id**: Delete a product by ID.

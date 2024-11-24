@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaTable, FaThLarge, FaSearch, FaSort } from 'react-icons/fa';
+import { FaTable, FaThLarge, FaSearch, FaSort, FaGamepad, FaDesktop, FaKeyboard, FaFlag, FaCompactDisc, FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { Badge, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import CustomTableCell from '../../components/Table/CustomTableCell';
+import { FaEuroSign, FaDollarSign, FaYenSign } from 'react-icons/fa';
+import { toast } from 'react-hot-toast';
+
+const IMAGE_SIZE = {
+  width: 60,  // DVD case proportions (approximately 7.5:11)
+  height: 85
+};
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -21,30 +30,35 @@ const ProductList = () => {
   const [productTypes, setProductTypes] = useState([]);
   const [regions, setRegions] = useState([]);
 
-  // Fetch products
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get('http://localhost:5000/api/products', {
-          params: {
-            groupId: filters.productGroup || undefined,
-            typeId: filters.productType || undefined,
-            regionId: filters.region || undefined,
-            sortOrder: sortDirection,
-          }
-        });
-        setProducts(response.data.data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to fetch products: ' + err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Define fetchProducts as a function reference
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:5000/api/products/extended/', {
+        params: {
+          groupId: filters.productGroup || undefined,
+          typeId: filters.productType || undefined,
+          regionId: filters.region || undefined,
+          sortField: sortField,
+          sortOrder: sortDirection,
+          page: currentPage,
+          limit: entriesPerPage
+        }
+      });
+      setProducts(response.data.data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch products: ' + err.message);
+      console.error('API Error:', err.response?.data || err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Use fetchProducts in useEffect
+  useEffect(() => {
     fetchProducts();
-  }, [filters, sortDirection]);
+  }, [filters, sortDirection, sortField, currentPage, entriesPerPage]);
 
   // Fetch reference data
   useEffect(() => {
@@ -104,6 +118,62 @@ const ProductList = () => {
       [name]: value
     }));
     setCurrentPage(1); // Reset to first page when filtering
+  };
+
+  const getRegionIcon = (regionId) => {
+    const region = regions.find(r => r.id === regionId);
+    if (!region) return <FaFlag title="Unknown Region" size={24} />;
+    
+    switch(region.name.toLowerCase()) {
+      case 'pal':
+      case 'eu':
+        return <FaEuroSign title="PAL/EU" className="text-primary" size={24} />;
+      case 'ntsc':
+      case 'usa':
+        return <FaDollarSign title="NTSC/USA" className="text-success" size={24} />;
+      case 'ntsc-j':
+      case 'japan':
+        return <FaYenSign title="NTSC-J/Japan" className="text-danger" size={24} />;
+      default:
+        return <FaFlag title={region.name} size={24} />;
+    }
+  };
+
+  const getTypeIcon = (typeId) => {
+    const type = productTypes.find(t => t.id === typeId);
+    if (!type) return <FaGamepad title="Unknown Type" size={24} />;
+    
+    switch(type.name.toLowerCase()) {
+      case 'game':
+        return <FaCompactDisc title="Game" className="text-primary" size={24} />;
+      case 'console':
+        return <FaDesktop title="Console" className="text-success" size={24} />;
+      case 'peripheral':
+        return <FaKeyboard title="Peripheral" className="text-warning" size={24} />;
+      default:
+        return <FaGamepad title={type.name} size={24} />;
+    }
+  };
+
+  const handleEdit = async (productId) => {
+    try {
+      // Fetch the specific product first
+      const response = await axios.get(`http://localhost:5000/api/products/${productId}`);
+      // TODO: Open edit modal with product data
+      console.log('Edit product:', response.data);
+    } catch (err) {
+      toast.error('Failed to fetch product details');
+    }
+  };
+
+  const handleDelete = async (productId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/products/${productId}`);
+      fetchProducts(); // Now fetchProducts is in scope
+      toast.success('Product deleted successfully');
+    } catch (err) {
+      toast.error('Failed to delete product');
+    }
   };
 
   return (
@@ -230,66 +300,190 @@ const ProductList = () => {
       ) : viewMode === 'table' ? (
         /* Table View */
         <div className="card">
-          <div className="table-responsive">
-            <table className="table table-hover mb-0">
-              <thead>
-                <tr>
-                  <th onClick={() => handleSort('title')} style={{cursor: 'pointer'}}>
-                    Title <FaSort className={sortField === 'title' ? 'text-primary' : ''} />
-                  </th>
-                  <th>Image</th>
-                  <th onClick={() => handleSort('product_group_id')} style={{cursor: 'pointer'}}>
-                    Group <FaSort className={sortField === 'product_group_id' ? 'text-primary' : ''} />
-                  </th>
-                  <th onClick={() => handleSort('product_type_id')} style={{cursor: 'pointer'}}>
-                    Type <FaSort className={sortField === 'product_type_id' ? 'text-primary' : ''} />
-                  </th>
-                  <th onClick={() => handleSort('region_id')} style={{cursor: 'pointer'}}>
-                    Region <FaSort className={sortField === 'region_id' ? 'text-primary' : ''} />
-                  </th>
-                  <th onClick={() => handleSort('developer')} style={{cursor: 'pointer'}}>
-                    Developer <FaSort className={sortField === 'developer' ? 'text-primary' : ''} />
-                  </th>
-                  <th onClick={() => handleSort('release_year')} style={{cursor: 'pointer'}}>
-                    Year <FaSort className={sortField === 'release_year' ? 'text-primary' : ''} />
-                  </th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentProducts.map(product => (
-                  <tr key={product.id}>
-                    <td>{product.title}</td>
-                    <td>
-                      {product.image_url ? (
-                        <img 
-                          src={product.image_url} 
-                          alt={product.title} 
-                          className="img-thumbnail"
-                          style={{width: '50px', height: '50px', objectFit: 'cover'}}
+          <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <span>Products</span>
+            <button className="btn btn-sm btn-light">Add Product</button>
+          </div>
+          <table className="table table-bordered mb-0 table-hover">
+            <thead className="table-light">
+              <tr>
+                <th onClick={() => handleSort('id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+                  ID <FaSort className={sortField === 'id' ? 'text-primary' : ''} />
+                </th>
+                <th onClick={() => handleSort('title')} style={{cursor: 'pointer'}}>
+                  Information <FaSort className={sortField === 'title' ? 'text-primary' : ''} />
+                </th>
+                <th style={{width: `${IMAGE_SIZE.width}px`, padding: 0}}></th>
+                <th onClick={() => handleSort('rating')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+                  Rating <FaSort className={sortField === 'rating' ? 'text-primary' : ''} />
+                </th>
+                <th style={{cursor: 'pointer'}}>
+                  Attributes
+                </th>
+                <th onClick={() => handleSort('product_type_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+                  Type <FaSort className={sortField === 'product_type_id' ? 'text-primary' : ''} />
+                </th>
+                <th onClick={() => handleSort('region_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+                  Region <FaSort className={sortField === 'region_id' ? 'text-primary' : ''} />
+                </th>
+                <th onClick={() => handleSort('developer')} style={{cursor: 'pointer'}}>
+                  Product Details <FaSort className={sortField === 'developer' ? 'text-primary' : ''} />
+                </th>
+                <th style={{width: '1%', whiteSpace: 'nowrap'}}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentProducts.map(product => (
+                <tr key={product.id}>
+                  <td className="text-center">
+                    <OverlayTrigger
+                      placement="right"
+                      overlay={
+                        <Tooltip id={`tooltip-${product.id}`}>
+                          <pre style={{ margin: 0, textAlign: 'left', fontSize: '0.8rem' }}>
+                            {JSON.stringify(product, null, 2)}
+                          </pre>
+                        </Tooltip>
+                      }
+                    >
+                      <span className="text-muted" style={{ cursor: 'help' }}>
+                        {product.id}
+                      </span>
+                    </OverlayTrigger>
+                  </td>
+                  <CustomTableCell>
+                    <div className="d-flex flex-column">
+                      <div>
+                        <strong>{product.title}</strong>
+                        {product.release_year && (
+                          <span className="text-muted ms-2">
+                            ({product.release_year})
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-muted small">
+                        {product.product_group_name || '-'}
+                      </div>
+                    </div>
+                  </CustomTableCell>
+                  <td style={{width: `${IMAGE_SIZE.width}px`, padding: '4px'}}>
+                    {product.image_url ? (
+                      <img 
+                        src={product.image_url} 
+                        alt={product.title} 
+                        className="rounded shadow-sm"
+                        style={{
+                          maxHeight: '40px',
+                          width: 'auto',
+                          objectFit: 'contain'
+                        }}
+                      />
+                    ) : (
+                      <div 
+                        className="d-flex flex-column align-items-center justify-content-center rounded shadow-sm image-placeholder"
+                        style={{
+                          maxHeight: '40px',
+                          width: 'auto',
+                          background: 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)',
+                          border: '1px solid #dee2e6'
+                        }}
+                      >
+                        <FaGamepad 
+                          className="text-secondary"
+                          style={{opacity: 0.5}}
+                          size={16}
                         />
-                      ) : (
-                        <div className="bg-secondary text-center" style={{width: '50px', height: '50px', lineHeight: '50px'}}>
-                          No Image
+                      </div>
+                    )}
+                  </td>
+                  <td className="text-center">
+                    {product.rating_name ? (
+                      <Badge 
+                        bg={
+                          product.rating_name === 'E' ? 'success' :
+                          product.rating_name === 'T' ? 'warning' :
+                          product.rating_name === 'M' ? 'danger' :
+                          'secondary'
+                        }
+                      >
+                        {product.rating_name}
+                      </Badge>
+                    ) : '-'}
+                  </td>
+                  <td>
+                    {product.attributes && Object.keys(product.attributes).length > 0 ? (
+                      <div className="d-flex flex-wrap gap-2">
+                        {Object.entries(product.attributes).map(([key, value]) => (
+                          <div key={key} className="small">
+                            {key}: <strong>{value}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    ) : '-'}
+                  </td>
+                  <td className="text-center">
+                    {getTypeIcon(product.product_type_id)}
+                    <div className="small text-muted mt-1">
+                      {product.product_type_name}
+                    </div>
+                  </td>
+                  <td className="text-center">
+                    {getRegionIcon(product.region_id)}
+                    <div className="small text-muted mt-1">
+                      {product.region_name}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="d-flex flex-column">
+                      {product.developer && (
+                        <div className="mb-1">
+                          Developer: <strong>{product.developer}</strong>
                         </div>
                       )}
-                    </td>
-                    <td>{productGroups.find(g => g.id === product.product_group_id)?.name || '-'}</td>
-                    <td>{productTypes.find(t => t.id === product.product_type_id)?.name || '-'}</td>
-                    <td>{regions.find(r => r.id === product.region_id)?.name || '-'}</td>
-                    <td>{product.developer || '-'}</td>
-                    <td>{product.release_year || '-'}</td>
-                    <td>
-                      <div className="btn-group btn-group-sm">
-                        <button className="btn btn-warning">Edit</button>
-                        <button className="btn btn-danger">Delete</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      {product.publisher && (
+                        <div className="mb-1">
+                          Publisher: <strong>{product.publisher}</strong>
+                        </div>
+                      )}
+                      {product.genre && (
+                        <div className="mb-1">
+                          Genre: <strong>{product.genre}</strong>
+                        </div>
+                      )}
+                      {product.players && (
+                        <div className="mb-1">
+                          Players: <strong>{product.players}</strong>
+                        </div>
+                      )}
+                      {product.format && (
+                        <div className="mb-1">
+                          Format: <strong>{product.format}</strong>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="text-center">
+                    <div className="d-flex gap-2 justify-content-center">
+                      <button 
+                        className="btn btn-link btn-sm p-0 text-primary" 
+                        title="Edit"
+                        onClick={() => handleEdit(product.id)}
+                      >
+                        <FaEdit size={18} />
+                      </button>
+                      <button 
+                        className="btn btn-link btn-sm p-0 text-danger" 
+                        title="Delete"
+                        onClick={() => handleDelete(product.id)}
+                      >
+                        <FaTrashAlt size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       ) : (
         /* Grid View */
@@ -336,15 +530,15 @@ const ProductList = () => {
           <nav>
             <ul className="pagination mb-0">
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link bg-dark border-secondary" onClick={() => setCurrentPage(1)}>First</button>
+                <button className="page-link" onClick={() => setCurrentPage(1)}>First</button>
               </li>
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link bg-dark border-secondary" onClick={() => setCurrentPage(prev => prev - 1)}>Previous</button>
+                <button className="page-link" onClick={() => setCurrentPage(prev => prev - 1)}>Previous</button>
               </li>
               {[...Array(totalPages)].map((_, i) => (
                 <li key={i + 1} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
                   <button 
-                    className="page-link bg-dark border-secondary"
+                    className="page-link"
                     onClick={() => setCurrentPage(i + 1)}
                   >
                     {i + 1}
@@ -352,10 +546,10 @@ const ProductList = () => {
                 </li>
               )).slice(Math.max(0, currentPage - 3), Math.min(totalPages, currentPage + 2))}
               <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link bg-dark border-secondary" onClick={() => setCurrentPage(prev => prev + 1)}>Next</button>
+                <button className="page-link" onClick={() => setCurrentPage(prev => prev + 1)}>Next</button>
               </li>
               <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link bg-dark border-secondary" onClick={() => setCurrentPage(totalPages)}>Last</button>
+                <button className="page-link" onClick={() => setCurrentPage(totalPages)}>Last</button>
               </li>
             </ul>
           </nav>

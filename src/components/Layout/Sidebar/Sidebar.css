@@ -1,0 +1,41 @@
+.sidebar {
+    /* Remove position fixed to allow flexbox layout */
+    /* position: fixed; */
+    /* top: 0; */
+    /* left: 0; */
+    width: 150px;
+    height: 100vh;
+    background-color: #343a40;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+    flex-shrink: 0;
+  }
+  
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar-menu li {
+    margin: 10px 0;
+  }
+  
+  .sidebar-menu a {
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .sidebar-menu a:hover {
+    background-color: #495057;
+  }
+  
+  .sidebar-menu a svg {
+    margin-right: 10px;
+  } 

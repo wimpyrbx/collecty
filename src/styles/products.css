@@ -1,8 +1,0 @@
-/* Only keep essential non-theme related styles */
-.table td {
-  vertical-align: middle;
-}
-
-.btn-group .btn:focus {
-  box-shadow: none;
-} 

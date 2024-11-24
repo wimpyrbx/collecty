@@ -1,62 +1,22 @@
-:root {
-  --sidebar-width: 200px;
-  --sidebar-collapsed-width: 80px;
-}
-
 .app-container {
   display: flex;
-  min-height: 100vh;
-}
-
-.sidebar {
-  width: var(--sidebar-width);
-  position: fixed;
-  left: 0;
-  top: 0;
-  height: 100vh;
-  overflow-x: hidden;
-  overflow-y: auto;
-  z-index: 1030;
-  transition: width 0.3s ease;
-  white-space: nowrap;
-}
-
-.sidebar-header {
-  padding: 1rem;
-  text-align: center;
-}
-
-.sidebar .nav-link {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  transition: all 0.2s;
-}
-
-.section-title {
-  padding: 0 1rem;
-  opacity: 0.65;
+  height: 100vh; /* Ensure the container takes full viewport height */
 }
 
 .main-content {
-  margin-left: var(--sidebar-width);
-  flex: 1;
-  transition: margin-left 0.3s ease;
+  flex: 1; /* Allow main content to take up remaining space */
+  /* Remove margin-left if .sidebar is no longer fixed */
+  /* margin-left: 150px; */
+  padding: 20px;
+  overflow-y: auto; /* Enable scrolling if content overflows */
+} 
+
+/* Ensure custom styles don't override Bootstrap defaults without intention */
+.sidebar {
+  /* Your custom styles */
 }
 
-/* Mobile/Tablet Responsive Design */
-@media (max-width: 768px) {
-  .sidebar {
-    width: var(--sidebar-collapsed-width);
-  }
-
-  .sidebar .nav-text,
-  .section-title {
-    display: none;
-  }
-
-  .main-content {
-    margin-left: var(--sidebar-collapsed-width);
-  }
+/* Be cautious with styles that affect Bootstrap components */
+.main-content {
+  /* Your custom styles */
 } 

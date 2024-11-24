@@ -1,0 +1,62 @@
+/* More specific selectors */
+.table tbody tr th,
+.table tbody tr td {
+  vertical-align: middle;
+}
+
+/* Allow custom content positioning within table cells */
+.table-custom-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Adjust the padding to make rows more compact */
+.table tbody tr th,
+.table tbody tr td {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+/* Customize table row hover effect */
+.table tbody tr:hover {
+  background-color: #f0f8ff;
+}
+
+/* Set background color and height for table headers and cells */
+.table th {
+  background-color: #e7e7e7;
+  height: 32px;
+  vertical-align: middle;
+  padding: 0.4rem;
+}
+
+.table td {
+  background-color: #f8f8f8;
+  height: 40px;
+  max-height: 40px;
+  line-height: 1.2;
+  overflow: hidden;
+}
+
+/* Image cell specific styles */
+.table td img,
+.table td .image-placeholder {
+  max-height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Ensure small text in cells maintains readability */
+.table td .small {
+  line-height: 1.1;
+}
+
+/* Adjust spacing for stacked content in cells */
+.table td .d-flex.flex-column > * {
+  margin-bottom: 0.2rem;
+}
+
+.table td .d-flex.flex-column > *:last-child {
+  margin-bottom: 0;
+} 
