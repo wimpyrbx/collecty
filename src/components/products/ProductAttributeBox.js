@@ -5,7 +5,12 @@ import './ProductAttributeBox.css';
 const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid }) => {
   const handleBoxClick = (e) => {
     if (attribute.type === 'boolean') {
-      onChange(attribute.id, value !== '1' ? '1' : '0');
+      onChange(attribute.id, value === '1' ? '0' : '1');
+    } else {
+      const input = e.currentTarget.querySelector('input, select');
+      if (input) {
+        input.focus();
+      }
     }
   };
 
@@ -15,11 +20,9 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
         return (
           <Form.Check
             type="switch"
-            id={`switch-${attribute.id}`}
-            className="custom-switch"
             checked={value === '1'}
             onChange={(e) => onChange(attribute.id, e.target.checked ? '1' : '0')}
-            onClick={(e) => e.stopPropagation()} // Prevent double-triggering
+            className="custom-switch"
           />
         );
       
@@ -29,51 +32,53 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
           <Form.Select
             value={value || ''}
             onChange={(e) => onChange(attribute.id, e.target.value)}
-            onClick={(e) => e.stopPropagation()}
+            required={attribute.is_required}
           >
             <option value="">Select {attribute.ui_name}</option>
-            {allowedValues.map(value => (
-              <option key={value} value={value}>{value}</option>
+            {allowedValues.map(val => (
+              <option key={val} value={val}>{val}</option>
             ))}
           </Form.Select>
         );
-
+      
       case 'number':
         return (
           <Form.Control
             type="number"
             value={value || ''}
             onChange={(e) => onChange(attribute.id, e.target.value)}
-            onClick={(e) => e.stopPropagation()}
+            required={attribute.is_required}
           />
         );
-
-      default: // string
+      
+      case 'string':
+      default:
         return (
           <Form.Control
             type="text"
             value={value || ''}
             onChange={(e) => onChange(attribute.id, e.target.value)}
-            onClick={(e) => e.stopPropagation()}
+            required={attribute.is_required}
           />
         );
     }
   };
 
+  const isActive = (attribute.type === 'boolean' && value === '1') || (value && attribute.type !== 'boolean');
+
   return (
     <div 
-      className={`attribute-box ${value === '1' && attribute.type === 'boolean' ? 'active' : ''}`}
+      className={`attribute-box ${isActive ? 'active' : ''}`}
       onClick={handleBoxClick}
     >
       <Form.Group className="attribute-content">
         <Form.Label>
           {attribute.ui_name}
-          {attribute.is_required && ' *'}
         </Form.Label>
         {renderInput()}
         {touched && isInvalid && (
           <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
-            This field is required
+            * Required
           </Form.Control.Feedback>
         )}
       </Form.Group>

@@ -9,6 +9,7 @@ import AddProductModal from '../../components/products/AddProductModal';
 import AttributeDisplay from '../../components/attributes/AttributeDisplay';
 import RegionImage from '../../components/common/RegionImage';
 import ProductTypeImage from '../../components/common/ProductTypeImage';
+import EditProductModal from '../../components/products/EditProductModal';
 
 const IMAGE_SIZE = {
   width: 60,  // DVD case proportions (approximately 7.5:11)
@@ -35,6 +36,8 @@ const ProductList = () => {
   const [regions, setRegions] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [attributes, setAttributes] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState(null);
 
   // Define fetchProducts as a function reference
   const fetchProducts = async () => {
@@ -144,15 +147,9 @@ const ProductList = () => {
     setCurrentPage(1); // Reset to first page when filtering
   };
 
-  const handleEdit = async (productId) => {
-    try {
-      // Fetch the specific product first
-      const response = await axios.get(`http://localhost:5000/api/products/${productId}`);
-      // TODO: Open edit modal with product data
-      console.log('Edit product:', response.data);
-    } catch (err) {
-      toast.error('Failed to fetch product details');
-    }
+  const handleEditClick = (productId) => {
+    setSelectedProductId(productId);
+    setShowEditModal(true);
   };
 
   const handleDelete = async (productId) => {
@@ -168,6 +165,23 @@ const ProductList = () => {
   const handleAddClick = () => {
     setShowAddModal(true);
   };
+
+  const renderActionButtons = (product) => (
+    <div className="btn-group">
+      <button 
+        className="btn btn-warning btn-sm"
+        onClick={() => handleEditClick(product.id)}
+      >
+        <FaEdit /> Edit
+      </button>
+      <button 
+        className="btn btn-danger btn-sm"
+        onClick={() => handleDelete(product.id)}
+      >
+        <FaTrashAlt /> Delete
+      </button>
+    </div>
+  );
 
   return (
     <div className="container-fluid py-4">
@@ -444,22 +458,7 @@ const ProductList = () => {
                     <RegionImage regionName={product.region_name} />
                   </td>
                   <td className="text-center">
-                    <div className="d-flex gap-2 justify-content-center">
-                      <button 
-                        className="btn btn-link btn-sm p-0 text-primary" 
-                        title="Edit"
-                        onClick={() => handleEdit(product.id)}
-                      >
-                        <FaEdit size={18} />
-                      </button>
-                      <button 
-                        className="btn btn-link btn-sm p-0 text-danger" 
-                        title="Delete"
-                        onClick={() => handleDelete(product.id)}
-                      >
-                        <FaTrashAlt size={18} />
-                      </button>
-                    </div>
+                    {renderActionButtons(product)}
                   </td>
                 </tr>
               ))}
@@ -491,10 +490,7 @@ const ProductList = () => {
                   <p className="card-text"><small className="text-muted">{product.release_year}</small></p>
                 </div>
                 <div className="card-footer">
-                  <div className="btn-group w-100">
-                    <button className="btn btn-warning">Edit</button>
-                    <button className="btn btn-danger">Delete</button>
-                  </div>
+                  {renderActionButtons(product)}
                 </div>
               </div>
             </div>
@@ -541,6 +537,13 @@ const ProductList = () => {
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
         onProductAdded={fetchProducts}
+      />
+
+      <EditProductModal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        productId={selectedProductId}
+        onProductUpdated={fetchProducts}
       />
     </div>
   );

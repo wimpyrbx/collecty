@@ -115,68 +115,40 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
   // Update the attributes fetch effect
   useEffect(() => {
     const fetchAttributes = async () => {
-      // Only fetch attributes if both group and type are selected
       if (!formData.product_group_id || !formData.product_type_id) {
         setAttributes([]);
-        // Clear all attribute values when removing attributes
         setAttributeValues({});
         return;
       }
 
       try {
-        const params = {
-          scope: 'product',
-          productGroupId: formData.product_group_id,
-          productTypeId: formData.product_type_id,
-          sortOrder: 'asc'
-        };
-
-        const response = await axios.get('http://localhost:5000/api/attributes', { params });
-
-        // Filter attributes based on the complex logic
-        const filteredAttributes = response.data.data.filter(attr => {
-          const groupIds = JSON.parse(attr.product_group_ids || '[]');
-          const typeIds = JSON.parse(attr.product_type_ids || '[]');
-
-          // Case 1: No limits on either group or type
-          if (groupIds.length === 0 && typeIds.length === 0) {
-            return true;
+        const response = await axios.get('http://localhost:5000/api/attributes', {
+          params: { 
+            scope: 'product',
+            productGroupId: formData.product_group_id,
+            productTypeId: formData.product_type_id,
+            sortOrder: 'asc'
           }
-
-          // Case 2: Group match (or no group limit) AND Type match (or no type limit)
-          const groupMatch = groupIds.length === 0 || groupIds.includes(Number(formData.product_group_id));
-          const typeMatch = typeIds.length === 0 || typeIds.includes(Number(formData.product_type_id));
-
-          return groupMatch && typeMatch;
         });
 
-        setAttributes(filteredAttributes);
+        console.log('Fetched attributes:', response.data.data);
+        setAttributes(response.data.data || []);
 
-        // Clean up attribute values - remove any that aren't in the new attribute list
-        setAttributeValues(prev => {
-          const newValues = {};
-          const validAttributeIds = filteredAttributes.map(attr => attr.id);
-          
-          // Only keep values for attributes that still exist
-          Object.entries(prev).forEach(([attrId, value]) => {
-            if (validAttributeIds.includes(Number(attrId))) {
-              newValues[attrId] = value;
-            }
-          });
-
-          // Set defaults for new attributes only
-          filteredAttributes.forEach(attr => {
-            if (!newValues.hasOwnProperty(attr.id) && attr.default_value) {
-              newValues[attr.id] = attr.default_value;
-            }
-          });
-
-          return newValues;
+        // Initialize attribute values with defaults only for boolean types
+        const newAttributeValues = {};
+        response.data.data.forEach(attr => {
+          if (attr.type === 'boolean' && attr.default_value) {
+            newAttributeValues[attr.id] = attr.default_value;
+          }
+          // Don't set default values for other types (set, string, number)
         });
+        setAttributeValues(prev => ({
+          ...prev,
+          ...newAttributeValues
+        }));
 
       } catch (err) {
         console.error('Failed to fetch attributes:', err);
-        toast.error('Failed to load product attributes');
       }
     };
 
@@ -199,15 +171,10 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // Only clear validation errors if form has been submitted
-    if (hasSubmitted && value) {
-      setError(null);
-    }
-    
     if (name === 'region_id') {
       // Filter rating groups for selected region
       const regionRatingGroups = ratingGroups.filter(
-        group => group.region_id === Number(value)
+        group => group.region_id === parseInt(value, 10)
       );
       setAvailableRatingGroups(regionRatingGroups);
       
@@ -222,19 +189,45 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
         rating_id: ''
       }));
 
-      // If we auto-selected a rating group, trigger the ratings update
-      if (newRatingGroupId) {
-        const filteredRatings = ratings.filter(
-          rating => rating.rating_group_id === Number(newRatingGroupId)
-        );
-        setAvailableRatings(filteredRatings);
-      }
+      // Focus next dropdown after a small delay
+      setTimeout(() => {
+        if (newRatingGroupId) {
+          // If we auto-selected a rating group, focus the rating dropdown
+          const ratingSelect = document.querySelector('[name="rating_id"]');
+          if (ratingSelect) {
+            ratingSelect.focus();
+            const filteredRatings = ratings.filter(
+              rating => rating.rating_group_id === parseInt(newRatingGroupId, 10)
+            );
+            setAvailableRatings(filteredRatings);
+          }
+        } else {
+          // Otherwise focus the rating group dropdown
+          const ratingGroupSelect = document.querySelector('[name="rating_group_id"]');
+          if (ratingGroupSelect) {
+            ratingGroupSelect.focus();
+          }
+        }
+      }, 0);
+
     } else if (name === 'rating_group_id') {
+      const filteredRatings = ratings.filter(
+        rating => rating.rating_group_id === parseInt(value, 10)
+      );
+      setAvailableRatings(filteredRatings);
       setFormData(prev => ({
         ...prev,
         rating_group_id: value,
         rating_id: ''
       }));
+
+      // Focus rating dropdown after a small delay
+      setTimeout(() => {
+        const ratingSelect = document.querySelector('[name="rating_id"]');
+        if (ratingSelect) {
+          ratingSelect.focus();
+        }
+      }, 0);
     } else {
       setFormData(prev => ({
         ...prev,
@@ -278,10 +271,16 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setHasSubmitted(true); // Mark form as submitted
+    setHasSubmitted(true);
     
+    console.log('=== Form Submission ===');
+    console.log('Form Data:', formData);
+    console.log('Attribute Values:', attributeValues);
+    console.log('Available Attributes:', attributes);
+
     const validationError = validateForm();
     if (validationError) {
+      console.log('Validation Error:', validationError);
       showWarning('Please fill in all required fields');
       return;
     }
@@ -301,11 +300,20 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
         attributes: attributeValues
       };
 
-      await axios.post('http://localhost:5000/api/products', payload);
+      console.log('=== Sending Payload ===');
+      console.log('Payload:', payload);
+
+      const response = await axios.post('http://localhost:5000/api/products', payload);
+      console.log('=== Response ===');
+      console.log('Response:', response.data);
+
       toast.success('Product created successfully');
       onProductAdded();
       onHide();
     } catch (err) {
+      console.error('=== Error Creating Product ===');
+      console.error('Error:', err);
+      console.error('Response:', err.response?.data);
       setError(err.response?.data?.error || 'Failed to create product');
       toast.error(err.response?.data?.error || 'Failed to create product');
     } finally {

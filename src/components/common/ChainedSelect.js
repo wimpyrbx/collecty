@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Form } from 'react-bootstrap';
 
 const ChainedSelect = ({
@@ -9,9 +9,7 @@ const ChainedSelect = ({
   label,
   disabled = false,
   isRequired = false,
-  isInvalid = false,
-  defaultValue = '',
-  onAutoProgress
+  isInvalid = false
 }) => {
   return (
     <Form.Group>
@@ -19,10 +17,7 @@ const ChainedSelect = ({
       <Form.Select
         name={name}
         value={value}
-        onChange={(e) => {
-          onChange(e);
-          if (onAutoProgress) onAutoProgress(e.target.value);
-        }}
+        onChange={onChange}
         disabled={disabled}
         isInvalid={isInvalid}
       >

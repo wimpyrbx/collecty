@@ -1,21 +1,16 @@
 import React from 'react';
 import { Row, Col, Form } from 'react-bootstrap';
+import ProductImageUrlInput from './ProductImageUrlInput';
 
 const ProductAdditionalInfo = ({ formData, onChange }) => {
   return (
     <>
       <Row className="mb-3">
         <Col md={12}>
-          <Form.Group>
-            <Form.Label>Product Image URL</Form.Label>
-            <Form.Control
-              type="url"
-              name="image_url"
-              value={formData.image_url}
-              onChange={onChange}
-              placeholder="https://"
-            />
-          </Form.Group>
+          <ProductImageUrlInput
+            value={formData.image_url}
+            onChange={onChange}
+          />
         </Col>
       </Row>
 

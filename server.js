@@ -88,6 +88,14 @@ app.use('/api/pricecharting-prices', require('./api/pricecharting-prices/delete'
 // Statistics
 app.use('/api/statistics', require('./api/statistics/get'));
 
+// Import routes
+const productAttributeValuesCleanupRouter = require('./api/product-attribute-values/cleanup');
+// ... other route imports ...
+
+// Register routes
+app.use('/api/product-attribute-values', productAttributeValuesCleanupRouter);
+// ... other route registrations ...
+
 // Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
