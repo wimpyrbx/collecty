@@ -7,7 +7,6 @@ import ChainedSelect from '../common/ChainedSelect';
 import ProductAttributeBox from './ProductAttributeBox';
 import AttributesSection from './AttributesSection';
 import ProductBasicInfo from './ProductBasicInfo';
-import ProductRegionInfo from './ProductRegionInfo';
 import ProductAdditionalInfo from './ProductAdditionalInfo';
 
 const initialFormState = {
@@ -336,27 +335,16 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
           <ProductBasicInfo
             formData={formData}
             onChange={handleInputChange}
-            productGroups={productGroups}
-            productTypes={productTypes}
-            hasSubmitted={hasSubmitted}
-            nameInputRef={nameInputRef}
-          />
-
-          <AttributesSection 
-            show={!!(formData.product_group_id && formData.product_type_id && attributes.length > 0)}
+            productGroups={productGroups || []}
+            productTypes={productTypes || []}
+            regions={regions || []}
+            availableRatingGroups={availableRatingGroups || []}
+            availableRatings={availableRatings || []}
             attributes={attributes}
             attributeValues={attributeValues}
             handleAttributeChange={handleAttributeChange}
             hasSubmitted={hasSubmitted}
-          />
-
-          <ProductRegionInfo
-            formData={formData}
-            onChange={handleInputChange}
-            regions={regions}
-            availableRatingGroups={availableRatingGroups}
-            availableRatings={availableRatings}
-            hasSubmitted={hasSubmitted}
+            nameInputRef={nameInputRef}
           />
 
           <ProductAdditionalInfo

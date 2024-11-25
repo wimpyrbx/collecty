@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Form, Button } from 'react-bootstrap';
+import { Modal, Form, Button, Row, Col, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import ProductBasicInfo from './ProductBasicInfo';
-import ProductRegionInfo from './ProductRegionInfo';
-import ProductAdditionalInfo from './ProductAdditionalInfo';
+import './AddProductModal.css';
+import ChainedSelect from '../common/ChainedSelect';
+import ProductAttributeBox from './ProductAttributeBox';
 import AttributesSection from './AttributesSection';
+import ProductBasicInfo from './ProductBasicInfo';
+import ProductAdditionalInfo from './ProductAdditionalInfo';
 
 const EditProductModal = ({ show, onHide, productId, onProductUpdated }) => {
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState({});
   const [attributes, setAttributes] = useState([]);
   const [productGroups, setProductGroups] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
@@ -16,13 +18,15 @@ const EditProductModal = ({ show, onHide, productId, onProductUpdated }) => {
   const [ratings, setRatings] = useState([]);
   const [ratingGroups, setRatingGroups] = useState([]);
   const [availableRatings, setAvailableRatings] = useState([]);
+  const [availableRatingGroups, setAvailableRatingGroups] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [attributeValues, setAttributeValues] = useState({});
-  const [availableRatingGroups, setAvailableRatingGroups] = useState([]);
-  const [warning, setWarning] = useState('');
-  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [touched, setTouched] = useState(false);
   const nameInputRef = useRef(null);
+  const [warning, setWarning] = useState('');
+  const warningTimeoutRef = useRef(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   // Fetch product data when modal opens
   useEffect(() => {
@@ -54,24 +58,22 @@ const EditProductModal = ({ show, onHide, productId, onProductUpdated }) => {
           
           const productData = response.data.data;
 
-          // Find the rating and its group
-          let ratingGroupId = '';
-          if (productData.rating_id) {
-            const rating = ratingsRes.data.data.find(r => r.id === productData.rating_id);
-            if (rating) {
-              ratingGroupId = rating.rating_group_id.toString();
-              
-              // Set up available rating groups for the region
-              const regionRatingGroups = ratingGroupsRes.data.data.filter(
-                group => group.region_id === productData.region_id
-              );
-              setAvailableRatingGroups(regionRatingGroups);
+          // Set up available rating groups for the region regardless of rating_id
+          if (productData.region_id) {
+            const regionRatingGroups = ratingGroupsRes.data.data.filter(
+              group => group.region_id === productData.region_id
+            );
+            setAvailableRatingGroups(regionRatingGroups);
 
-              // Set up available ratings for the rating group
-              const groupRatings = ratingsRes.data.data.filter(
-                r => r.rating_group_id === rating.rating_group_id
-              );
-              setAvailableRatings(groupRatings);
+            // If there's a rating_id, set up the ratings for its group
+            if (productData.rating_id) {
+              const rating = ratingsRes.data.data.find(r => r.id === productData.rating_id);
+              if (rating) {
+                const groupRatings = ratingsRes.data.data.filter(
+                  r => r.rating_group_id === rating.rating_group_id
+                );
+                setAvailableRatings(groupRatings);
+              }
             }
           }
 
@@ -81,7 +83,7 @@ const EditProductModal = ({ show, onHide, productId, onProductUpdated }) => {
             product_group_id: productData.product_group_id.toString(),
             product_type_id: productData.product_type_id.toString(),
             region_id: productData.region_id.toString(),
-            rating_group_id: ratingGroupId,
+            rating_group_id: productData.rating_group_id?.toString() || '',
             rating_id: productData.rating_id?.toString() || '',
             image_url: productData.image_url || '',
             release_year: productData.release_year?.toString() || '',
@@ -287,8 +289,11 @@ const EditProductModal = ({ show, onHide, productId, onProductUpdated }) => {
           <ProductBasicInfo
             formData={formData}
             onChange={handleInputChange}
-            productGroups={productGroups}
-            productTypes={productTypes}
+            productGroups={productGroups || []}
+            productTypes={productTypes || []}
+            regions={regions || []}
+            availableRatingGroups={availableRatingGroups || []}
+            availableRatings={availableRatings || []}
             hasSubmitted={hasSubmitted}
             nameInputRef={nameInputRef}
           />
@@ -298,15 +303,6 @@ const EditProductModal = ({ show, onHide, productId, onProductUpdated }) => {
             attributes={attributes}
             attributeValues={attributeValues}
             handleAttributeChange={handleAttributeChange}
-            hasSubmitted={hasSubmitted}
-          />
-
-          <ProductRegionInfo
-            formData={formData}
-            onChange={handleInputChange}
-            regions={regions}
-            availableRatingGroups={availableRatingGroups}
-            availableRatings={availableRatings}
             hasSubmitted={hasSubmitted}
           />
 

@@ -1,0 +1,50 @@
+.image-preview {
+  position: relative;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Size variants */
+.image-preview.small {
+  height: 60px;
+  width: 60px;
+}
+
+.image-preview.medium {
+  height: 85px;
+  width: 60px;
+}
+
+.image-preview.large {
+  height: 200px;
+  width: 100%;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.image-preview.placeholder,
+.error-overlay {
+  color: #adb5bd;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #f8f9fa;
+} 
