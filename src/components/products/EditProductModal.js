@@ -294,16 +294,11 @@ const EditProductModal = ({ show, onHide, productId, onProductUpdated }) => {
             regions={regions || []}
             availableRatingGroups={availableRatingGroups || []}
             availableRatings={availableRatings || []}
-            hasSubmitted={hasSubmitted}
-            nameInputRef={nameInputRef}
-          />
-
-          <AttributesSection 
-            show={!!(formData.product_group_id && formData.product_type_id && attributes.length > 0)}
             attributes={attributes}
             attributeValues={attributeValues}
             handleAttributeChange={handleAttributeChange}
             hasSubmitted={hasSubmitted}
+            nameInputRef={nameInputRef}
           />
 
           <ProductAdditionalInfo
