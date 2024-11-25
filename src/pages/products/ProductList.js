@@ -99,13 +99,7 @@ const ProductList = () => {
         setProductTypes(typesRes.data.data || []);
         setRegions(regionsRes.data.data || []);
         setAttributes(attributesRes.data.data || []);
-
-        console.log('Product Groups:', groupsRes.data.data);
-        console.log('Product Types:', typesRes.data.data);
-        console.log('Regions:', regionsRes.data.data);
       } catch (err) {
-        console.error('Failed to fetch reference data:', err);
-        console.error('Error details:', err.response?.data || err.message);
         toast.error('Failed to load reference data');
       }
     };
@@ -118,9 +112,7 @@ const ProductList = () => {
     .filter(product => {
       const searchLower = filters.searchTerm.toLowerCase();
       return !filters.searchTerm || 
-        product.title.toLowerCase().includes(searchLower) ||
-        product.developer?.toLowerCase().includes(searchLower) ||
-        product.publisher?.toLowerCase().includes(searchLower);
+        product.title.toLowerCase().includes(searchLower);
     })
     .sort((a, b) => {
       const direction = sortDirection === 'asc' ? 1 : -1;
@@ -327,9 +319,6 @@ const ProductList = () => {
                 <th onClick={() => handleSort('region_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
                   Region <FaSort className={sortField === 'region_id' ? 'text-primary' : ''} />
                 </th>
-                <th onClick={() => handleSort('developer')} style={{cursor: 'pointer'}}>
-                  Product Details <FaSort className={sortField === 'developer' ? 'text-primary' : ''} />
-                </th>
                 <th style={{width: '1%', whiteSpace: 'nowrap'}}></th>
               </tr>
             </thead>
@@ -453,35 +442,6 @@ const ProductList = () => {
                   </td>
                   <td className="text-center">
                     <RegionImage regionName={product.region_name} />
-                  </td>
-                  <td>
-                    <div className="d-flex flex-column">
-                      {product.developer && (
-                        <div className="mb-1">
-                          Developer: <strong>{product.developer}</strong>
-                        </div>
-                      )}
-                      {product.publisher && (
-                        <div className="mb-1">
-                          Publisher: <strong>{product.publisher}</strong>
-                        </div>
-                      )}
-                      {product.genre && (
-                        <div className="mb-1">
-                          Genre: <strong>{product.genre}</strong>
-                        </div>
-                      )}
-                      {product.players && (
-                        <div className="mb-1">
-                          Players: <strong>{product.players}</strong>
-                        </div>
-                      )}
-                      {product.format && (
-                        <div className="mb-1">
-                          Format: <strong>{product.format}</strong>
-                        </div>
-                      )}
-                    </div>
                   </td>
                   <td className="text-center">
                     <div className="d-flex gap-2 justify-content-center">

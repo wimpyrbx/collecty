@@ -792,7 +792,7 @@
             "description": "Field to sort by",
             "schema": {
               "type": "string",
-              "enum": ["id", "title", "developer", "publisher", "release_year"],
+              "enum": ["id", "title", "release_year"],
               "default": "title"
             }
           },
@@ -2573,10 +2573,7 @@
           "pricecharting_id": { "type": "integer", "nullable": true },
           "title": { "type": "string" },
           "image_url": { "type": "string", "nullable": true },
-          "developer": { "type": "string", "nullable": true },
-          "publisher": { "type": "string", "nullable": true },
           "release_year": { "type": "integer", "nullable": true },
-          "genre": { "type": "string", "nullable": true },
           "description": { "type": "string", "nullable": true },
           "is_active": { "type": "boolean" },
           "created_at": { "type": "string", "format": "date-time" },
@@ -2794,21 +2791,14 @@
           "region_name": { "type": "string" },
           "rating_name": { "type": "string", "nullable": true },
           "rating_group_name": { "type": "string", "nullable": true },
-          "developer": { "type": "string", "nullable": true },
-          "publisher": { "type": "string", "nullable": true },
           "release_year": { "type": "integer", "nullable": true },
-          "genre": { "type": "string", "nullable": true },
           "attributes": {
             "type": "object",
             "additionalProperties": { "type": "string" }
           },
           "siteLinks": {
-            "type": "object",
-            "additionalProperties": { "type": "string" }
-          },
-          "loose_usd": { "type": "number", "nullable": true },
-          "cib_usd": { "type": "number", "nullable": true },
-          "new_usd": { "type": "number", "nullable": true }
+            "type": "object"
+          }
         }
       }
     },

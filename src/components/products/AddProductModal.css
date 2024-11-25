@@ -194,4 +194,22 @@
 }
 
 /* Remove the old attribute-box styles since they're now in ProductAttributeBox.css */
+
+.modal-warning {
+  position: absolute;
+  right: 50px; /* Leave space for close button */
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Remove validation icons from inputs */
+.form-control.is-invalid,
+.form-select.is-invalid {
+  background-image: none;
+}
  

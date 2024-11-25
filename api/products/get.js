@@ -89,7 +89,7 @@ router.get('/', async (req, res) => {
     }
 
     // Add sorting
-    const validSortFields = ['id', 'title', 'developer', 'publisher', 'release_year'];
+    const validSortFields = ['id', 'title', 'release_year'];
     if (validSortFields.includes(sortField)) {
       const sortColumn = extended === 'true' ? `p.${sortField}` : sortField;
       sql += ` ORDER BY ${sortColumn} ${sortOrder.toUpperCase()}`;

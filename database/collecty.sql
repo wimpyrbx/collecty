@@ -60,10 +60,7 @@ CREATE TABLE IF NOT EXISTS "products" (
 	"pricecharting_id"	INTEGER,
 	"title"	TEXT NOT NULL CHECK(length("title") > 0),
 	"image_url"	TEXT CHECK("image_url" IS NULL OR (length("image_url") > 0 AND "image_url" LIKE 'http%://%')),
-	"developer"	TEXT CHECK("developer" IS NULL OR length("developer") > 0),
-	"publisher"	TEXT CHECK("publisher" IS NULL OR length("publisher") > 0),
 	"release_year"	INTEGER CHECK("release_year" BETWEEN 1950 AND 2050),
-	"genre"	TEXT CHECK("genre" IS NULL OR length("genre") > 0),
 	"description"	TEXT,
 	"is_active"	BOOLEAN NOT NULL DEFAULT 1,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -96,7 +93,9 @@ CREATE TABLE IF NOT EXISTS "product_attribute_values" (
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("attribute_id") REFERENCES "attributes"("id") ON DELETE RESTRICT
+	FOREIGN KEY("attribute_id") REFERENCES "attributes"("id") ON DELETE RESTRICT,
+	FOREIGN KEY("product_id") REFERENCES "products"("id") ON DELETE RESTRICT,
+	UNIQUE("product_id","attribute_id")
 );
 CREATE TABLE IF NOT EXISTS "inventory_attribute_values" (
 	"id"	INTEGER,
@@ -225,14 +224,14 @@ INSERT INTO "ratings" VALUES (27,3,'USK 6',6,NULL,1,'2024-11-23 13:26:58','2024-
 INSERT INTO "ratings" VALUES (28,3,'USK 12',12,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "ratings" VALUES (29,3,'USK 16',16,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "ratings" VALUES (30,3,'USK 18',18,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "products" VALUES (1,1,1,1,4,NULL,'Halo 3',NULL,'Bungie','Microsoft Game Studios',2007,'First-person Shooter',NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "products" VALUES (2,1,1,2,25,NULL,'Halo 3',NULL,'Bungie','Microsoft Game Studios',2007,'First-person Shooter',NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "products" VALUES (3,2,2,1,NULL,NULL,'DualShock 3 Controller',NULL,'Sony','Sony',2006,NULL,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "products" VALUES (4,4,1,1,1,NULL,'Wii Sports',NULL,'Nintendo','Nintendo',2006,'Sports',NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "products" VALUES (5,4,1,2,21,NULL,'Wii Sports',NULL,'Nintendo','Nintendo',2006,'Sports',NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "products" VALUES (6,4,1,3,6,NULL,'Wii Sports',NULL,'Nintendo','Nintendo',2006,'Sports',NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "products" VALUES (7,1,3,1,NULL,NULL,'Xbox 360 Elite Console',NULL,'Microsoft','Microsoft',2007,NULL,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "products" VALUES (8,2,3,1,NULL,NULL,'PlayStation 3 Slim Console',NULL,'Sony','Sony',2009,NULL,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
+INSERT INTO "products" VALUES (1,1,1,1,4,NULL,'Halo 3',NULL,2007,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
+INSERT INTO "products" VALUES (2,1,1,2,25,NULL,'Halo 3',NULL,2007,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
+INSERT INTO "products" VALUES (3,2,2,1,NULL,NULL,'DualShock 3 Controller',NULL,2006,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
+INSERT INTO "products" VALUES (4,4,1,1,1,NULL,'Wii Sports',NULL,2006,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
+INSERT INTO "products" VALUES (5,4,1,2,21,NULL,'Wii Sports',NULL,2006,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
+INSERT INTO "products" VALUES (6,4,1,3,6,NULL,'Wii Sports',NULL,2006,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
+INSERT INTO "products" VALUES (7,1,3,1,NULL,NULL,'Xbox 360 Elite Console',NULL,2007,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
+INSERT INTO "products" VALUES (8,2,3,1,NULL,NULL,'PlayStation 3 Slim Console',NULL,2009,NULL,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "attributes" VALUES (10,'isKinect','Kinect Support','boolean','product',NULL,'[1]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-24 15:08:09',1,0,1);
 INSERT INTO "attributes" VALUES (11,'hasHDD','Hard Drive','boolean','product',NULL,'[1,3]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
 INSERT INTO "attributes" VALUES (12,'hasXboxLive','Xbox Live','boolean','product',NULL,'[1]','[1]',1,'0',NULL,1,'2024-11-23 13:34:08','2024-11-23 13:34:08',1,0,0);
@@ -366,4 +365,203 @@ CREATE INDEX IF NOT EXISTS "idx_attributes_scope" ON "attributes" (
 CREATE INDEX IF NOT EXISTS "idx_attributes_active" ON "attributes" (
 	"is_active"
 );
+CREATE TRIGGER update_product_groups_timestamp 
+   AFTER UPDATE ON product_groups
+BEGIN
+   UPDATE product_groups SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER update_product_types_timestamp 
+   AFTER UPDATE ON product_types
+BEGIN
+   UPDATE product_types SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER update_regions_timestamp 
+   AFTER UPDATE ON regions
+BEGIN
+   UPDATE regions SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER update_rating_groups_timestamp 
+   AFTER UPDATE ON rating_groups
+BEGIN
+   UPDATE rating_groups SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER update_ratings_timestamp 
+   AFTER UPDATE ON ratings
+BEGIN
+   UPDATE ratings SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER update_products_timestamp 
+   AFTER UPDATE ON products
+BEGIN
+   UPDATE products SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER update_inventory_timestamp 
+   AFTER UPDATE ON inventory
+BEGIN
+   UPDATE inventory SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER update_product_attribute_values_timestamp 
+   AFTER UPDATE ON product_attribute_values
+BEGIN
+   UPDATE product_attribute_values SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER update_inventory_attribute_values_timestamp 
+   AFTER UPDATE ON inventory_attribute_values
+BEGIN
+   UPDATE inventory_attribute_values SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER update_pricecharting_prices_timestamp 
+   AFTER UPDATE ON pricecharting_prices
+BEGIN
+   UPDATE pricecharting_prices SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER update_product_sites_timestamp 
+   AFTER UPDATE ON product_sites
+BEGIN
+   UPDATE product_sites SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER update_product_site_links_timestamp 
+   AFTER UPDATE ON product_site_links
+BEGIN
+   UPDATE product_site_links SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
+CREATE TRIGGER validate_product_rating_region
+   BEFORE INSERT ON products
+   WHEN NEW.rating_id IS NOT NULL
+BEGIN
+   SELECT CASE 
+       WHEN NOT EXISTS (
+           SELECT 1 FROM ratings r
+           JOIN rating_groups rg ON r.rating_group_id = rg.id
+           WHERE r.id = NEW.rating_id 
+           AND rg.region_id = NEW.region_id
+       )
+       THEN RAISE(ABORT, 'Rating must belong to the specified region')
+   END;
+END;
+CREATE TRIGGER validate_product_rating_region_update
+   BEFORE UPDATE ON products
+   WHEN NEW.rating_id IS NOT NULL
+BEGIN
+   SELECT CASE 
+       WHEN NOT EXISTS (
+           SELECT 1 FROM ratings r
+           JOIN rating_groups rg ON r.rating_group_id = rg.id
+           WHERE r.id = NEW.rating_id 
+           AND rg.region_id = NEW.region_id
+       )
+       THEN RAISE(ABORT, 'Rating must belong to the specified region')
+   END;
+END;
+CREATE TRIGGER validate_attribute_value_insert
+   BEFORE INSERT ON product_attribute_values
+BEGIN
+   SELECT CASE
+       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'boolean'
+           AND NEW.value NOT IN ('0', '1')
+           THEN RAISE(ABORT, 'Boolean attribute must be 0 or 1')
+           
+       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'number'
+           AND NOT NEW.value GLOB '[0-9]*[.][0-9]*' 
+           AND NOT NEW.value GLOB '[0-9]*'
+           THEN RAISE(ABORT, 'Number attribute must be numeric')
+           
+       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'set'
+           AND NOT EXISTS (
+               SELECT 1 FROM json_each(
+                   (SELECT allowed_values FROM attributes WHERE id = NEW.attribute_id)
+               ) 
+               WHERE value = NEW.value
+           )
+           THEN RAISE(ABORT, 'Set attribute value must be one of the allowed values')
+   END;
+END;
+CREATE TRIGGER validate_inventory_attribute_value_insert
+   BEFORE INSERT ON inventory_attribute_values
+BEGIN
+   SELECT CASE
+       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'boolean'
+           AND NEW.value NOT IN ('0', '1')
+           THEN RAISE(ABORT, 'Boolean attribute must be 0 or 1')
+           
+       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'number'
+           AND NOT NEW.value GLOB '[0-9]*[.][0-9]*' 
+           AND NOT NEW.value GLOB '[0-9]*'
+           THEN RAISE(ABORT, 'Number attribute must be numeric')
+           
+       WHEN (SELECT type FROM attributes WHERE id = NEW.attribute_id) = 'set'
+           AND NOT EXISTS (
+               SELECT 1 FROM json_each(
+                   (SELECT allowed_values FROM attributes WHERE id = NEW.attribute_id)
+               ) 
+               WHERE value = NEW.value
+           )
+           THEN RAISE(ABORT, 'Set attribute value must be one of the allowed values')
+   END;
+END;
+CREATE TRIGGER validate_attribute_scope_product
+   BEFORE INSERT ON product_attribute_values
+BEGIN
+   SELECT CASE
+       WHEN (SELECT scope FROM attributes WHERE id = NEW.attribute_id) != 'product'
+       THEN RAISE(ABORT, 'This attribute cannot be used for products')
+   END;
+END;
+CREATE TRIGGER validate_attribute_scope_inventory
+   BEFORE INSERT ON inventory_attribute_values
+BEGIN
+   SELECT CASE
+       WHEN (SELECT scope FROM attributes WHERE id = NEW.attribute_id) != 'inventory'
+       THEN RAISE(ABORT, 'This attribute cannot be used for inventory items')
+   END;
+END;
+CREATE TRIGGER validate_product_attribute_constraints
+   BEFORE INSERT ON product_attribute_values
+   WHEN (SELECT product_type_ids FROM attributes WHERE id = NEW.attribute_id) IS NOT NULL 
+   OR (SELECT product_group_ids FROM attributes WHERE id = NEW.attribute_id) IS NOT NULL
+BEGIN
+   SELECT CASE
+       WHEN (SELECT product_type_ids FROM attributes WHERE id = NEW.attribute_id) IS NOT NULL
+       AND NOT EXISTS (
+           SELECT 1 FROM products p
+           WHERE p.id = NEW.product_id
+           AND p.product_type_id IN (
+               SELECT value FROM json_each(
+                   (SELECT product_type_ids FROM attributes WHERE id = NEW.attribute_id)
+               )
+           )
+       )
+       THEN RAISE(ABORT, 'This attribute is not allowed for this product type')
+       
+       WHEN (SELECT product_group_ids FROM attributes WHERE id = NEW.attribute_id) IS NOT NULL
+       AND NOT EXISTS (
+           SELECT 1 FROM products p
+           WHERE p.id = NEW.product_id
+           AND p.product_group_id IN (
+               SELECT value FROM json_each(
+                   (SELECT product_group_ids FROM attributes WHERE id = NEW.attribute_id)
+               )
+           )
+       )
+       THEN RAISE(ABORT, 'This attribute is not allowed for this product group')
+   END;
+END;
+CREATE TRIGGER update_attributes_timestamp 
+   AFTER UPDATE ON attributes
+BEGIN
+   UPDATE attributes SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
 COMMIT;
