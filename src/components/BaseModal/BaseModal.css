@@ -1,0 +1,32 @@
+.base-modal .modal-content {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.base-modal .modal-header {
+  border-bottom: none;
+  padding: 1rem 1.5rem;
+}
+
+.base-modal .modal-header .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+.base-modal .modal-body {
+  padding: 1.5rem;
+}
+
+.base-modal .modal-body p {
+  margin-bottom: 0;
+}
+
+.base-modal .modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem 1.5rem;
+}
+
+.base-modal .modal-icon {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+} 

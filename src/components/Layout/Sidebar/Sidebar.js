@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FaHome, 
@@ -11,18 +11,53 @@ import {
   FaTools,
   FaBook,
   FaDatabase,
-  FaCog
+  FaCog,
+  FaQuestion
 } from 'react-icons/fa';
 import SidebarItem from './SidebarItem';
 import './Sidebar.css';
+import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../BaseModal';
 
 const Sidebar = () => {
+  const [showTestModal, setShowTestModal] = useState(false);
+
   const openSwagger = () => {
     window.open('http://localhost:5000/api-docs', '_blank');
   };
 
   return (
     <div className="sidebar">
+      {/* Test Modal Button */}
+      <button 
+        className="btn btn-link text-white w-100 text-start px-3 py-2"
+        onClick={() => setShowTestModal(true)}
+      >
+        <FaQuestion className="me-2" /> Test Modal
+      </button>
+
+      {/* Test Modal */}
+      <BaseModal 
+        show={showTestModal} 
+        onHide={() => setShowTestModal(false)}
+      >
+        <BaseModalHeader 
+          icon={<FaQuestion />}
+          onHide={() => setShowTestModal(false)}
+        >
+          Test Modal
+        </BaseModalHeader>
+        <BaseModalBody>
+          <p>This is a test modal using the new BaseModal components.</p>
+        </BaseModalBody>
+        <BaseModalFooter
+          onCancel={() => setShowTestModal(false)}
+          onConfirm={() => {
+            alert('Confirmed!');
+            setShowTestModal(false);
+          }}
+        />
+      </BaseModal>
+
       <ul className="sidebar-menu">
         <SidebarItem to="/" icon={<FaHome />} label="Dashboard" />
         
