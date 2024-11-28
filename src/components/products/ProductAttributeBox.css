@@ -29,10 +29,23 @@
   margin-bottom: 0.5rem;
 }
 
-/* Add this for required indicator */
+/* Remove the automatic asterisk from required fields */
 .attribute-box.required label::after {
-  content: " *";
-  color: #dc3545;
+  content: none;  /* Remove the automatic asterisk */
+}
+
+/* Style for the single required asterisk */
+.attribute-box .text-danger {
+  margin-left: 4px;
+  font-size: 14px;
+}
+
+/* Ensure proper spacing for the label */
+.attribute-box .form-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
 }
 
 .attribute-box:hover {
@@ -105,4 +118,51 @@
 .attribute-box .form-group {
   margin-bottom: 0;
   width: 100%;
+}
+
+/* Remove dropdown arrow and fix appearance */
+.attribute-box .form-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none !important;
+  cursor: pointer;
+  padding-right: 0.75rem;  /* Reset padding since we removed the arrow */
+}
+
+/* Style for set type values */
+.attribute-box .form-select option {
+  padding: 8px;
+  font-size: 14px;
+}
+
+/* Ensure proper height and alignment */
+.attribute-box .form-select {
+  height: 38px;
+  text-align: center;
+  width: 100%;
+  background-color: #fff;
+}
+
+/* Add a subtle border style */
+.attribute-box .form-select {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+/* Style for disabled state */
+.attribute-box .form-select:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+/* Hover effect */
+.attribute-box .form-select:not(:disabled):hover {
+  border-color: var(--bs-primary);
+}
+
+/* Focus state */
+.attribute-box .form-select:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 } 

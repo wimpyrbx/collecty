@@ -27,12 +27,20 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
         );
       
       case 'set':
-        const allowedValues = JSON.parse(attribute.allowed_values || '[]');
+        let allowedValues = [];
+        try {
+          // Parse the JSON string of allowed values
+          allowedValues = JSON.parse(attribute.allowed_values);
+        } catch (e) {
+          console.error('Error parsing allowed values:', e);
+        }
+
         return (
           <Form.Select
             value={value || ''}
             onChange={(e) => onChange(attribute.id, e.target.value)}
             required={attribute.is_required}
+            className="set-select"
           >
             <option value="">Select {attribute.ui_name}</option>
             {allowedValues.map(val => (
@@ -64,7 +72,7 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
     }
   };
 
-  const isActive = (attribute.type === 'boolean' && value === '1') || (value && attribute.type !== 'boolean');
+  const isActive = value && value !== '0';
 
   return (
     <div 
@@ -78,7 +86,7 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
         {renderInput()}
         {touched && isInvalid && (
           <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
-            * Required
+            Required
           </Form.Control.Feedback>
         )}
       </Form.Group>

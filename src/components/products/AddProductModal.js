@@ -130,17 +130,16 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
           }
         });
 
-        console.log('Fetched attributes:', response.data.data);
         setAttributes(response.data.data || []);
 
-        // Initialize attribute values with defaults only for boolean types
+        // Initialize attribute values with defaults
         const newAttributeValues = {};
         response.data.data.forEach(attr => {
-          if (attr.type === 'boolean' && attr.default_value) {
+          if (attr.default_value) {
             newAttributeValues[attr.id] = attr.default_value;
           }
-          // Don't set default values for other types (set, string, number)
         });
+        
         setAttributeValues(prev => ({
           ...prev,
           ...newAttributeValues

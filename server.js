@@ -58,6 +58,8 @@ app.use('/api/rating-groups', require('./api/rating-groups/post'));
 // Attributes
 app.use('/api/attributes', require('./api/attributes/get'));
 app.use('/api/attributes', require('./api/attributes/post'));
+app.use('/api/attributes', require('./api/attributes/put'));
+app.use('/api/attributes', require('./api/attributes/delete'));
 
 // Product Attribute Values
 app.use('/api/product-attribute-values', require('./api/product-attribute-values/get'));

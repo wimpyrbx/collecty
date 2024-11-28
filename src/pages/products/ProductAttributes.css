@@ -1,0 +1,59 @@
+.page-container {
+  padding: 2rem;
+}
+
+.table th {
+  background-color: var(--bs-primary);
+  color: white;
+  border-color: var(--bs-primary);
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.btn-primary {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--bs-primary-dark, #0a58ca);
+  border-color: var(--bs-primary-dark, #0a58ca);
+}
+
+.btn-outline-primary {
+  color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.btn-outline-danger {
+  color: var(--bs-danger);
+  border-color: var(--bs-danger);
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--bs-danger);
+  border-color: var(--bs-danger);
+}
+
+.table td .fa-check {
+  color: #28a745;
+  font-size: 1.1rem;
+}
+
+.table td .fa-times {
+  color: #dc3545;
+  font-size: 1.1rem;
+}
+
+/* Style for multi-select */
+.form-select[multiple] {
+  height: auto;
+  min-height: 120px;
+} 

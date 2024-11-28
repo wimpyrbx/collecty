@@ -48,7 +48,6 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
   const id = req.params.id;
-  
   db.get('SELECT * FROM attributes WHERE id = ?', [id], (err, row) => {
     if (err) {
       res.status(400).json({ error: err.message });
