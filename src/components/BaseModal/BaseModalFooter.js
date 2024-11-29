@@ -10,27 +10,35 @@ const BaseModalFooter = ({
   isLoading = false,
   cancelVariant = 'warning',
   confirmVariant = 'success',
-  ...props
+  debugButton = null
 }) => {
   return (
-    <Modal.Footer {...props} className="d-flex justify-content-between">
-      <Button 
-        variant={cancelVariant} 
-        onClick={onCancel}
-        disabled={isLoading}
-      >
-        {cancelText}
-      </Button>
-      <Button 
-        variant={confirmVariant}
-        onClick={onConfirm}
-        disabled={isLoading}
-      >
-        {confirmText}
-      </Button>
+    <Modal.Footer className="d-flex justify-content-between">
+      <div>
+        <Button 
+          variant={cancelVariant} 
+          onClick={onCancel}
+          disabled={isLoading}
+        >
+          {cancelText}
+        </Button>
+      </div>
+      <div className="d-flex">
+        <Button 
+          variant={confirmVariant}
+          onClick={onConfirm}
+          disabled={isLoading}
+          className="me-2"
+        >
+          {confirmText}
+        </Button>
+        {debugButton}
+      </div>
     </Modal.Footer>
   );
 };
+
+BaseModalFooter.displayName = 'BaseModalFooter';
 
 BaseModalFooter.propTypes = {
   onCancel: PropTypes.func.isRequired,
@@ -39,7 +47,8 @@ BaseModalFooter.propTypes = {
   confirmText: PropTypes.string,
   isLoading: PropTypes.bool,
   cancelVariant: PropTypes.string,
-  confirmVariant: PropTypes.string
+  confirmVariant: PropTypes.string,
+  debugButton: PropTypes.node
 };
 
 export default BaseModalFooter; 

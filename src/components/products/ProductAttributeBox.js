@@ -18,12 +18,20 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
     switch (attribute.type) {
       case 'boolean':
         return (
-          <Form.Check
-            type="switch"
-            checked={value === '1'}
-            onChange={(e) => onChange(attribute.id, e.target.checked ? '1' : '0')}
-            className="custom-switch"
-          />
+          <div className="switch-container">
+            <label className="form-label">
+              {attribute.name}
+              {attribute.is_required && <span className="text-danger">*</span>}
+            </label>
+            <div className="form-switch">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                checked={value || false}
+                onChange={(e) => onChange(attribute.id, e.target.checked)}
+              />
+            </div>
+          </div>
         );
       
       case 'set':
@@ -75,21 +83,51 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
   const isActive = value && value !== '0';
 
   return (
-    <div 
-      className={`attribute-box ${isActive ? 'active' : ''}`}
-      onClick={handleBoxClick}
-    >
-      <Form.Group className="attribute-content">
-        <Form.Label>
-          {attribute.ui_name}
-        </Form.Label>
-        {renderInput()}
-        {touched && isInvalid && (
-          <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
-            Required
-          </Form.Control.Feedback>
-        )}
-      </Form.Group>
+    <div className={`attribute-box ${attribute.is_required ? 'required' : ''}`}>
+      {attribute.type === 'boolean' ? (
+        <div className="switch-container">
+          <label className="form-label">
+            {attribute.name}
+            {attribute.is_required && <span className="text-danger">*</span>}
+          </label>
+          <div className="form-switch">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              checked={value || false}
+              onChange={(e) => onChange(attribute.id, e.target.checked)}
+            />
+          </div>
+        </div>
+      ) : (
+        <>
+          <label className="form-label">
+            {attribute.name}
+            {attribute.is_required && <span className="text-danger">*</span>}
+          </label>
+          {attribute.type === 'set' ? (
+            <Form.Select
+              value={value || ''}
+              onChange={(e) => onChange(attribute.id, e.target.value)}
+              isInvalid={isInvalid}
+            >
+              <option value="">Select {attribute.name}</option>
+              {attribute.set_values?.split(',').map(value => (
+                <option key={value.trim()} value={value.trim()}>
+                  {value.trim()}
+                </option>
+              ))}
+            </Form.Select>
+          ) : (
+            <Form.Control
+              type={attribute.type === 'number' ? 'number' : 'text'}
+              value={value || ''}
+              onChange={(e) => onChange(attribute.id, e.target.value)}
+              isInvalid={isInvalid}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 };

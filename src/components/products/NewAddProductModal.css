@@ -27,12 +27,6 @@
   padding: 1rem;
 }
 
-.new-product-modal .attributes-section {
-  background-color: var(--bs-gray-100);
-  padding: 1rem;
-  border-radius: 0.5rem;
-}
-
 .new-product-modal .basic-info-section {
   background-color: var(--bs-gray-100);
   padding: 1rem;

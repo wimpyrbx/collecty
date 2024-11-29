@@ -20,14 +20,14 @@ router.get('/', (req, res) => {
   
   sql += ` ORDER BY name ${sortOrder.toUpperCase()}`;
 
-  console.log('Attributes Query:', sql, params);  // Debug log
+  //console.log('Attributes Query:', sql, params);  // Debug log
 
   db.all(sql, params, (err, rows) => {
     if (err) {
       res.status(400).json({ error: err.message });
       return;
     }
-    console.log(`Found ${rows.length} attributes`);  // Debug log
+    //console.log(`Found ${rows.length} attributes`);  // Debug log
     res.json({
       message: 'success',
       data: rows

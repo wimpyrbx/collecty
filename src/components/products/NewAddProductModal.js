@@ -64,42 +64,21 @@ const NewAddProductModal = ({
   useEffect(() => {
     const fetchAttributes = async () => {
       if (!formData.product_group_id || !formData.product_type_id) {
-        console.log('Missing required selections:', {
-          group: formData.product_group_id,
-          type: formData.product_type_id
-        });
         setFilteredAttributes([]);
         return;
       }
 
       try {
-        console.log('Fetching attributes for:', {
-          group: formData.product_group_id,
-          type: formData.product_type_id
-        });
-
         const response = await axios.get('http://localhost:5000/api/attributes', {
           params: { 
             scope: 'product',
             is_active: true
           }
         });
-
-        console.log('Raw attributes from API:', response.data.data);
         
         const filteredAttrs = (response.data.data || []).filter(attr => {
           const groupIds = JSON.parse(attr.product_group_ids || '[]');
           const typeIds = JSON.parse(attr.product_type_ids || '[]');
-
-          console.log('Checking attribute:', {
-            name: attr.name,
-            groupIds,
-            typeIds,
-            selectedGroup: Number(formData.product_group_id),
-            selectedType: Number(formData.product_type_id),
-            matchesGroup: groupIds.length === 0 || groupIds.includes(Number(formData.product_group_id)),
-            matchesType: typeIds.length === 0 || typeIds.includes(Number(formData.product_type_id))
-          });
 
           const matchesGroup = groupIds.length === 0 || 
             groupIds.includes(Number(formData.product_group_id));
@@ -110,15 +89,18 @@ const NewAddProductModal = ({
           return matchesGroup && matchesType && attr.is_active === 1;
         });
 
-        console.log('Filtered attributes:', filteredAttrs);
         setFilteredAttributes(filteredAttrs);
 
-        // Debug render conditions
-        console.log('Render conditions:', {
-          hasActiveAttributes: filteredAttrs.length > 0,
-          filteredAttributesLength: filteredAttrs.length,
-          showValue: true
-        });
+        // Clean up any attributes that are no longer valid
+        const validAttributeIds = filteredAttrs.map(attr => attr.id);
+        setFormData(prev => ({
+          ...prev,
+          attributes: Object.fromEntries(
+            Object.entries(prev.attributes).filter(([key]) => 
+              validAttributeIds.includes(Number(key))
+            )
+          )
+        }));
 
       } catch (err) {
         console.error('Failed to fetch attributes:', err);
@@ -130,18 +112,18 @@ const NewAddProductModal = ({
   }, [formData.product_group_id, formData.product_type_id]);
 
   useEffect(() => {
-    console.group('Product Group/Type Change');
-    console.log('Selected Group:', formData.product_group_id);
-    console.log('Selected Type:', formData.product_type_id);
-    console.log('Available Attributes:', attributes);
-    console.log('Filtered Attributes:', attributes.filter(attr => {
-      const groupIds = attr.product_group_ids ? JSON.parse(attr.product_group_ids) : [];
-      const typeIds = attr.product_type_ids ? JSON.parse(attr.product_type_ids) : [];
-      const matchesGroup = !groupIds.length || groupIds.includes(formData.product_group_id);
-      const matchesType = !typeIds.length || typeIds.includes(formData.product_type_id);
-      return attr.is_active && matchesGroup && matchesType;
-    }));
-    console.groupEnd();
+    //console.group('Product Group/Type Change');
+    //console.log('Selected Group:', formData.product_group_id);
+    //console.log('Selected Type:', formData.product_type_id);
+    //console.log('Available Attributes:', attributes);
+    //console.log('Filtered Attributes:', attributes.filter(attr => {
+      //const groupIds = attr.product_group_ids ? JSON.parse(attr.product_group_ids) : [];
+      //const typeIds = attr.product_type_ids ? JSON.parse(attr.product_type_ids) : [];
+      //const matchesGroup = !groupIds.length || groupIds.includes(formData.product_group_id);
+      //const matchesType = !typeIds.length || typeIds.includes(formData.product_type_id);
+      //return attr.is_active && matchesGroup && matchesType;
+    //}));
+    //console.groupEnd();
   }, [formData.product_group_id, formData.product_type_id]);
 
   const handleInputChange = (e) => {
@@ -181,19 +163,49 @@ const NewAddProductModal = ({
 
   const handleProductGroupChange = (e) => {
     const groupId = e.target.value;
+    
+    // Keep only the attributes that are still valid for the new group
+    const validAttributeIds = filteredAttributes
+      .filter(attr => {
+        const groupIds = Array.isArray(attr.product_group_ids) 
+          ? attr.product_group_ids 
+          : JSON.parse(attr.product_group_ids || '[]');
+        return groupIds.length === 0 || groupIds.includes(Number(groupId));
+      })
+      .map(attr => attr.id);
+
     setFormData(prev => ({
       ...prev,
       product_group_id: groupId,
-      attributes: {}
+      attributes: Object.fromEntries(
+        Object.entries(prev.attributes).filter(([key]) => 
+          validAttributeIds.includes(Number(key))
+        )
+      )
     }));
   };
 
   const handleProductTypeChange = (e) => {
     const typeId = e.target.value;
+    
+    // Keep only the attributes that are still valid for the new type
+    const validAttributeIds = filteredAttributes
+      .filter(attr => {
+        const typeIds = Array.isArray(attr.product_type_ids) 
+          ? attr.product_type_ids 
+          : JSON.parse(attr.product_type_ids || '[]');
+        return typeIds.length === 0 || typeIds.includes(Number(typeId));
+      })
+      .map(attr => attr.id);
+
     setFormData(prev => ({
       ...prev,
       product_type_id: typeId,
-      attributes: {}
+      attributes: Object.fromEntries(
+        Object.entries(prev.attributes).filter(([key]) => 
+          validAttributeIds.includes(Number(key))
+        )
+      )
     }));
   };
 
@@ -258,11 +270,11 @@ const NewAddProductModal = ({
   );
 
   const hasActiveAttributes = filteredAttributes.length > 0;
-  console.log('Before render:', {
-    hasActiveAttributes,
-    filteredAttributesLength: filteredAttributes.length,
-    attributeValues: formData.attributes,
-  });
+  //console.log('Before render:', {
+    //hasActiveAttributes,
+    //filteredAttributesLength: filteredAttributes.length,
+    //attributeValues: formData.attributes,
+  //});
 
   return (
     <BaseModal 
@@ -270,6 +282,14 @@ const NewAddProductModal = ({
       onHide={onHide}
       size="lg"
       className="new-product-modal"
+      debugFormData={true}
+      formData={{
+        ...formData,
+        filteredAttributes,
+        hasActiveAttributes,
+        availableRatingGroups: filteredRatingGroups,
+        availableRatings: filteredRatings
+      }}
     >
       <Form onSubmit={handleSubmit}>
         <BaseModalHeader 
@@ -404,44 +424,40 @@ const NewAddProductModal = ({
                 </Row>
               </div>
 
-              {console.log('hasActiveAttributes:', hasActiveAttributes)}
               {hasActiveAttributes && (
                 <div className={`attributes-section mb-3 ${hasActiveAttributes ? 'show' : ''}`}>
-                  <h5>Product Attributes</h5>
-                  <div className="card">
-                    <div className="card-header">
-                      <h6 className="mb-0">Available Attributes</h6>
-                    </div>
-                    <div className="card-body">
-                      <Row>
-                        {filteredAttributes.map(attribute => {
-                          // Ensure we have valid arrays
-                          const groupIds = Array.isArray(attribute.product_group_ids) 
-                            ? attribute.product_group_ids 
-                            : JSON.parse(attribute.product_group_ids || '[]');
-                          
-                          const typeIds = Array.isArray(attribute.product_type_ids)
-                            ? attribute.product_type_ids
-                            : JSON.parse(attribute.product_type_ids || '[]');
+                  <div className="section-title">
+                    <h5>Product Attributes</h5>
+                  </div>
+                  <div className="attribute-card">
+                    <Row>
+                      {filteredAttributes.map(attribute => {
+                        // Ensure we have valid arrays
+                        const groupIds = Array.isArray(attribute.product_group_ids) 
+                          ? attribute.product_group_ids 
+                          : JSON.parse(attribute.product_group_ids || '[]');
+                        
+                        const typeIds = Array.isArray(attribute.product_type_ids)
+                          ? attribute.product_type_ids
+                          : JSON.parse(attribute.product_type_ids || '[]');
 
-                          return (
-                            <Col md={3} key={attribute.id} className="mb-3">
-                              <ProductAttributeBox
-                                attribute={{
-                                  ...attribute,
-                                  product_group_ids: groupIds,
-                                  product_type_ids: typeIds
-                                }}
-                                value={formData.attributes[attribute.id]}
-                                onChange={handleAttributeChange}
-                                touched={hasSubmitted}
-                                isInvalid={attribute.is_required && !formData.attributes[attribute.id]}
-                              />
-                            </Col>
-                          );
-                        })}
-                      </Row>
-                    </div>
+                        return (
+                          <Col md={4} key={attribute.id} className="mb-3">
+                            <ProductAttributeBox
+                              attribute={{
+                                ...attribute,
+                                product_group_ids: groupIds,
+                                product_type_ids: typeIds
+                              }}
+                              value={formData.attributes[attribute.id]}
+                              onChange={handleAttributeChange}
+                              touched={hasSubmitted}
+                              isInvalid={attribute.is_required && !formData.attributes[attribute.id]}
+                            />
+                          </Col>
+                        );
+                      })}
+                    </Row>
                   </div>
                 </div>
               )}

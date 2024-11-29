@@ -5,9 +5,9 @@ const db = require('../../db');
 router.put('/:id', (req, res) => {
   const attributeId = req.params.id;
   
-  console.log('\n=== PUT /attributes/:id ===');
-  console.log('Attribute ID:', attributeId);
-  console.log('Request Body:', req.body);
+  //console.log('\n=== PUT /attributes/:id ===');
+  //console.log('Attribute ID:', attributeId);
+  //console.log('Request Body:', req.body);
   
   const {
     name,
@@ -23,11 +23,11 @@ router.put('/:id', (req, res) => {
     is_active
   } = req.body;
 
-  console.log('Extracted is_active:', {
-    raw: is_active,
-    type: typeof is_active,
-    converted: is_active === true || is_active === 1 || is_active === '1' ? 1 : 0
-  });
+  //console.log('Extracted is_active:', {
+    //raw: is_active,
+    //type: typeof is_active,
+    //converted: is_active === true || is_active === 1 || is_active === '1' ? 1 : 0
+  //});
 
   // First check if attribute exists
   db.get('SELECT * FROM attributes WHERE id = ?', [attributeId], (err, row) => {
@@ -41,11 +41,6 @@ router.put('/:id', (req, res) => {
       return;
     }
 
-    console.log('Current DB state:', {
-      id: row.id,
-      is_active: row.is_active,
-      // ... other relevant fields ...
-    });
 
     const sql = `
       UPDATE attributes 
@@ -88,7 +83,7 @@ router.put('/:id', (req, res) => {
       type
     });
 
-    console.log('Executing update with params:', params);
+    //console.log('Executing update with params:', params);
 
     db.run(sql, params, function(err) {
       if (err) {
@@ -102,7 +97,7 @@ router.put('/:id', (req, res) => {
         if (verifyErr) {
           console.error('Error verifying update:', verifyErr);
         } else {
-          console.log('Updated DB state:', updatedRow);
+          //console.log('Updated DB state:', updatedRow);
         }
       });
 
