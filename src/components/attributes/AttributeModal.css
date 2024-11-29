@@ -1,0 +1,157 @@
+.attribute-switches .form-switch {
+  padding-left: 3rem; /* More space for the switch */
+}
+
+.attribute-switches .form-switch .form-check-input {
+  width: 3em;  /* Bigger switch width */
+  height: 1.5em;  /* Bigger switch height */
+  margin-left: -3rem; /* Align with the increased padding */
+  cursor: pointer;
+}
+
+.attribute-switches .form-check-label {
+  font-size: 1.1em;  /* Bigger label text */
+  padding-top: 0.2em; /* Vertically align label with bigger switch */
+  cursor: pointer;
+}
+
+/* Optional: Add hover effect */
+.attribute-switches .form-switch:hover .form-check-input {
+  border-color: var(--bs-primary);
+} 
+
+.option-box {
+  padding: 1rem;
+  border: 2px solid var(--bs-gray-300);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.option-box.active {
+  border-color: var(--bs-primary);
+  background-color: var(--bs-primary);
+  color: white;
+}
+
+.option-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.option-label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.option-status {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.toggle-button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--bs-gray-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.toggle-button.active {
+  background: var(--bs-primary);
+  color: white;
+}
+
+.toggle-label {
+  font-weight: 500;
+}
+
+.toggle-status {
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.toggles-section {
+  background-color: var(--bs-gray-100);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.toggles-section .section-title {
+  color: var(--bs-gray-700);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.toggles-section .attribute-toggles {
+  gap: 1rem;
+}
+
+.form-section {
+  background-color: var(--bs-gray-100);
+  border: 1px solid var(--bs-gray-300);
+  border-radius: 8px;
+}
+
+.form-section .section-title {
+  color: var(--bs-gray-700);
+  font-weight: 500;
+  padding: 0.75rem 1.25rem;
+  margin: 0;
+  border-bottom: 1px solid var(--bs-gray-300);
+  background-color: var(--bs-gray-200);
+  border-radius: 7px 7px 0 0;
+}
+
+.toggles-container {
+  padding: 1rem;
+}
+
+/* Ensure toggle buttons stay in one row */
+.toggles-container .row {
+  flex-wrap: nowrap;
+}
+
+/* Adjust spacing between toggle buttons */
+.toggles-container .col-md-4 {
+  padding: 0 0.5rem;
+}
+
+.toggles-container .col-md-4:first-child {
+  padding-left: 0;
+}
+
+.toggles-container .col-md-4:last-child {
+  padding-right: 0;
+}
+
+/* Style for multi-select */
+.form-select[multiple] {
+  padding: 0.5rem;
+}
+
+.form-select[multiple] option {
+  padding: 0.25rem 0.5rem;
+  margin: 0;
+  cursor: pointer;
+}
+
+.form-select[multiple] option:checked {
+  background-color: var(--bs-primary);
+  color: white;
+}
+
+.form-select[multiple] option:hover:not(:checked) {
+  background-color: var(--bs-gray-200);
+}
+
+.attribute-modal .modal-dialog {
+  max-width: 700px; /* Or whatever width you want for your "medium" size */
+  margin: 1.75rem auto;
+} 

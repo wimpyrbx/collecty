@@ -52,8 +52,27 @@
   font-size: 1.1rem;
 }
 
-/* Style for multi-select */
 .form-select[multiple] {
   height: auto;
   min-height: 120px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  opacity: 0.8;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.table .fa-edit:hover {
+  color: var(--bs-primary-dark) !important;
+}
+
+.table .fa-trash:hover {
+  color: var(--bs-danger-dark) !important;
 } 

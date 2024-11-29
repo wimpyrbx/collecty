@@ -4,6 +4,11 @@ const db = require('../../db');
 
 router.put('/:id', (req, res) => {
   const attributeId = req.params.id;
+  
+  console.log('\n=== PUT /attributes/:id ===');
+  console.log('Attribute ID:', attributeId);
+  console.log('Request Body:', req.body);
+  
   const {
     name,
     ui_name,
@@ -14,12 +19,20 @@ router.put('/:id', (req, res) => {
     allowed_values,
     default_value,
     product_group_ids,
-    product_type_ids
+    product_type_ids,
+    is_active
   } = req.body;
 
+  console.log('Extracted is_active:', {
+    raw: is_active,
+    type: typeof is_active,
+    converted: is_active === true || is_active === 1 || is_active === '1' ? 1 : 0
+  });
+
   // First check if attribute exists
-  db.get('SELECT id FROM attributes WHERE id = ?', [attributeId], (err, row) => {
+  db.get('SELECT * FROM attributes WHERE id = ?', [attributeId], (err, row) => {
     if (err) {
+      console.error('Database error checking attribute:', err);
       res.status(400).json({ error: err.message });
       return;
     }
@@ -28,24 +41,30 @@ router.put('/:id', (req, res) => {
       return;
     }
 
+    console.log('Current DB state:', {
+      id: row.id,
+      is_active: row.is_active,
+      // ... other relevant fields ...
+    });
+
     const sql = `
-      UPDATE attributes SET
-        name = ?,
-        ui_name = ?,
-        type = ?,
-        scope = ?,
-        is_required = ?,
-        use_image = ?,
-        allowed_values = ?,
-        default_value = ?,
-        product_group_ids = ?,
-        product_type_ids = ?
+      UPDATE attributes 
+      SET name = ?,
+          ui_name = ?,
+          type = ?,
+          scope = ?,
+          is_required = ?,
+          use_image = ?,
+          allowed_values = ?,
+          default_value = ?,
+          product_group_ids = ?,
+          product_type_ids = ?,
+          is_active = ?
       WHERE id = ?
     `;
 
-    // Convert arrays to JSON strings if they exist, otherwise null
-    const groupIds = product_group_ids ? JSON.stringify(product_group_ids) : null;
-    const typeIds = product_type_ids ? JSON.stringify(product_type_ids) : null;
+    // Ensure is_active is explicitly converted to 0/1
+    const isActiveValue = is_active === true || is_active === 1 || is_active === '1' ? 1 : 0;
 
     const params = [
       name,
@@ -56,17 +75,37 @@ router.put('/:id', (req, res) => {
       use_image ? 1 : 0,
       allowed_values || '',
       default_value || '',
-      groupIds,
-      typeIds,
+      product_group_ids ? JSON.stringify(product_group_ids) : null,
+      product_type_ids ? JSON.stringify(product_type_ids) : null,
+      isActiveValue,
       attributeId
     ];
 
+    console.log('Update params:', {
+      id: attributeId,
+      is_active: isActiveValue,
+      name,
+      type
+    });
+
+    console.log('Executing update with params:', params);
+
     db.run(sql, params, function(err) {
       if (err) {
-        console.error('Database error:', err);
+        console.error('Database error updating attribute:', err);
         res.status(400).json({ error: err.message });
         return;
       }
+
+      // Verify the update
+      db.get('SELECT * FROM attributes WHERE id = ?', [attributeId], (verifyErr, updatedRow) => {
+        if (verifyErr) {
+          console.error('Error verifying update:', verifyErr);
+        } else {
+          console.log('Updated DB state:', updatedRow);
+        }
+      });
+
       res.json({
         message: 'success',
         data: {
@@ -79,8 +118,9 @@ router.put('/:id', (req, res) => {
           use_image,
           allowed_values,
           default_value,
-          product_group_ids: groupIds,
-          product_type_ids: typeIds
+          product_group_ids,
+          product_type_ids,
+          is_active: isActiveValue
         }
       });
     });

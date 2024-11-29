@@ -1,0 +1,38 @@
+.toggle-button-section {
+  border: 1px solid var(--bs-gray-300);
+  border-radius: 8px;
+  background-color: var(--bs-gray-100);
+}
+
+.toggle-button-section .section-title {
+  color: inherit;
+  font-weight: 500;
+  padding: 0.75rem 1.25rem;
+  margin: 0;
+  border-bottom: 1px solid var(--bs-gray-300);
+  border-radius: 7px 7px 0 0;
+}
+
+.toggle-button-container {
+  padding: 1rem;
+  background-color: rgba(33, 37, 41, 0.015);
+}
+
+.toggle-button-container .row {
+  flex-wrap: nowrap;
+}
+
+.toggle-button-container .col,
+.toggle-button-container [class*="col-"] {
+  padding: 0 0.5rem;
+}
+
+.toggle-button-container .col:first-child,
+.toggle-button-container [class*="col-"]:first-child {
+  padding-left: 0;
+}
+
+.toggle-button-container .col:last-child,
+.toggle-button-container [class*="col-"]:last-child {
+  padding-right: 0;
+} 

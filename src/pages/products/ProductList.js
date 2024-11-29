@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaTable, FaThLarge, FaSearch, FaSort, FaGamepad, FaDesktop, FaKeyboard, FaFlag, FaCompactDisc, FaEdit, FaTrashAlt } from 'react-icons/fa';
-import { Badge, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { FaTable, FaThLarge, FaSearch, FaSort, FaGamepad, FaDesktop, FaKeyboard, FaFlag, FaCompactDisc, FaEdit, FaTrashAlt, FaBox, FaPlus } from 'react-icons/fa';
+import { Badge, OverlayTrigger, Tooltip, Button } from 'react-bootstrap';
 import CustomTableCell from '../../components/Table/CustomTableCell';
 import { FaEuroSign, FaDollarSign, FaYenSign } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
-import AddProductModal from '../../components/products/AddProductModal';
+import NewAddProductModal from '../../components/products/NewAddProductModal';
 import AttributeDisplay from '../../components/attributes/AttributeDisplay';
 import RegionImage from '../../components/common/RegionImage';
 import ProductTypeImage from '../../components/common/ProductTypeImage';
 import EditProductModal from '../../components/products/EditProductModal';
+import PageHeader from '../../components/common/PageHeader/PageHeader';
+import DeleteModal from '../../components/common/DeleteModal/DeleteModal';
 
 const IMAGE_SIZE = {
   width: 60,  // DVD case proportions (approximately 7.5:11)
@@ -38,6 +40,14 @@ const ProductList = () => {
   const [attributes, setAttributes] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
+  const [availableRatingGroups, setAvailableRatingGroups] = useState([]);
+  const [availableRatings, setAvailableRatings] = useState([]);
+  const [attributeValues, setAttributeValues] = useState({});
+  const [deleteModal, setDeleteModal] = useState({
+    show: false,
+    item: null,
+    isDeleting: false
+  });
 
   // Define fetchProducts as a function reference
   const fetchProducts = async () => {
@@ -74,35 +84,67 @@ const ProductList = () => {
   useEffect(() => {
     const fetchReferenceData = async () => {
       try {
-        const [groupsRes, typesRes, regionsRes, attributesRes] = await Promise.all([
+        const [
+          groupsRes, 
+          typesRes, 
+          regionsRes, 
+          attributesRes, 
+          ratingsRes, 
+          ratingGroupsRes
+        ] = await Promise.all([
           axios.get('http://localhost:5000/api/product-groups', {
-            params: {
-              sortOrder: 'asc'
-            }
+            params: { sortOrder: 'asc' }
           }),
           axios.get('http://localhost:5000/api/product-types', {
-            params: {
-              sortOrder: 'asc'
-            }
+            params: { sortOrder: 'asc' }
           }),
           axios.get('http://localhost:5000/api/regions', {
-            params: {
-              sortOrder: 'asc'
-            }
+            params: { sortOrder: 'asc' }
           }),
           axios.get('http://localhost:5000/api/attributes', {
             params: { 
               scope: 'product',
               sortOrder: 'asc'
             }
+          }),
+          axios.get('http://localhost:5000/api/ratings', {
+            params: { 
+              extended: true,
+              sortOrder: 'asc'
+            }
+          }),
+          axios.get('http://localhost:5000/api/rating-groups', {
+            params: { 
+              extended: true,
+              sortOrder: 'asc'
+            }
           })
         ]);
 
-        setProductGroups(groupsRes.data.data || []);
-        setProductTypes(typesRes.data.data || []);
-        setRegions(regionsRes.data.data || []);
-        setAttributes(attributesRes.data.data || []);
+        const groups = groupsRes.data.data || [];
+        const types = typesRes.data.data || [];
+        const regs = regionsRes.data.data || [];
+        const attrs = attributesRes.data.data || [];
+        const ratings = ratingsRes.data.data || [];
+        const ratingGroups = ratingGroupsRes.data.data || [];
+
+        //console.group('Reference Data Loaded');
+        //console.log('Groups:', groups);
+        //console.log('Types:', types);
+        //console.log('Regions:', regs);
+        //console.log('Attributes:', attrs);
+        //console.log('Ratings:', ratings);
+        //console.log('Rating Groups:', ratingGroups);
+        //console.groupEnd();
+
+        setProductGroups(groups);
+        setProductTypes(types);
+        setRegions(regs);
+        setAttributes(attrs);
+        setAvailableRatings(ratings);
+        setAvailableRatingGroups(ratingGroups);
       } catch (err) {
+        console.error('Failed to load reference data:', err);
         toast.error('Failed to load reference data');
       }
     };
@@ -152,14 +194,30 @@ const ProductList = () => {
     setShowEditModal(true);
   };
 
-  const handleDelete = async (productId) => {
+  const handleDelete = async () => {
+    const { item } = deleteModal;
+    
     try {
-      await axios.delete(`http://localhost:5000/api/products/${productId}`);
-      fetchProducts(); // Now fetchProducts is in scope
+      setDeleteModal(prev => ({ ...prev, isDeleting: true }));
+      
+      await axios.delete(`http://localhost:5000/api/products/${item.id}`);
       toast.success('Product deleted successfully');
+      fetchProducts();
+      
+      setDeleteModal({ show: false, item: null, isDeleting: false });
     } catch (err) {
-      toast.error('Failed to delete product');
+      const errorMessage = err.response?.data?.error || 'Failed to delete product';
+      toast.error(errorMessage);
+      setDeleteModal({ show: false, item: null, isDeleting: false });
     }
+  };
+
+  const showDeleteModal = (item) => {
+    setDeleteModal({
+      show: true,
+      item,
+      isDeleting: false
+    });
   };
 
   const handleAddClick = () => {
@@ -176,7 +234,7 @@ const ProductList = () => {
       </button>
       <button 
         className="btn btn-danger btn-sm"
-        onClick={() => handleDelete(product.id)}
+        onClick={() => showDeleteModal(product)}
       >
         <FaTrashAlt /> Delete
       </button>
@@ -184,30 +242,21 @@ const ProductList = () => {
   );
 
   return (
-    <div className="container-fluid py-4">
-      {/* Header Section */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="h3 mb-0">Product List</h1>
-        <div className="d-flex gap-2">
-          <button className="btn btn-primary" onClick={handleAddClick}>
-            Add New Product
-          </button>
-          <div className="btn-group">
-            <button 
-              className={`btn btn-outline-secondary ${viewMode === 'table' ? 'active' : ''}`}
-              onClick={() => setViewMode('table')}
-            >
-              <FaTable />
-            </button>
-            <button 
-              className={`btn btn-outline-secondary ${viewMode === 'grid' ? 'active' : ''}`}
-              onClick={() => setViewMode('grid')}
-            >
-              <FaThLarge />
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="page-container">
+      <PageHeader>
+        <PageHeader.Icon>
+          <FaBox />
+        </PageHeader.Icon>
+        <PageHeader.Title>
+          Products
+        </PageHeader.Title>
+        <PageHeader.Actions>
+          <Button variant="light" onClick={handleAddClick}>
+            <FaPlus className="me-2" />
+            Add Product
+          </Button>
+        </PageHeader.Actions>
+      </PageHeader>
 
       {/* Filters Section */}
       <div className="card mb-4">
@@ -533,10 +582,17 @@ const ProductList = () => {
         </div>
       </div>
 
-      <AddProductModal
+      <NewAddProductModal
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
         onProductAdded={fetchProducts}
+        productGroups={productGroups}
+        productTypes={productTypes}
+        regions={regions}
+        availableRatingGroups={availableRatingGroups}
+        availableRatings={availableRatings}
+        attributes={attributes}
+        attributeValues={attributeValues}
       />
 
       <EditProductModal
@@ -544,6 +600,15 @@ const ProductList = () => {
         onHide={() => setShowEditModal(false)}
         productId={selectedProductId}
         onProductUpdated={fetchProducts}
+      />
+
+      <DeleteModal 
+        show={deleteModal.show}
+        onHide={() => setDeleteModal({ show: false, item: null, isDeleting: false })}
+        onConfirm={handleDelete}
+        title="Delete Product"
+        message={`Are you sure you want to delete "${deleteModal.item?.title}"?`}
+        isDeleting={deleteModal.isDeleting}
       />
     </div>
   );

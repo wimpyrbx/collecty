@@ -44,8 +44,8 @@ export const ThemeProvider = ({ children }) => {
       ? 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' 
       : `https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/${themeName}/bootstrap.min.css`;
 
-    console.log('Loading theme:', themeName);
-    console.log('Theme URL:', href);
+    //console.log('Loading theme:', themeName);
+    //console.log('Theme URL:', href);
 
     if (link) {
       link.href = href;

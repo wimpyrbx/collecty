@@ -4,12 +4,20 @@
 }
 
 .base-modal .modal-header {
+  background-color: var(--bs-primary);
+  color: white;
   border-bottom: none;
   padding: 1rem 1.5rem;
 }
 
 .base-modal .modal-header .btn-close {
+  color: white;
   filter: brightness(0) invert(1);
+  opacity: 1;
+}
+
+.base-modal .modal-header .btn-close:hover {
+  opacity: 0.75;
 }
 
 .base-modal .modal-body {
@@ -21,7 +29,8 @@
 }
 
 .base-modal .modal-footer {
-  border-top: 1px solid #dee2e6;
+  background-color: var(--bs-primary);
+  border-top: none;
   padding: 1rem 1.5rem;
 }
 
@@ -29,4 +38,29 @@
   display: flex;
   align-items: center;
   font-size: 1.25rem;
+  color: white;
+}
+
+.base-modal .modal-footer .btn-secondary {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: white;
+  color: white;
+}
+
+.base-modal .modal-footer .btn-primary {
+  background-color: white;
+  border-color: white;
+  color: var(--bs-primary);
+}
+
+.base-modal .modal-footer .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: white;
+  color: white;
+}
+
+.base-modal .modal-footer .btn-primary:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-color: white;
+  color: var(--bs-primary);
 } 

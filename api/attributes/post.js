@@ -15,7 +15,8 @@ router.post('/', (req, res) => {
     allowed_values,
     default_value,
     product_group_ids,
-    product_type_ids
+    product_type_ids,
+    is_active
   } = req.body;
 
   const sql = `
@@ -31,11 +32,8 @@ router.post('/', (req, res) => {
       product_group_ids,
       product_type_ids,
       is_active
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
-
-  const groupIds = product_group_ids ? JSON.stringify(product_group_ids) : null;
-  const typeIds = product_type_ids ? JSON.stringify(product_type_ids) : null;
 
   const params = [
     name,
@@ -46,8 +44,9 @@ router.post('/', (req, res) => {
     use_image ? 1 : 0,
     allowed_values || '',
     default_value || '',
-    groupIds,
-    typeIds
+    product_group_ids ? JSON.stringify(product_group_ids) : null,
+    product_type_ids ? JSON.stringify(product_type_ids) : null,
+    is_active ? 1 : 0
   ];
 
   db.run(sql, params, function(err) {
@@ -68,8 +67,9 @@ router.post('/', (req, res) => {
         use_image,
         allowed_values,
         default_value,
-        product_group_ids: groupIds,
-        product_type_ids: typeIds
+        product_group_ids: product_group_ids ? JSON.stringify(product_group_ids) : null,
+        product_type_ids: product_type_ids ? JSON.stringify(product_type_ids) : null,
+        is_active: is_active ? 1 : 0
       }
     });
   });

@@ -3,18 +3,38 @@ const router = express.Router();
 const db = require('../../db');
 
 router.post('/', (req, res) => {
-  const { name, description, is_active } = req.body;
-  const sql = 'INSERT INTO rating_groups (name, description, is_active) VALUES (?, ?, ?)';
-  const params = [name, description, is_active || 1];
+  const { name, region_id, description } = req.body;
+  
+  if (!name || !region_id) {
+    return res.status(400).json({ 
+      error: 'Name and region_id are required' 
+    });
+  }
+
+  const sql = `
+    INSERT INTO rating_groups (
+      name, 
+      region_id, 
+      description, 
+      is_active
+    ) VALUES (?, ?, ?, ?)
+  `;
+  const params = [name, region_id, description || null, 1];
 
   db.run(sql, params, function(err) {
     if (err) {
-      res.status(400).json({ error: err.message });
+      res.status(400).json({ error: err.message, sql: sql, params: params });
       return;
     }
     res.json({
       message: 'success',
-      data: { id: this.lastID, name, description, is_active },
+      data: { 
+        id: this.lastID, 
+        name, 
+        region_id, 
+        description, 
+        is_active: 1 
+      }
     });
   });
 });

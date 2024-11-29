@@ -17,6 +17,7 @@ import {
 import SidebarItem from './SidebarItem';
 import './Sidebar.css';
 import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../BaseModal';
+import ThemeSwitcher from '../../ThemeSwitcher/ThemeSwitcher';
 
 const Sidebar = () => {
   const [showTestModal, setShowTestModal] = useState(false);
@@ -27,6 +28,11 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
+      {/* Theme Switcher at top */}
+      <div className="px-3 py-2">
+        <ThemeSwitcher />
+      </div>
+
       {/* Test Modal Button */}
       <button 
         className="btn btn-link text-white w-100 text-start px-3 py-2"
@@ -68,9 +74,11 @@ const Sidebar = () => {
           </div>
           <ul>
             <SidebarItem to="/products" icon={<FaDatabase />} label="List" />
-            <SidebarItem to="/products/groups" icon={<FaTags />} label="Groups" />
-            <SidebarItem to="/products/types" icon={<FaTags />} label="Types" />
-            <SidebarItem to="/products/attributes" icon={<FaTags />} label="Attributes" />
+            <SidebarItem 
+              to="/products/groups-types" 
+              icon={<FaTags />} 
+              label="Groups/Types" 
+            />
           </ul>
         </li>
 
@@ -81,7 +89,6 @@ const Sidebar = () => {
           </div>
           <ul>
             <SidebarItem to="/inventory" icon={<FaDatabase />} label="List" />
-            <SidebarItem to="/inventory/attributes" icon={<FaTags />} label="Attributes" />
           </ul>
         </li>
 
@@ -91,8 +98,11 @@ const Sidebar = () => {
             <FaCog /> Reference
           </div>
           <ul>
-            <SidebarItem to="/regions" icon={<FaGlobe />} label="Regions" />
-            <SidebarItem to="/ratings" icon={<FaStar />} label="Ratings" />
+            <SidebarItem 
+              to="/reference/region-ratings" 
+              icon={<FaGlobe />} 
+              label="Regions/Ratings" 
+            />
             <SidebarItem to="/sites" icon={<FaGlobe />} label="Sites" />
           </ul>
         </li>
@@ -120,6 +130,16 @@ const Sidebar = () => {
                 <FaBook /> API Docs
               </a>
             </li>
+          </ul>
+        </li>
+
+        {/* Admin Group */}
+        <li className="menu-group">
+          <div className="menu-group-title">
+            <FaCog /> Admin
+          </div>
+          <ul>
+            <SidebarItem to="/attributes" icon={<FaTags />} label="Attributes" />
           </ul>
         </li>
       </ul>

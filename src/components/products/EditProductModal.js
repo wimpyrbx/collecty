@@ -210,9 +210,9 @@ const EditProductModal = ({ show, onHide, productId, onProductUpdated }) => {
     e.preventDefault();
     setHasSubmitted(true);
 
-    console.log('=== Edit Modal Submit ===');
-    console.log('Form Data:', formData);
-    console.log('Attribute Values:', attributeValues);
+    //console.log('=== Edit Modal Submit ===');
+    //console.log('Form Data:', formData);
+    //console.log('Attribute Values:', attributeValues);
 
     if (!formData.title || !formData.product_group_id || 
         !formData.product_type_id || !formData.region_id) {
@@ -233,14 +233,14 @@ const EditProductModal = ({ show, onHide, productId, onProductUpdated }) => {
         release_year: formData.release_year ? parseInt(formData.release_year, 10) : null
       };
 
-      console.log('=== Updating Product ===');
-      console.log('Product Payload:', productPayload);
+      //console.log('=== Updating Product ===');
+      //console.log('Product Payload:', productPayload);
 
       await axios.put(`http://localhost:5000/api/products/${productId}`, productPayload);
 
       // Then cleanup and update attributes
       if (Object.keys(attributeValues).length > 0) {
-        console.log('=== Updating Attributes ===');
+        //console.log('=== Updating Attributes ===');
         
         // Clean up old attributes
         await axios.post('http://localhost:5000/api/product-attribute-values/cleanup', {

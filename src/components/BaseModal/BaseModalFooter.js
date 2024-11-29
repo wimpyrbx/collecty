@@ -1,66 +1,45 @@
 import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import { Modal, Button } from 'react-bootstrap';
 
 const BaseModalFooter = ({
-  variant = 'primary',
   onCancel,
   onConfirm,
   cancelText = 'Cancel',
   confirmText = 'Confirm',
-  cancelVariant = 'secondary',
-  confirmVariant = 'success',
-  showCancel = true,
-  showConfirm = true,
   isLoading = false,
-  className = '',
-  children,
+  cancelVariant = 'warning',
+  confirmVariant = 'success',
   ...props
 }) => {
   return (
-    <Modal.Footer 
-      className={`bg-${variant} text-white ${className}`}
-      {...props}
-    >
-      {children || (
-        <>
-          {showCancel && (
-            <Button 
-              variant={cancelVariant} 
-              onClick={onCancel}
-              disabled={isLoading}
-            >
-              {cancelText}
-            </Button>
-          )}
-          {showConfirm && (
-            <Button 
-              variant={confirmVariant} 
-              onClick={onConfirm}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Loading...' : confirmText}
-            </Button>
-          )}
-        </>
-      )}
+    <Modal.Footer {...props} className="d-flex justify-content-between">
+      <Button 
+        variant={cancelVariant} 
+        onClick={onCancel}
+        disabled={isLoading}
+      >
+        {cancelText}
+      </Button>
+      <Button 
+        variant={confirmVariant}
+        onClick={onConfirm}
+        disabled={isLoading}
+      >
+        {confirmText}
+      </Button>
     </Modal.Footer>
   );
 };
 
 BaseModalFooter.propTypes = {
-  variant: PropTypes.string,
-  onCancel: PropTypes.func,
-  onConfirm: PropTypes.func,
+  onCancel: PropTypes.func.isRequired,
+  onConfirm: PropTypes.func.isRequired,
   cancelText: PropTypes.string,
   confirmText: PropTypes.string,
-  cancelVariant: PropTypes.string,
-  confirmVariant: PropTypes.string,
-  showCancel: PropTypes.bool,
-  showConfirm: PropTypes.bool,
   isLoading: PropTypes.bool,
-  className: PropTypes.string,
-  children: PropTypes.node
+  cancelVariant: PropTypes.string,
+  confirmVariant: PropTypes.string
 };
 
 export default BaseModalFooter; 
