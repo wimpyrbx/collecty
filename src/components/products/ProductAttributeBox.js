@@ -4,24 +4,26 @@ import { FaCheck, FaTimes } from 'react-icons/fa';
 import './ProductAttributeBox.css';
 
 const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid }) => {
-  // Only set default value for required attributes that are NOT set type
+  // Only set default value once when component mounts
   useEffect(() => {
-    if (attribute.type !== 'set' && attribute.is_required && !value && attribute.default_value !== undefined) {
+    if (attribute.type !== 'set' && attribute.is_required && attribute.default_value !== undefined && !value) {
       // For boolean type, convert default_value to actual boolean
       if (attribute.type === 'boolean') {
-        onChange(attribute.id, attribute.default_value === '1' || attribute.default_value === true);
+        const defaultBool = attribute.default_value === '1' || attribute.default_value === true;
+        onChange(attribute.id, defaultBool);
       } else {
         onChange(attribute.id, attribute.default_value);
       }
     }
-  }, [attribute, value, onChange]);
+  }, [attribute.id, attribute.type, attribute.is_required, attribute.default_value]);
 
   const renderInput = () => {
     const isEmptyRequired = attribute.is_required && (!value || value === '');
-    const boxClassName = `attribute-box ${value ? 'has-value' : ''} ${isEmptyRequired ? 'is-invalid' : ''}`;
+    const boxClassName = `p-2 attribute-box ${value ? 'has-value' : ''} ${isEmptyRequired ? 'is-invalid' : ''}`;
 
     switch (attribute.type) {
       case 'boolean':
+        // Convert value to boolean, default to false if undefined
         const boolValue = value === true || value === '1' || value === 1;
         return (
           <div 
@@ -87,13 +89,25 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
               {attribute.ui_name || attribute.name}
               {attribute.is_required === 1 && <span className="text-danger">*</span>}
             </label>
-            <Form.Control
-              type={attribute.type === 'number' ? 'number' : 'text'}
-              value={value || ''}
-              onChange={(e) => onChange(attribute.id, e.target.value)}
-              isInvalid={isInvalid || isEmptyRequired}
-              placeholder={``} // no placeholder wanted for these
-            />
+            <div className="input-wrapper">
+              <Form.Control
+                type={attribute.type === 'number' ? 'number' : 'text'}
+                value={value || ''}
+                onChange={(e) => onChange(attribute.id, e.target.value)}
+                isInvalid={isInvalid || isEmptyRequired}
+                className={value ? 'has-clear-button' : ''}
+              />
+              {value && (
+                <button
+                  type="button"
+                  className="clear-button"
+                  onClick={() => onChange(attribute.id, '')}
+                  tabIndex={-1}
+                >
+                  <FaTimes />
+                </button>
+              )}
+            </div>
           </div>
         );
     }

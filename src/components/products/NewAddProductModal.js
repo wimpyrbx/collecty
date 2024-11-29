@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Form, Row, Col } from 'react-bootstrap';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaImage, FaUpload } from 'react-icons/fa';
 import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../BaseModal';
 import ProductBasicInfo from './ProductBasicInfo';
 import ProductAdditionalInfo from './ProductAdditionalInfo';
@@ -44,6 +44,9 @@ const NewAddProductModal = ({
   const ratingGroupSelectRef = useRef(null);
   const ratingSelectRef = useRef(null);
   const [filteredAttributes, setFilteredAttributes] = useState([]);
+  const [dragActive, setDragActive] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState('');
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (show) {
@@ -276,51 +279,95 @@ const NewAddProductModal = ({
     //attributeValues: formData.attributes,
   //});
 
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileInput = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFile(e.target.files[0]);
+    }
+  };
+
+  const handleFile = (file) => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+        setFormData(prev => ({
+          ...prev,
+          image_url: file
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <BaseModal 
       show={show} 
       onHide={onHide}
-      size="lg"
+      size="md"
       className="new-product-modal"
-      debugFormData={true}
-      formData={{
-        ...formData,
-        filteredAttributes,
-        hasActiveAttributes,
-        availableRatingGroups: filteredRatingGroups,
-        availableRatings: filteredRatings
-      }}
     >
       <Form onSubmit={handleSubmit}>
         <BaseModalHeader 
           icon={<FaPlus />}
           onHide={onHide}
         >
-          {initialData ? 'Edit' : 'Add New'} Product
-          {warning && (
-            <div className="modal-warning">
-              {warning}
-            </div>
-          )}
+          Add Product
         </BaseModalHeader>
 
         <BaseModalBody>
           <Row>
-            <Col md={4}>
-              <div className="image-section mb-3">
-                <h6 className="section-title">Product Image</h6>
-                <div className="image-placeholder">
-                  <Form.Control
-                    type="text"
-                    name="image_url"
-                    placeholder="Enter image URL"
-                    value={formData.image_url || ''}
-                    onChange={handleInputChange}
-                  />
-                </div>
+            <Col md={3}>
+              <div 
+                className={`image-upload-container ${dragActive ? 'drag-active' : ''} ${previewUrl ? 'has-image' : ''}`}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {previewUrl ? (
+                  <>
+                    <img src={previewUrl} alt="Product preview" className="preview-image" />
+                    <div className="hover-overlay">
+                      <FaUpload className="upload-icon" />
+                    </div>
+                  </>
+                ) : (
+                  <div className="upload-placeholder">
+                    <FaImage className="placeholder-icon" />
+                    <span className="upload-text">Click or drag image here</span>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileInput}
+                  style={{ display: 'none' }}
+                />
               </div>
             </Col>
-            <Col md={8}>
+            <Col md={9}>
               <div className="basic-info-section mb-3">
                 <h6 className="section-title">Basic Information</h6>
                 <Row>
