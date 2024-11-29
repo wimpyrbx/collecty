@@ -1,10 +1,11 @@
 .attribute-box {
-  background-color: #eeeeee;
+  background-color: #cccccc !important;
   border-radius: 0.375rem;
   padding: 0.75rem;
   height: 82px;
   border: 1px solid var(--bs-gray-400);
   transition: all 0.2s ease;
+  font-size: 9px;
 }
 
 /* Switch box specific styling */
@@ -23,18 +24,18 @@
 }
 
 .attribute-box.switch-box.active {
-  background-color: rgba(var(--bs-success-rgb), 0.1);
+  background-color: rgba(var(--bs-success-rgb), 0.1) !important;
   border-color: var(--bs-success);
 }
 
 .attribute-box.switch-box.inactive {
-  background-color: rgba(var(--bs-danger-rgb), 0.1);
+  background-color: rgba(var(--bs-danger-rgb), 0.1) !important;
   border-color: var(--bs-danger);
 }
 
 /* Filled state for input/select boxes */
 .attribute-box.has-value {
-  background-color: rgba(var(--bs-success-rgb), 0.1);
+  background-color: rgba(var(--bs-success-rgb), 0.1) !important;
   border-color: var(--bs-success);
 }
 
@@ -47,7 +48,7 @@
 .attribute-name {
   font-weight: 500;
   color: var(--bs-gray-900);
-  font-size: 0.875rem;
+  font-size: 9px;
   text-align: left;
   line-height: 1.2;
   padding-right: 4rem;
@@ -58,14 +59,14 @@
   top: 50%;
   right: 0.75rem;
   transform: translateY(-50%);
-  padding: 0.25rem 0.75rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-weight: 500;
   color: white;
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 0.85em;
+  font-size: 9px;
 }
 
 .switch-status.success {
@@ -83,11 +84,11 @@
 /* Form styling */
 .attribute-box .form-label {
   font-weight: 500;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 0.875rem;
+  font-size: 9px;
 }
 
 .attribute-box .text-danger {
@@ -99,16 +100,15 @@
 .attribute-box .form-select {
   border: 1px solid var(--bs-gray-400);
   background-color: white;
-  height: 36px;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
+  height: 28px;
+  padding: 0.25rem 0.5rem;
+  font-size: 9px;
 }
 
 .attribute-box .form-control:focus,
 .attribute-box .form-select:focus {
   border-color: var(--bs-primary);
   box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
-  background-color: white;
 }
 
 /* Required field validation styling */
