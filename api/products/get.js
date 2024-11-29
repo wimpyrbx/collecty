@@ -1,6 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../db');
+const path = require('path');
+const { getImagePaths } = require('./imageUtils');
+
+// Helper function to get image URLs for a product
+function getProductImageUrls(productId) {
+  const paths = getImagePaths(productId);
+  
+  try {
+    // Use fs.accessSync to check if files exist
+    require('fs').accessSync(paths.originalPath);
+    return {
+      originalUrl: `/assets/images/products/original/${paths.x}/${paths.y}/${paths.filename}`,
+      thumbUrl: `/assets/images/products/thumb/${paths.x}/${paths.y}/${paths.filename}`
+    };
+  } catch (err) {
+    return { originalUrl: null, thumbUrl: null };
+  }
+}
+
+// Helper function to transform product data
+function transformProduct(product) {
+  if (!product) return null;
+  
+  const { originalUrl, thumbUrl } = getProductImageUrls(product.id);
+  return {
+    ...product,
+    productImageOriginal: originalUrl,
+    productImageThumb: thumbUrl
+  };
+}
 
 // GET /api/products - Get all products or a single product with optional extended info
 router.get('/', async (req, res) => {
@@ -71,7 +101,7 @@ router.get('/', async (req, res) => {
 
       // Add filters for basic query
       if (id) {
-        sql += ' AND id = ?';  // No table alias for basic query
+        sql += ' AND id = ?';
         params.push(id);
       }
       if (groupId) {
@@ -137,7 +167,8 @@ router.get('/', async (req, res) => {
         row.siteLinks = siteLinks;
         delete row.site_links;
 
-        return row;
+        // Add image URLs
+        return transformProduct(row);
       };
 
       const transformedResults = id ? transformRow(results[0]) : results.map(transformRow);
@@ -147,10 +178,14 @@ router.get('/', async (req, res) => {
       });
     }
 
-    // Return basic results
+    // Return basic results with image URLs
+    const transformedResults = id ? 
+      transformProduct(results[0]) : 
+      results.map(product => transformProduct(product));
+
     res.json({
       message: 'success',
-      data: id ? results[0] : results
+      data: transformedResults
     });
 
   } catch (err) {

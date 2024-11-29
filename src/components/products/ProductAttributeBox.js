@@ -1,9 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Form } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import './ProductAttributeBox.css';
 
 const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid }) => {
+  const inputRef = useRef(null);
+
+  // Add this to expose the input element for focusing
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.setAttribute('data-attribute-input', attribute.id);
+    }
+  }, [attribute.id]);
+
   // Only set default value once when component mounts
   useEffect(() => {
     if (attribute.type !== 'set' && attribute.is_required && attribute.default_value !== undefined && !value) {
@@ -93,10 +102,11 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
             </label>
             <div className="input-wrapper">
               <Form.Control
+                ref={inputRef}
                 type={attribute.type === 'number' ? 'number' : 'text'}
                 value={value || ''}
                 onChange={(e) => onChange(attribute.id, e.target.value)}
-                isInvalid={isInvalid || isEmptyRequired}
+                isInvalid={touched && isInvalid}
                 className={value ? 'has-clear-button' : ''}
                 data-attribute-id={attribute.id}
               />

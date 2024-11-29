@@ -24,6 +24,7 @@
     "react-scripts": "5.0.1",
     "react-select": "^5.8.3",
     "react-toastify": "^10.0.6",
+    "sharp": "^0.33.5",
     "sqlite3": "^5.1.7",
     "swagger-ui": "^5.18.2",
     "swagger-ui-express": "^5.0.1",

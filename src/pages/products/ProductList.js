@@ -6,10 +6,10 @@ import CustomTableCell from '../../components/Table/CustomTableCell';
 import { FaEuroSign, FaDollarSign, FaYenSign } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import NewAddProductModal from '../../components/products/NewAddProductModal';
+import NewEditProductModal from '../../components/products/NewEditProductModal';
 import AttributeDisplay from '../../components/attributes/AttributeDisplay';
 import RegionImage from '../../components/common/RegionImage';
 import ProductTypeImage from '../../components/common/ProductTypeImage';
-import EditProductModal from '../../components/products/EditProductModal';
 import PageHeader from '../../components/common/PageHeader/PageHeader';
 import DeleteModal from '../../components/common/DeleteModal/DeleteModal';
 
@@ -230,19 +230,30 @@ const ProductList = () => {
     setShowAddModal(true);
   };
 
+  const handleProductUpdated = (updatedProduct) => {
+    // Update just the single product in the list
+    setProducts(prevProducts => 
+      prevProducts.map(product => 
+        product.id === updatedProduct.id ? updatedProduct : product
+      )
+    );
+  };
+
   const renderActionButtons = (product) => (
-    <div className="btn-group">
+    <div className="d-flex gap-2 justify-content-center">
       <button 
-        className="btn btn-warning btn-sm"
+        className="btn btn-link text-warning p-0"
         onClick={() => handleEditClick(product.id)}
+        title="Edit Product"
       >
-        <FaEdit /> Edit
+        <FaEdit />
       </button>
       <button 
-        className="btn btn-danger btn-sm"
+        className="btn btn-link text-danger p-0"
         onClick={() => showDeleteModal(product)}
+        title="Delete Product"
       >
-        <FaTrashAlt /> Delete
+        <FaTrashAlt />
       </button>
     </div>
   );
@@ -397,145 +408,159 @@ const ProductList = () => {
       ) : viewMode === 'table' ? (
         /* Table View */
         <div className="card">
-          <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <span>Products</span>
-            <button className="btn btn-sm btn-light">Add Product</button>
+          <div className="card-header d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center">
+              <button
+                className={`btn btn-sm me-2 ${viewMode === 'table' ? 'btn-primary' : 'btn-outline-primary'}`}
+                onClick={() => setViewMode('table')}
+              >
+                <FaTable /> Table
+              </button>
+              <button
+                className={`btn btn-sm ${viewMode === 'grid' ? 'btn-primary' : 'btn-outline-primary'}`}
+                onClick={() => setViewMode('grid')}
+              >
+                <FaThLarge /> Grid
+              </button>
+            </div>
           </div>
-          <table className="table table-bordered mb-0 table-hover">
-            <thead className="table-light">
-              <tr>
-                <th onClick={() => handleSort('id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-                  ID <FaSort className={sortField === 'id' ? 'text-primary' : ''} />
-                </th>
-                <th onClick={() => handleSort('title')} style={{cursor: 'pointer'}}>
-                  Information <FaSort className={sortField === 'title' ? 'text-primary' : ''} />
-                </th>
-                <th style={{width: `${IMAGE_SIZE.width}px`, padding: 0}}></th>
-                <th onClick={() => handleSort('rating')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-                  Rating <FaSort className={sortField === 'rating' ? 'text-primary' : ''} />
-                </th>
-                <th style={{cursor: 'pointer'}}>
-                  Attributes
-                </th>
-                <th onClick={() => handleSort('product_type_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-                  Type <FaSort className={sortField === 'product_type_id' ? 'text-primary' : ''} />
-                </th>
-                <th onClick={() => handleSort('region_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-                  Region <FaSort className={sortField === 'region_id' ? 'text-primary' : ''} />
-                </th>
-                <th style={{width: '1%', whiteSpace: 'nowrap'}}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentProducts.map(product => (
-                <tr key={product.id}>
-                  <td className="text-center">
-                    <OverlayTrigger
-                      placement="right"
-                      overlay={
-                        <Tooltip id={`tooltip-${product.id}`}>
-                          <pre style={{ margin: 0, textAlign: 'left', fontSize: '0.8rem' }}>
-                            {JSON.stringify(product, null, 2)}
-                          </pre>
-                        </Tooltip>
-                      }
-                    >
-                      <span className="text-muted" style={{ cursor: 'help' }}>
-                        {product.id}
-                      </span>
-                    </OverlayTrigger>
-                  </td>
-                  <CustomTableCell>
-                    <div className="d-flex flex-column">
-                      <div>
-                        <strong>{product.title}</strong>
-                        {product.release_year && (
-                          <span className="text-muted ms-2">
-                            ({product.release_year})
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-muted small">
-                        {product.product_group_name || '-'}
-                      </div>
-                    </div>
-                  </CustomTableCell>
-                  <td style={{width: `${IMAGE_SIZE.width}px`, padding: '4px'}}>
-                    {product.image_url ? (
-                      <img 
-                        src={product.image_url} 
-                        alt={product.title} 
-                        className="rounded shadow-sm"
-                        style={{
-                          maxHeight: '40px',
-                          width: 'auto',
-                          objectFit: 'contain'
-                        }}
-                      />
-                    ) : (
-                      <div 
-                        className="d-flex flex-column align-items-center justify-content-center rounded shadow-sm image-placeholder"
-                        style={{
-                          maxHeight: '40px',
-                          width: 'auto',
-                          background: 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)',
-                          border: '1px solid #dee2e6'
-                        }}
-                      >
-                        <FaGamepad 
-                          className="text-secondary"
-                          style={{opacity: 0.5}}
-                          size={16}
-                        />
-                      </div>
-                    )}
-                  </td>
-                  <td className="text-center">
-                    {product.rating_name ? (
-                      <Badge 
-                        bg={
-                          product.rating_name === 'E' ? 'success' :
-                          product.rating_name === 'T' ? 'warning' :
-                          product.rating_name === 'M' ? 'danger' :
-                          'secondary'
+          <div className="table-responsive">
+            <table className="table table-bordered mb-0 table-hover">
+              <thead className="table-light">
+                <tr>
+                  <th onClick={() => handleSort('id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+                    ID <FaSort className={sortField === 'id' ? 'text-primary' : ''} />
+                  </th>
+                  <th onClick={() => handleSort('title')} style={{cursor: 'pointer'}}>
+                    Information <FaSort className={sortField === 'title' ? 'text-primary' : ''} />
+                  </th>
+                  <th style={{width: `${IMAGE_SIZE.width}px`, padding: 0}}>Image</th>
+                  <th onClick={() => handleSort('rating')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+                    Rating <FaSort className={sortField === 'rating' ? 'text-primary' : ''} />
+                  </th>
+                  <th style={{cursor: 'pointer'}}>
+                    Attributes
+                  </th>
+                  <th onClick={() => handleSort('product_type_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+                    Type <FaSort className={sortField === 'product_type_id' ? 'text-primary' : ''} />
+                  </th>
+                  <th onClick={() => handleSort('region_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+                    Region <FaSort className={sortField === 'region_id' ? 'text-primary' : ''} />
+                  </th>
+                  <th style={{width: '1%', whiteSpace: 'nowrap'}}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentProducts.map(product => (
+                  <tr key={product.id}>
+                    <td className="text-center">
+                      <OverlayTrigger
+                        placement="right"
+                        overlay={
+                          <Tooltip id={`tooltip-${product.id}`}>
+                            <pre style={{ margin: 0, textAlign: 'left', fontSize: '0.8rem' }}>
+                              {JSON.stringify(product, null, 2)}
+                            </pre>
+                          </Tooltip>
                         }
                       >
-                        {product.rating_name}
-                      </Badge>
-                    ) : '-'}
-                  </td>
-                  <td>
-                    {product.attributes ? (
-                      <div className="d-flex flex-column gap-2">
-                        {Object.entries(product.attributes).map(([key, value]) => {
-                          const attribute = attributes.find(a => a.name === key);
-                          // Skip if attribute not found or not active
-                          if (!attribute || !attribute.is_active) return null;
-                          
-                          return (
-                            <AttributeDisplay 
-                              key={key}
-                              attribute={attribute} 
-                              value={value} 
-                            />
-                          );
-                        })}
+                        <span className="text-muted" style={{ cursor: 'help' }}>
+                          {product.id}
+                        </span>
+                      </OverlayTrigger>
+                    </td>
+                    <CustomTableCell>
+                      <div className="d-flex flex-column">
+                        <div>
+                          <strong>{product.title}</strong>
+                          {product.release_year && (
+                            <span className="text-muted ms-2">
+                              ({product.release_year})
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-muted small">
+                          {product.product_group_name || '-'}
+                        </div>
                       </div>
-                    ) : '-'}
-                  </td>
-                  <td className="text-center">
-                    <ProductTypeImage typeName={product.product_type_name} />
-                  </td>
-                  <td className="text-center">
-                    <RegionImage regionName={product.region_name} />
-                  </td>
-                  <td className="text-center">
-                    {renderActionButtons(product)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </CustomTableCell>
+                    <td style={{width: `${IMAGE_SIZE.width}px`, padding: '4px'}}>
+                      {product.productImageThumb ? (
+                        <img 
+                          src={product.productImageThumb} 
+                          alt={product.title} 
+                          className="rounded shadow-sm"
+                          style={{
+                            maxHeight: '70px',
+                            width: 'auto',
+                            objectFit: 'contain'
+                          }}
+                        />
+                      ) : (
+                        <div 
+                          className="d-flex flex-column align-items-center justify-content-center rounded shadow-sm image-placeholder"
+                          style={{
+                            height: '70px',
+                            width: 'auto',
+                            background: 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)',
+                            border: '1px solid #dee2e6'
+                          }}
+                        >
+                          <FaGamepad 
+                            className="text-secondary"
+                            style={{opacity: 0.5}}
+                            size={16}
+                          />
+                        </div>
+                      )}
+                    </td>
+                    <td className="text-center">
+                      {product.rating_name ? (
+                        <Badge 
+                          bg={
+                            product.rating_name === 'E' ? 'success' :
+                            product.rating_name === 'T' ? 'warning' :
+                            product.rating_name === 'M' ? 'danger' :
+                            'secondary'
+                          }
+                        >
+                          {product.rating_name}
+                        </Badge>
+                      ) : '-'}
+                    </td>
+                    <td>
+                      {product.attributes ? (
+                        <div className="d-flex flex-column gap-2">
+                          {Object.entries(product.attributes).map(([key, value]) => {
+                            const attribute = attributes.find(a => a.name === key);
+                            // Skip if attribute not found or not active
+                            if (!attribute || !attribute.is_active) return null;
+                            
+                            return (
+                              <AttributeDisplay 
+                                key={key}
+                                attribute={attribute} 
+                                value={value} 
+                              />
+                            );
+                          })}
+                        </div>
+                      ) : '-'}
+                    </td>
+                    <td className="text-center">
+                      <ProductTypeImage typeName={product.product_type_name} />
+                    </td>
+                    <td className="text-center">
+                      <RegionImage regionName={product.region_name} />
+                    </td>
+                    <td className="text-center">
+                      {renderActionButtons(product)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         /* Grid View */
@@ -605,6 +630,7 @@ const ProductList = () => {
         </div>
       </div>
 
+      {/* Add Product Modal */}
       <NewAddProductModal
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
@@ -623,19 +649,28 @@ const ProductList = () => {
         }}
       />
 
-      <EditProductModal
+      {/* Edit Product Modal */}
+      <NewEditProductModal
         show={showEditModal}
         onHide={() => setShowEditModal(false)}
+        onProductUpdated={handleProductUpdated}
         productId={selectedProductId}
-        onProductUpdated={fetchProducts}
+        productGroups={productGroups}
+        productTypes={productTypes}
+        regions={regions}
+        availableRatingGroups={availableRatingGroups}
+        availableRatings={availableRatings}
+        attributes={attributes}
+        attributeValues={attributeValues}
       />
 
-      <DeleteModal 
+      {/* Delete Confirmation Modal */}
+      <DeleteModal
         show={deleteModal.show}
         onHide={() => setDeleteModal({ show: false, item: null, isDeleting: false })}
         onConfirm={handleDelete}
         title="Delete Product"
-        message={`Are you sure you want to delete "${deleteModal.item?.title}"?`}
+        message={`Are you sure you want to delete the product "${deleteModal.item?.title}"?`}
         isDeleting={deleteModal.isDeleting}
       />
     </div>

@@ -41,6 +41,7 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
   const [warning, setWarning] = useState('');
   const warningTimeoutRef = useRef(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [formRef] = useState(React.createRef());
 
   // Function to show warning
   const showWarning = (message) => {
@@ -115,12 +116,18 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
   useEffect(() => {
     const fetchAttributes = async () => {
       if (!formData.product_group_id || !formData.product_type_id) {
+        console.log('Missing group or type, clearing attributes');
         setAttributes([]);
         setAttributeValues({});
         return;
       }
 
       try {
+        console.log('Fetching attributes for:', {
+          group: formData.product_group_id,
+          type: formData.product_type_id
+        });
+
         const response = await axios.get('http://localhost:5000/api/attributes', {
           params: { 
             scope: 'product',
@@ -130,6 +137,7 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
           }
         });
 
+        console.log('Fetched attributes:', response.data.data);
         setAttributes(response.data.data || []);
 
         // Initialize attribute values with defaults
@@ -235,58 +243,140 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
   };
 
   const handleAttributeChange = (attributeId, value) => {
-    // Only clear validation errors if form has been submitted
-    if (hasSubmitted && value) {
-      setError(null);
-    }
-
-    setAttributeValues(prev => ({
-      ...prev,
-      [attributeId]: value
-    }));
+    console.log('Attribute Change:', { attributeId, value }); // Debug log
+    
+    // Update the attributeValues state
+    setAttributeValues(prev => {
+      const newValues = {
+        ...prev,
+        [attributeId]: value
+      };
+      console.log('New Attribute Values:', newValues); // Debug log
+      return newValues;
+    });
   };
 
-  // Update validateForm to only check required fields
+  // Modify validateForm to properly check attributes
   const validateForm = () => {
+    console.log('VALIDATE FORM CALLED'); // This should definitely show
+    
+    console.log('Current form state:', {
+      formData,
+      attributes: attributes.map(a => ({
+        id: a.id,
+        name: a.name,
+        required: a.is_required === 1,
+        type: a.type,
+        value: attributeValues[a.id]
+      }))
+    });
+
     const errors = [];
+    let firstInvalidElement = null;
 
-    // Required fields validation
-    if (!formData.title) errors.push('* Required');
-    if (!formData.product_group_id) errors.push('* Required');
-    if (!formData.product_type_id) errors.push('* Required');
-    if (!formData.region_id) errors.push('* Required');
+    // Check title first
+    if (!formData.title) {
+      errors.push("Product Name is required");
+      firstInvalidElement = nameInputRef.current;
+    }
 
-    // Required attributes validation
-    const requiredAttributes = attributes.filter(attr => attr.is_required);
-    for (const attr of requiredAttributes) {
-      if (!attributeValues[attr.id]) {
-        errors.push('* Required');
+    // Check required dropdowns in order
+    const requiredSelects = [
+      { field: 'product_group_id', name: 'Product Group' },
+      { field: 'product_type_id', name: 'Product Type' },
+      { field: 'region_id', name: 'Region' }
+    ];
+
+    for (const { field, name } of requiredSelects) {
+      if (!formData[field]) {
+        errors.push(`${name} is required`);
+        if (!firstInvalidElement) {
+          const element = document.querySelector(`[name="${field}"]`);
+          if (element) firstInvalidElement = element;
+        }
       }
     }
 
-    return errors.length > 0 ? errors.join('\n') : null;
+    // Debug log before attribute validation
+    console.log('Before attribute validation:', {
+      attributeCount: attributes.length,
+      requiredAttributes: attributes.filter(a => a.is_required === 1)
+    });
+
+    // Check required attributes
+    attributes.forEach(attr => {
+      console.log('Checking attribute:', {
+        attr,
+        currentValue: attributeValues[attr.id],
+        isRequired: attr.is_required === 1
+      });
+
+      if (attr.is_required === 1) {
+        const value = attributeValues[attr.id];
+        const isEmpty = attr.type === 'boolean' ? 
+          (value === undefined || value === null || value === '') :
+          (!value && value !== 0 && value !== '0');
+
+        if (isEmpty) {
+          const errorMessage = `${attr.ui_name || attr.name} is required`;
+          console.log('Validation error:', errorMessage);
+          errors.push(errorMessage);
+          
+          if (!firstInvalidElement) {
+            const element = document.querySelector(`[data-attribute-id="${attr.id}"]`);
+            if (element) {
+              console.log('Found invalid element:', element);
+              firstInvalidElement = element;
+            }
+          }
+        }
+      }
+    });
+
+    // Focus first invalid element immediately
+    if (firstInvalidElement) {
+      console.log('Focusing element:', firstInvalidElement);
+      firstInvalidElement.focus();
+    }
+
+    if (errors.length > 0) {
+      console.log('Validation errors:', errors);
+      toast.error(errors.join('\n'));
+      return false;
+    }
+
+    return true;
   };
 
+  // Update handleSubmit to ensure validation runs before submission
   const handleSubmit = async (e) => {
+    console.log('SUBMIT BUTTON CLICKED'); // This should definitely show
     e.preventDefault();
+    e.stopPropagation();
     setHasSubmitted(true);
-    
-    console.log('=== Form Submission ===');
-    console.log('Form Data:', formData);
-    console.log('Attribute Values:', attributeValues);
-    console.log('Available Attributes:', attributes);
 
-    const validationError = validateForm();
-    if (validationError) {
-      console.log('Validation Error:', validationError);
-      showWarning('Please fill in all required fields');
+    // Add before validation
+    console.log('About to validate with:', {
+      attributes: attributes.map(a => ({
+        id: a.id,
+        name: a.name,
+        required: a.is_required === 1,
+        type: a.type
+      })),
+      attributeValues
+    });
+
+    // Run validation first
+    const isValid = validateForm();
+    console.log('Validation result:', isValid);
+    
+    if (!isValid) {
+      console.log('Validation failed - preventing submission');
       return;
     }
 
+    setLoading(true);
     try {
-      setLoading(true);
-      setError(null);
-
       const payload = {
         ...formData,
         product_group_id: parseInt(formData.product_group_id, 10),
@@ -298,22 +388,20 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
         attributes: attributeValues
       };
 
-      console.log('=== Sending Payload ===');
-      console.log('Payload:', payload);
-
       const response = await axios.post('http://localhost:5000/api/products', payload);
-      console.log('=== Response ===');
-      console.log('Response:', response.data);
-
+      
       toast.success('Product created successfully');
       onProductAdded();
       onHide();
-    } catch (err) {
-      console.error('=== Error Creating Product ===');
-      console.error('Error:', err);
-      console.error('Response:', err.response?.data);
-      setError(err.response?.data?.error || 'Failed to create product');
-      toast.error(err.response?.data?.error || 'Failed to create product');
+    } catch (error) {
+      console.error('Error creating product:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+        toast.error(error.response.data.error || 'Failed to create product');
+      } else {
+        toast.error(error.message || 'Failed to create product');
+      }
+      setWarning(error.message);
     } finally {
       setLoading(false);
     }
@@ -329,7 +417,7 @@ const AddProductModal = ({ show, onHide, onProductAdded, initialData = null }) =
           </div>
         )}
       </Modal.Header>
-      <Form onSubmit={handleSubmit}>
+      <Form ref={formRef} noValidate onSubmit={handleSubmit}>
         <Modal.Body className="bg-light">
           <ProductBasicInfo
             formData={formData}

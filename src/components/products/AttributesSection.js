@@ -46,6 +46,7 @@ const AttributesSection = ({
                     onChange={handleAttributeChange}
                     touched={touched}
                     isInvalid={attribute.is_required && !attributeValues[attribute.id]}
+                    data-attribute-id={attribute.id}
                   />
                 </Col>
               );
