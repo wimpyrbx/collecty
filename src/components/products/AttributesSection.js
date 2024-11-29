@@ -16,17 +16,10 @@ const AttributesSection = ({
     return null;
   }
 
-  console.log('AttributesSection render:', {
-    show,
-    attributesCount: attributes.length,
-    hasValues: Object.keys(attributeValues || {}).length > 0,
-    className: `attributes-section ${show ? 'show' : ''}`
-  });
-
   return (
-    <div className={`attributes-section ${show ? 'show' : ''}`} style={{display: show ? 'block' : 'none'}}>
-      <div className="card mb-3 attribute-card">
-        <div className="card-header">
+    <div className={`attributes-section ${show ? 'show' : ''}`}>
+      <div className="card attribute-card">
+        <div className="section-title">
           <h5>Product Attributes</h5>
         </div>
         <div className="card-body">
@@ -41,14 +34,8 @@ const AttributesSection = ({
                 ? attribute.product_type_ids
                 : JSON.parse(attribute.product_type_ids || '[]');
 
-              console.log('Attribute arrays:', {
-                name: attribute.name,
-                groupIds,
-                typeIds
-              });
-
               return (
-                <Col md={3} key={attribute.id} className="mb-3">
+                <Col md={3} key={attribute.id}>
                   <ProductAttributeBox
                     attribute={{
                       ...attribute,

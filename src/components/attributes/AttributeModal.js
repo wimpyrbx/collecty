@@ -175,11 +175,6 @@ const AttributeModal = ({
       return false;
     }
 
-    if (formData.is_required && !formData.default_value) {
-      toast.error('Default value is required when field is marked as required');
-      return false;
-    }
-
     if (formData.type === 'set' && !formData.allowed_values) {
       toast.error('Allowed values are required for Set type');
       return false;
@@ -207,7 +202,6 @@ const AttributeModal = ({
             name="default_value"
             value={formData.default_value}
             onChange={handleInputChange}
-            isInvalid={hasSubmitted && formData.is_required && !formData.default_value}
           >
             <option value="">Select Default Value</option>
             <option value="1">Yes</option>
@@ -222,7 +216,6 @@ const AttributeModal = ({
             name="default_value"
             value={formData.default_value}
             onChange={handleInputChange}
-            isInvalid={hasSubmitted && formData.is_required && !formData.default_value}
           >
             <option value="">Select Default Value</option>
             {parsedAllowedValues.map(value => (
@@ -239,7 +232,6 @@ const AttributeModal = ({
             name="default_value"
             value={formData.default_value}
             onChange={handleInputChange}
-            isInvalid={hasSubmitted && formData.is_required && !formData.default_value}
           />
         );
 
@@ -251,7 +243,6 @@ const AttributeModal = ({
             name="default_value"
             value={formData.default_value}
             onChange={handleInputChange}
-            isInvalid={hasSubmitted && formData.is_required && !formData.default_value}
           />
         );
     }

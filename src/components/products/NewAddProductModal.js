@@ -425,8 +425,8 @@ const NewAddProductModal = ({
               </div>
 
               {hasActiveAttributes && (
-                <div className={`attributes-section mb-3 ${hasActiveAttributes ? 'show' : ''}`}>
-                  <div className="section-title">
+                <div className={`attributes-section ${hasActiveAttributes ? 'show' : ''}`}>
+                  <div className="section-title mb-0">
                     <h5>Product Attributes</h5>
                   </div>
                   <div className="attribute-card">

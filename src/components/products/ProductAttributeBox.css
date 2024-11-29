@@ -1,168 +1,129 @@
 .attribute-box {
-  border: 1px solid #dee2e6;
+  background-color: #eeeeee;
   border-radius: 0.375rem;
   padding: 0.75rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  height: 82px;
+  border: 1px solid var(--bs-gray-400);
+  transition: all 0.2s ease;
+}
+
+/* Switch box specific styling */
+.attribute-box.switch-box {
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  padding: 0.75rem;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.attribute-box:focus-within {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-  outline: 0;
+.attribute-box.switch-box:hover {
+  background: var(--bs-gray-400);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.attribute-box.required {
-  border-left: 3px solid #dc3545;
+.attribute-box.switch-box.active {
+  background-color: rgba(var(--bs-success-rgb), 0.1);
+  border-color: var(--bs-success);
 }
 
-.attribute-box.required:focus-within {
-  border-left: 3px solid #dc3545;
+.attribute-box.switch-box.inactive {
+  background-color: rgba(var(--bs-danger-rgb), 0.1);
+  border-color: var(--bs-danger);
 }
 
-/* Add this for the label */
-.attribute-box label {
+/* Filled state for input/select boxes */
+.attribute-box.has-value {
+  background-color: rgba(var(--bs-success-rgb), 0.1);
+  border-color: var(--bs-success);
+}
+
+.switch-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.attribute-name {
   font-weight: 500;
-  margin-bottom: 0.5rem;
+  color: var(--bs-gray-900);
+  font-size: 0.875rem;
+  text-align: left;
+  line-height: 1.2;
+  padding-right: 4rem;
 }
 
-/* Remove the automatic asterisk from required fields */
-.attribute-box.required label::after {
-  content: none;  /* Remove the automatic asterisk */
+.switch-status {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85em;
 }
 
-/* Style for the single required asterisk */
-.attribute-box .text-danger {
-  margin-left: 4px;
-  font-size: 14px;
+.switch-status.success {
+  background-color: var(--bs-success);
 }
 
-/* Ensure proper spacing for the label */
+.switch-status.danger {
+  background-color: var(--bs-danger);
+}
+
+.switch-status svg {
+  font-size: 0.9em;
+}
+
+/* Form styling */
 .attribute-box .form-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-
-.attribute-box:hover {
-  border-color: #adb5bd;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.attribute-box.active {
-  background-color: rgba(40, 167, 69, 0.1);
-  border-color: #28a745;
-}
-
-.attribute-content {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-.attribute-content .form-label {
-  margin-bottom: 0.5rem;
   font-weight: 500;
-  text-align: center;
-  width: 100%;
-}
-
-/* Custom switch styling */
-.attribute-box .custom-switch {
+  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
+  gap: 0.25rem;
+  font-size: 0.875rem;
 }
 
-.attribute-box .custom-switch .form-check-input {
-  float: none;
-  margin-left: 0;
-  width: 3rem;
-  cursor: pointer;
+.attribute-box .text-danger {
+  font-size: 0.875rem;
 }
 
-.attribute-box .custom-switch .form-check-input:checked {
-  background-color: #28a745;
-  border-color: #28a745;
-}
-
+/* Input and select styling */
 .attribute-box .form-control,
 .attribute-box .form-select {
-  height: 38px;
-  text-align: center;
-  width: 100%;
+  border: 1px solid var(--bs-gray-400);
+  background-color: white;
+  height: 36px;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
 }
 
-/* Added - ensure all interactive elements show pointer */
-.attribute-box * {
-  cursor: pointer;
-}
-
-/* Exception for text input cursor */
-.attribute-box input[type="text"],
-.attribute-box input[type="number"],
-.attribute-box select {
-  cursor: text;
-}
-
-/* Remove bottom margin from form groups */
-.attribute-box .form-group {
-  margin-bottom: 0;
-  width: 100%;
-}
-
-/* Remove dropdown arrow and fix appearance */
-.attribute-box .form-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: none !important;
-  cursor: pointer;
-  padding-right: 0.75rem;  /* Reset padding since we removed the arrow */
-}
-
-/* Style for set type values */
-.attribute-box .form-select option {
-  padding: 8px;
-  font-size: 14px;
-}
-
-/* Ensure proper height and alignment */
-.attribute-box .form-select {
-  height: 38px;
-  text-align: center;
-  width: 100%;
-  background-color: #fff;
-}
-
-/* Add a subtle border style */
-.attribute-box .form-select {
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-}
-
-/* Style for disabled state */
-.attribute-box .form-select:disabled {
-  background-color: #e9ecef;
-  cursor: not-allowed;
-}
-
-/* Hover effect */
-.attribute-box .form-select:not(:disabled):hover {
-  border-color: var(--bs-primary);
-}
-
-/* Focus state */
+.attribute-box .form-control:focus,
 .attribute-box .form-select:focus {
   border-color: var(--bs-primary);
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+  background-color: white;
+}
+
+/* Required field validation styling */
+.attribute-box.is-invalid {
+  background-color: rgba(var(--bs-danger-rgb), 0.1);
+  border-color: var(--bs-danger);
+}
+
+.attribute-box.is-invalid .form-control,
+.attribute-box.is-invalid .form-select {
+  border-color: var(--bs-danger);
+}
+
+.attribute-box.is-invalid .form-control:focus,
+.attribute-box.is-invalid .form-select:focus {
+  border-color: var(--bs-danger);
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-danger-rgb), 0.25);
 } 
