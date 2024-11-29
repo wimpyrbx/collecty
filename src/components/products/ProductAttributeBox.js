@@ -23,12 +23,13 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
 
     switch (attribute.type) {
       case 'boolean':
-        // Convert value to boolean, default to false if undefined
-        const boolValue = value === true || value === '1' || value === 1;
+        // Convert any truthy value to 1, falsy to 0
+        const boolValue = value === true || value === 'true' || value === 1 || value === '1';
         return (
           <div 
             className={`attribute-box switch-box ${boolValue ? 'active' : 'inactive'}`}
-            onClick={() => onChange(attribute.id, !boolValue)}
+            onClick={() => onChange(attribute.id, boolValue ? 0 : 1)}
+            data-attribute-id={attribute.id}
           >
             <span className={`switch-status ${boolValue ? 'success' : 'danger'}`}>
               {boolValue ? (
@@ -71,6 +72,7 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
               value={value || ''}
               onChange={(e) => onChange(attribute.id, e.target.value)}
               isInvalid={isInvalid || isEmptyRequired}
+              data-attribute-id={attribute.id}
             >
               <option value="">Choose a value</option>
               {setValues.map(val => (
@@ -96,6 +98,7 @@ const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid })
                 onChange={(e) => onChange(attribute.id, e.target.value)}
                 isInvalid={isInvalid || isEmptyRequired}
                 className={value ? 'has-clear-button' : ''}
+                data-attribute-id={attribute.id}
               />
               {value && (
                 <button

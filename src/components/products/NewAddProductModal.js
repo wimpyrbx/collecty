@@ -8,6 +8,7 @@ import ProductAttributeBox from './ProductAttributeBox';
 import './NewAddProductModal.css';
 import ChainedSelect from '../common/ChainedSelect';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const initialFormState = {
   title: '',
@@ -47,22 +48,38 @@ const NewAddProductModal = ({
   const [dragActive, setDragActive] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
   const fileInputRef = useRef(null);
+  const [formRef] = useState(React.createRef());
 
   useEffect(() => {
     if (show) {
-      // Reset form state when modal opens
-      setFormData(initialFormState);
-      setFilteredAttributes([]);
+      // Reset form when modal opens
+      const initialValues = {
+        ...initialFormState,
+        // Use preselected values from initialData if available
+        product_group_id: initialData?.product_group_id || '',
+        product_type_id: initialData?.product_type_id || '',
+        region_id: initialData?.region_id || '',
+        attributes: {}
+      };
+      setFormData(initialValues);
+      setPreviewUrl('');
       setHasSubmitted(false);
-      
+      setDragActive(false);
+      setFilteredAttributes([]);
+
       // Focus the name input after a short delay
       setTimeout(() => {
         if (nameInputRef.current) {
           nameInputRef.current.focus();
         }
       }, 100);
+
+      // If region is preselected, trigger the change
+      if (initialData?.region_id) {
+        handleRegionChange({ target: { value: initialData.region_id } });
+      }
     }
-  }, [show]);
+  }, [show, initialData]);
 
   useEffect(() => {
     const fetchAttributes = async () => {
@@ -147,17 +164,199 @@ const NewAddProductModal = ({
     }));
   };
 
+  // Add validation function
+  const validateForm = () => {
+    const errors = [];
+    const invalidFields = {
+      required_fields: {},
+      required_attributes: {}
+    };
+    
+    // Required fields validation in order of appearance
+    const validationFields = [
+      { field: 'title', ref: nameInputRef, message: "Product Name is required" },
+      { field: 'product_group_id', message: "Product Group is required" },
+      { field: 'product_type_id', message: "Product Type is required" },
+      { field: 'region_id', message: "Region is required" }
+    ];
+
+    let firstInvalidElement = null;
+
+    // Check each field in order
+    validationFields.forEach(({ field, ref, message }) => {
+      if (!formData[field]) {
+        errors.push(message);
+        invalidFields.required_fields[field] = formData[field];
+
+        // Store the first invalid element we find
+        if (!firstInvalidElement) {
+          if (ref) {
+            firstInvalidElement = ref.current;
+          } else {
+            // For select elements without refs, find them in the DOM
+            const element = document.querySelector(`[name="${field}"]`);
+            if (element) firstInvalidElement = element;
+          }
+        }
+      }
+    });
+
+    // Validate required attributes
+    filteredAttributes.forEach(attr => {
+      if (attr.is_required) {
+        const value = formData.attributes[attr.id];
+        const isEmpty = attr.type === 'boolean' ? 
+          value === undefined || value === null : // for boolean, only undefined/null is invalid
+          !value; // for other types, empty string or falsy value is invalid
+
+        // Convert boolean values to 0/1 for consistency
+        const displayValue = attr.type === 'boolean' ? 
+          (value === true || value === 'true' || value === 1 || value === '1' ? 1 : 0) :
+          value;
+
+        if (isEmpty) {
+          errors.push(`${attr.ui_name || attr.name} is required`);
+          invalidFields.required_attributes[attr.id] = {
+            name: attr.ui_name || attr.name,
+            value: displayValue,
+            type: attr.type
+          };
+
+          // If no previous invalid element was found, find the attribute input
+          if (!firstInvalidElement) {
+            const element = document.querySelector(`[data-attribute-id="${attr.id}"]`);
+            if (element) firstInvalidElement = element;
+          }
+        }
+      }
+    });
+
+    if (errors.length > 0) {
+      console.log('Validation failed. Missing or invalid fields:', invalidFields);
+      
+      // Focus the first invalid element
+      if (firstInvalidElement) {
+        setTimeout(() => {
+          firstInvalidElement.focus();
+        }, 100);
+      }
+      
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setHasSubmitted(true);
-    setLoading(true);
-    
-    try {
-      if (onProductAdded) {
-        await onProductAdded(formData);
+
+    // Log validation state for all fields
+    const validationState = {
+      required_fields: {
+        title: {
+          value: formData.title,
+          valid: Boolean(formData.title?.trim())
+        },
+        product_group_id: {
+          value: formData.product_group_id,
+          valid: Boolean(formData.product_group_id)
+        },
+        product_type_id: {
+          value: formData.product_type_id,
+          valid: Boolean(formData.product_type_id)
+        },
+        region_id: {
+          value: formData.region_id,
+          valid: Boolean(formData.region_id)
+        }
+      },
+      required_attributes: {}
+    };
+
+    // Add required attributes to validation state
+    filteredAttributes.forEach(attr => {
+      if (attr.is_required) {
+        const value = formData.attributes[attr.id];
+        
+        // For boolean attributes, convert to 0/1 and consider both valid
+        const displayValue = attr.type === 'boolean' ? 
+          (value === true || value === 'true' || value === 1 || value === '1' ? 1 : 0) :
+          value;
+        
+        const isValid = attr.type === 'boolean' ? 
+          value !== undefined && value !== null : // for boolean, only undefined/null is invalid
+          Boolean(value); // for other types, any truthy value is valid
+
+        validationState.required_attributes[attr.id] = {
+          name: attr.ui_name || attr.name,
+          value: displayValue,
+          valid: isValid
+        };
       }
-      onHide();
+    });
+
+    console.log('Form Validation State:', validationState);
+
+    // Check if form is valid
+    const form = e.currentTarget;
+    if (!form.checkValidity() || !validateForm()) {
+      e.stopPropagation();
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Create FormData and add all form fields
+      const submitData = new FormData();
+      
+      // Add basic fields
+      submitData.append('title', formData.title);
+      submitData.append('product_group_id', formData.product_group_id);
+      submitData.append('product_type_id', formData.product_type_id);
+      submitData.append('region_id', formData.region_id);
+      if (formData.rating_group_id) submitData.append('rating_group_id', formData.rating_group_id);
+      if (formData.rating_id) submitData.append('rating_id', formData.rating_id);
+      if (formData.release_year) submitData.append('release_year', formData.release_year);
+      if (formData.description) submitData.append('description', formData.description);
+      submitData.append('is_active', 1);
+      
+      // Add image if exists
+      if (formData.image_url) {
+        submitData.append('image_url', formData.image_url);
+      }
+
+      // Add attributes
+      Object.entries(formData.attributes).forEach(([id, value]) => {
+        const attr = filteredAttributes.find(a => a.id === Number(id));
+        if (attr) {
+          // Convert boolean values to 0/1
+          const submitValue = attr.type === 'boolean' ? 
+            (value === true || value === 'true' || value === 1 || value === '1' ? 1 : 0) :
+            value;
+          submitData.append(`attributes[${id}]`, submitValue);
+        }
+      });
+
+      // Send the product data to the API
+      const response = await axios.post('http://localhost:5000/api/products', submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+
+      if (response.data.success) {
+        toast.success(`Product "${formData.title}" Added.`);
+        if (onProductAdded) {
+          await onProductAdded(response.data.data);
+        }
+        onHide();
+      } else {
+        throw new Error(response.data.message || 'Failed to add product');
+      }
     } catch (error) {
+      console.error('Error adding product:', error);
+      toast.error(error.message || 'Failed to add product');
       setWarning(error.message);
     } finally {
       setLoading(false);
@@ -323,10 +522,27 @@ const NewAddProductModal = ({
     <BaseModal 
       show={show} 
       onHide={onHide}
-      size="md"
+      size="lg"
       className="new-product-modal"
+      debugFormData={true}
+      formData={{
+        formData,
+        attributes: {
+          filtered: filteredAttributes,
+          hasActive: hasActiveAttributes,
+          values: formData.attributes
+        },
+        ratings: {
+          groups: filteredRatingGroups,
+          ratings: filteredRatings
+        },
+        validation: {
+          hasSubmitted,
+          isValid: formRef.current?.checkValidity()
+        }
+      }}
     >
-      <Form onSubmit={handleSubmit}>
+      <Form ref={formRef} noValidate onSubmit={handleSubmit}>
         <BaseModalHeader 
           icon={<FaPlus />}
           onHide={onHide}
@@ -368,108 +584,118 @@ const NewAddProductModal = ({
               </div>
             </Col>
             <Col md={9}>
-              <div className="basic-info-section mb-3">
-                <h6 className="section-title">Basic Information</h6>
-                <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Product Name *</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="title"
-                        required
-                        ref={nameInputRef}
-                        value={formData.title || ''}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={3}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Product Group *</Form.Label>
-                      <Form.Select
-                        name="product_group_id"
-                        required
-                        value={formData.product_group_id || ''}
-                        onChange={handleProductGroupChange}
-                      >
-                        <option value="">Select Group</option>
-                        {productGroups.map(group => (
-                          <option key={group.id} value={group.id}>
-                            {group.name}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md={3}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Product Type *</Form.Label>
-                      <Form.Select
-                        name="product_type_id"
-                        required
-                        value={formData.product_type_id || ''}
-                        onChange={handleProductTypeChange}
-                      >
-                        <option value="">Select Type</option>
-                        {productTypes.map(type => (
-                          <option key={type.id} value={type.id}>
-                            {type.name}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col md={3}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Release Year</Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="release_year"
-                        value={formData.release_year || ''}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={3}>
-                    <ChainedSelect
-                      name="region_id"
-                      label="Region"
-                      value={formData.region_id || ''}
-                      onChange={handleRegionChange}
-                      options={regions}
-                      isRequired={true}
-                      isInvalid={hasSubmitted && !formData.region_id}
-                    />
-                  </Col>
-                  <Col md={3}>
-                    <ChainedSelect
-                      name="rating_group_id"
-                      label="Rating Group"
-                      value={formData.rating_group_id || ''}
-                      onChange={handleRatingGroupChange}
-                      options={filteredRatingGroups}
-                      disabled={!formData.region_id}
-                      isInvalid={hasSubmitted && !formData.rating_group_id}
-                      ref={ratingGroupSelectRef}
-                    />
-                  </Col>
-                  <Col md={3}>
-                    <ChainedSelect
-                      name="rating_id"
-                      label="Rating"
-                      value={formData.rating_id || ''}
+              <Row>
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Product Name *</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="title"
+                      required
+                      ref={nameInputRef}
+                      value={formData.title || ''}
                       onChange={handleInputChange}
-                      options={filteredRatings}
-                      disabled={!formData.rating_group_id}
-                      isInvalid={hasSubmitted && !formData.rating_id}
-                      ref={ratingSelectRef}
+                      isInvalid={hasSubmitted && !formData.title}
                     />
-                  </Col>
-                </Row>
-              </div>
+                    <Form.Control.Feedback type="invalid">
+                      Product Name is required
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={3}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Product Group *</Form.Label>
+                    <Form.Select
+                      name="product_group_id"
+                      required
+                      value={formData.product_group_id || ''}
+                      onChange={handleProductGroupChange}
+                      isInvalid={hasSubmitted && !formData.product_group_id}
+                    >
+                      <option value="">Select Group</option>
+                      {productGroups.map(group => (
+                        <option key={group.id} value={group.id}>
+                          {group.name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      Product Group is required
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={3}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Product Type *</Form.Label>
+                    <Form.Select
+                      name="product_type_id"
+                      required
+                      value={formData.product_type_id || ''}
+                      onChange={handleProductTypeChange}
+                      isInvalid={hasSubmitted && !formData.product_type_id}
+                    >
+                      <option value="">Select Type</option>
+                      {productTypes.map(type => (
+                        <option key={type.id} value={type.id}>
+                          {type.name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      Product Type is required
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={3}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Release Year</Form.Label>
+                    <Form.Select
+                      name="release_year"
+                      value={formData.release_year || ''}
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Select Year</option>
+                      {Array.from({ length: new Date().getFullYear() - 1949 }, (_, i) => 1950 + i).map(year => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+                <Col md={3}>
+                  <ChainedSelect
+                    name="region_id"
+                    label="Region *"
+                    value={formData.region_id || ''}
+                    onChange={handleRegionChange}
+                    options={regions}
+                    isRequired={true}
+                    isInvalid={hasSubmitted && !formData.region_id}
+                    feedback="Region is required"
+                  />
+                </Col>
+                <Col md={3}>
+                  <ChainedSelect
+                    name="rating_group_id"
+                    label="Rating Group"
+                    value={formData.rating_group_id || ''}
+                    onChange={handleRatingGroupChange}
+                    options={filteredRatingGroups}
+                    disabled={!formData.region_id}
+                  />
+                </Col>
+                <Col md={3}>
+                  <ChainedSelect
+                    name="rating_id"
+                    label="Rating"
+                    value={formData.rating_id || ''}
+                    onChange={handleInputChange}
+                    options={filteredRatings}
+                    disabled={!formData.rating_group_id}
+                  />
+                </Col>
+              </Row>
 
               {hasActiveAttributes && (
                 <div className={`attributes-section ${hasActiveAttributes ? 'show' : ''}`}>
@@ -508,6 +734,21 @@ const NewAddProductModal = ({
                   </div>
                 </div>
               )}
+
+              <Row className="mt-3">
+                <Col md={12}>
+                  <Form.Group>
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      name="description"
+                      value={formData.description || ''}
+                      onChange={handleInputChange}
+                      rows={3}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </BaseModalBody>
@@ -516,7 +757,7 @@ const NewAddProductModal = ({
           onCancel={onHide}
           onConfirm={handleSubmit}
           cancelText="Cancel"
-          confirmText={loading ? (initialData ? 'Updating...' : 'Creating...') : (initialData ? 'Update' : 'Create')}
+          confirmText={loading ? 'Adding...' : 'Add Product'}
           isLoading={loading}
         />
       </Form>

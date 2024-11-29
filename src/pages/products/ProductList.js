@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaTable, FaThLarge, FaSearch, FaSort, FaGamepad, FaDesktop, FaKeyboard, FaFlag, FaCompactDisc, FaEdit, FaTrashAlt, FaBox, FaPlus, FaDatabase } from 'react-icons/fa';
-import { Badge, OverlayTrigger, Tooltip, Button } from 'react-bootstrap';
+import { Badge, OverlayTrigger, Tooltip, Button, Form } from 'react-bootstrap';
 import CustomTableCell from '../../components/Table/CustomTableCell';
 import { FaEuroSign, FaDollarSign, FaYenSign } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
@@ -47,6 +47,11 @@ const ProductList = () => {
     show: false,
     item: null,
     isDeleting: false
+  });
+  const [preselectedFilters, setPreselectedFilters] = useState({
+    product_group_id: '',
+    product_type_id: '',
+    region_id: ''
   });
 
   // Define fetchProducts as a function reference
@@ -252,6 +257,39 @@ const ProductList = () => {
           Products
         </PageHeader.Title>
         <PageHeader.Actions>
+          <Form.Select
+            className="me-2"
+            style={{ width: 'auto', display: 'inline-block' }}
+            value={preselectedFilters.product_group_id}
+            onChange={(e) => setPreselectedFilters(prev => ({ ...prev, product_group_id: e.target.value }))}
+          >
+            <option value="">Select Group</option>
+            {productGroups.map(group => (
+              <option key={group.id} value={group.id}>{group.name}</option>
+            ))}
+          </Form.Select>
+          <Form.Select
+            className="me-2"
+            style={{ width: 'auto', display: 'inline-block' }}
+            value={preselectedFilters.product_type_id}
+            onChange={(e) => setPreselectedFilters(prev => ({ ...prev, product_type_id: e.target.value }))}
+          >
+            <option value="">Select Type</option>
+            {productTypes.map(type => (
+              <option key={type.id} value={type.id}>{type.name}</option>
+            ))}
+          </Form.Select>
+          <Form.Select
+            className="me-2"
+            style={{ width: 'auto', display: 'inline-block' }}
+            value={preselectedFilters.region_id}
+            onChange={(e) => setPreselectedFilters(prev => ({ ...prev, region_id: e.target.value }))}
+          >
+            <option value="">Select Region</option>
+            {regions.map(region => (
+              <option key={region.id} value={region.id}>{region.name}</option>
+            ))}
+          </Form.Select>
           <Button variant="light" onClick={() => setShowAddModal(true)}>
             <FaPlus className="me-2" /> Add Product
           </Button>
@@ -578,6 +616,11 @@ const ProductList = () => {
         availableRatings={availableRatings}
         attributes={attributes}
         attributeValues={attributeValues}
+        initialData={{
+          product_group_id: preselectedFilters.product_group_id || '',
+          product_type_id: preselectedFilters.product_type_id || '',
+          region_id: preselectedFilters.region_id || ''
+        }}
       />
 
       <EditProductModal

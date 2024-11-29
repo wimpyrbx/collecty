@@ -111,12 +111,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   color: var(--bs-gray-600);
   padding: 1rem;
   text-align: center;
   aspect-ratio: 1;
   width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .placeholder-icon {
@@ -133,4 +138,17 @@
   width: 100%;
   height: auto;
   display: block;
+}
+
+.attributes-section {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.attributes-section.show {
+  max-height: 1000px;
+  opacity: 1;
+  margin-top: 1rem;
 } 
