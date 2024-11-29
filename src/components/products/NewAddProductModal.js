@@ -4,10 +4,24 @@ import { FaPlus } from 'react-icons/fa';
 import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../BaseModal';
 import ProductBasicInfo from './ProductBasicInfo';
 import ProductAdditionalInfo from './ProductAdditionalInfo';
-import AttributesSection from './AttributesSection';
+import ProductAttributeBox from './ProductAttributeBox';
 import './NewAddProductModal.css';
 import ChainedSelect from '../common/ChainedSelect';
 import axios from 'axios';
+
+const initialFormState = {
+  title: '',
+  product_group_id: '',
+  product_type_id: '',
+  region_id: '',
+  rating_id: '',
+  rating_group_id: '',
+  image_url: '',
+  release_year: '',
+  description: '',
+  is_active: true,
+  attributes: {}
+};
 
 const NewAddProductModal = ({ 
   show, 
@@ -22,7 +36,7 @@ const NewAddProductModal = ({
   attributes = [],
   attributeValues = {},
 }) => {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState(initialFormState);
   const [loading, setLoading] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [warning, setWarning] = useState('');
@@ -33,76 +47,78 @@ const NewAddProductModal = ({
 
   useEffect(() => {
     if (show) {
-      //console.group('Modal Data');
-      //console.log('Product Groups:', productGroups);
-      //console.log('Product Types:', productTypes);
-      //console.log('Regions:', regions);
-      //console.log('Rating Groups:', availableRatingGroups);
-      //console.log('Ratings:', availableRatings);
-      //console.log('Attributes:', attributes);
-      //console.log('Attribute Values:', attributeValues);
-      //console.groupEnd();
+      // Reset form state when modal opens
+      setFormData(initialFormState);
+      setFilteredAttributes([]);
+      setHasSubmitted(false);
+      
+      // Focus the name input after a short delay
+      setTimeout(() => {
+        if (nameInputRef.current) {
+          nameInputRef.current.focus();
+        }
+      }, 100);
     }
-  }, [show, productGroups, productTypes, regions, availableRatingGroups, availableRatings, attributes, attributeValues]);
+  }, [show]);
 
   useEffect(() => {
     const fetchAttributes = async () => {
       if (!formData.product_group_id || !formData.product_type_id) {
-        //console.log('Skipping attribute fetch - need both product group and type selected');
+        console.log('Missing required selections:', {
+          group: formData.product_group_id,
+          type: formData.product_type_id
+        });
         setFilteredAttributes([]);
-        setFormData(prev => ({
-          ...prev,
-          attributes: {}
-        }));
         return;
       }
 
-      //console.log('Fetching attributes with current values:', {
-      //  productGroupId: formData.product_group_id,
-      //  productTypeId: formData.product_type_id
-      //});
-
       try {
+        console.log('Fetching attributes for:', {
+          group: formData.product_group_id,
+          type: formData.product_type_id
+        });
+
         const response = await axios.get('http://localhost:5000/api/attributes', {
           params: { 
             scope: 'product',
-            productGroupId: formData.product_group_id,
-            productTypeId: formData.product_type_id,
-            sortOrder: 'asc'
+            is_active: true
           }
         });
 
-        //console.log('Fetched attributes:', response.data.data);
+        console.log('Raw attributes from API:', response.data.data);
         
         const filteredAttrs = (response.data.data || []).filter(attr => {
-          const matchesGroup = !attr.product_group_ids || 
-            attr.product_group_ids.length === 0 || 
-            attr.product_group_ids.includes(Number(formData.product_group_id));
+          const groupIds = JSON.parse(attr.product_group_ids || '[]');
+          const typeIds = JSON.parse(attr.product_type_ids || '[]');
 
-          const matchesType = !attr.product_type_ids || 
-            attr.product_type_ids.length === 0 || 
-            attr.product_type_ids.includes(Number(formData.product_type_id));
+          console.log('Checking attribute:', {
+            name: attr.name,
+            groupIds,
+            typeIds,
+            selectedGroup: Number(formData.product_group_id),
+            selectedType: Number(formData.product_type_id),
+            matchesGroup: groupIds.length === 0 || groupIds.includes(Number(formData.product_group_id)),
+            matchesType: typeIds.length === 0 || typeIds.includes(Number(formData.product_type_id))
+          });
 
-          return matchesGroup && matchesType;
+          const matchesGroup = groupIds.length === 0 || 
+            groupIds.includes(Number(formData.product_group_id));
+
+          const matchesType = typeIds.length === 0 || 
+            typeIds.includes(Number(formData.product_type_id));
+
+          return matchesGroup && matchesType && attr.is_active === 1;
         });
 
-        //console.log('Filtered attributes:', filteredAttrs);
+        console.log('Filtered attributes:', filteredAttrs);
         setFilteredAttributes(filteredAttrs);
 
-        const newAttributeValues = {};
-        filteredAttrs.forEach(attr => {
-          if (attr.default_value) {
-            newAttributeValues[attr.id] = attr.default_value;
-          }
+        // Debug render conditions
+        console.log('Render conditions:', {
+          hasActiveAttributes: filteredAttrs.length > 0,
+          filteredAttributesLength: filteredAttrs.length,
+          showValue: true
         });
-        
-        setFormData(prev => ({
-          ...prev,
-          attributes: {
-            ...prev.attributes,
-            ...newAttributeValues
-          }
-        }));
 
       } catch (err) {
         console.error('Failed to fetch attributes:', err);
@@ -111,6 +127,21 @@ const NewAddProductModal = ({
     };
 
     fetchAttributes();
+  }, [formData.product_group_id, formData.product_type_id]);
+
+  useEffect(() => {
+    console.group('Product Group/Type Change');
+    console.log('Selected Group:', formData.product_group_id);
+    console.log('Selected Type:', formData.product_type_id);
+    console.log('Available Attributes:', attributes);
+    console.log('Filtered Attributes:', attributes.filter(attr => {
+      const groupIds = attr.product_group_ids ? JSON.parse(attr.product_group_ids) : [];
+      const typeIds = attr.product_type_ids ? JSON.parse(attr.product_type_ids) : [];
+      const matchesGroup = !groupIds.length || groupIds.includes(formData.product_group_id);
+      const matchesType = !typeIds.length || typeIds.includes(formData.product_type_id);
+      return attr.is_active && matchesGroup && matchesType;
+    }));
+    console.groupEnd();
   }, [formData.product_group_id, formData.product_type_id]);
 
   const handleInputChange = (e) => {
@@ -225,6 +256,13 @@ const NewAddProductModal = ({
   const filteredRatings = availableRatings.filter(rating => 
     rating.rating_group_id === formData.rating_group_id
   );
+
+  const hasActiveAttributes = filteredAttributes.length > 0;
+  console.log('Before render:', {
+    hasActiveAttributes,
+    filteredAttributesLength: filteredAttributes.length,
+    attributeValues: formData.attributes,
+  });
 
   return (
     <BaseModal 
@@ -366,13 +404,47 @@ const NewAddProductModal = ({
                 </Row>
               </div>
 
-              <AttributesSection 
-                show={filteredAttributes.length > 0}
-                attributes={filteredAttributes}
-                attributeValues={formData.attributes || {}}
-                handleAttributeChange={handleAttributeChange}
-                touched={hasSubmitted}
-              />
+              {console.log('hasActiveAttributes:', hasActiveAttributes)}
+              {hasActiveAttributes && (
+                <div className={`attributes-section mb-3 ${hasActiveAttributes ? 'show' : ''}`}>
+                  <h5>Product Attributes</h5>
+                  <div className="card">
+                    <div className="card-header">
+                      <h6 className="mb-0">Available Attributes</h6>
+                    </div>
+                    <div className="card-body">
+                      <Row>
+                        {filteredAttributes.map(attribute => {
+                          // Ensure we have valid arrays
+                          const groupIds = Array.isArray(attribute.product_group_ids) 
+                            ? attribute.product_group_ids 
+                            : JSON.parse(attribute.product_group_ids || '[]');
+                          
+                          const typeIds = Array.isArray(attribute.product_type_ids)
+                            ? attribute.product_type_ids
+                            : JSON.parse(attribute.product_type_ids || '[]');
+
+                          return (
+                            <Col md={3} key={attribute.id} className="mb-3">
+                              <ProductAttributeBox
+                                attribute={{
+                                  ...attribute,
+                                  product_group_ids: groupIds,
+                                  product_type_ids: typeIds
+                                }}
+                                value={formData.attributes[attribute.id]}
+                                onChange={handleAttributeChange}
+                                touched={hasSubmitted}
+                                isInvalid={attribute.is_required && !formData.attributes[attribute.id]}
+                              />
+                            </Col>
+                          );
+                        })}
+                      </Row>
+                    </div>
+                  </div>
+                </div>
+              )}
             </Col>
           </Row>
         </BaseModalBody>

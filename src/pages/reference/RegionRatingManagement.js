@@ -555,7 +555,7 @@ const RegionRatingManagement = () => {
       <Toaster position="top-right" />
       
       <PageHeader>
-        <PageHeader.Icon color="#ffc107">
+        <PageHeader.Icon color="#90CAF9">
           <FaGlobe />
         </PageHeader.Icon>
         <PageHeader.Title>
@@ -564,6 +564,9 @@ const RegionRatingManagement = () => {
         <PageHeader.Actions>
           {/* Add actions if needed */}
         </PageHeader.Actions>
+        <PageHeader.TitleSmall>
+          Configure regions and their associated rating systems
+        </PageHeader.TitleSmall>
       </PageHeader>
 
       <Row className="g-4">

@@ -20,3 +20,35 @@
 .main-content {
   /* Your custom styles */
 } 
+
+.page-container {
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Ensure PageHeader fills width */
+.page-header-wrapper {
+  width: 100%;
+}
+
+.page-header {
+  width: 100%;
+}
+
+.page-header-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;  /* Change from space-between to flex-start */
+}
+
+/* Ensure title section takes up space but actions remain right-aligned */
+.page-header-title {
+  flex: 1;
+  margin-right: auto;
+}
+
+.page-header-actions {
+  margin-left: auto;
+} 

@@ -19,6 +19,9 @@ router.post('/', (req, res) => {
     is_active
   } = req.body;
 
+  const formattedGroupIds = JSON.stringify(product_group_ids || []);
+  const formattedTypeIds = JSON.stringify(product_type_ids || []);
+
   const sql = `
     INSERT INTO attributes (
       name,
@@ -44,8 +47,8 @@ router.post('/', (req, res) => {
     use_image ? 1 : 0,
     allowed_values || '',
     default_value || '',
-    product_group_ids ? JSON.stringify(product_group_ids) : null,
-    product_type_ids ? JSON.stringify(product_type_ids) : null,
+    formattedGroupIds,
+    formattedTypeIds,
     is_active ? 1 : 0
   ];
 

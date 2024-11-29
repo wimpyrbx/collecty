@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaTable, FaThLarge, FaSearch, FaSort, FaGamepad, FaDesktop, FaKeyboard, FaFlag, FaCompactDisc, FaEdit, FaTrashAlt, FaBox, FaPlus } from 'react-icons/fa';
+import { FaTable, FaThLarge, FaSearch, FaSort, FaGamepad, FaDesktop, FaKeyboard, FaFlag, FaCompactDisc, FaEdit, FaTrashAlt, FaBox, FaPlus, FaDatabase } from 'react-icons/fa';
 import { Badge, OverlayTrigger, Tooltip, Button } from 'react-bootstrap';
 import CustomTableCell from '../../components/Table/CustomTableCell';
 import { FaEuroSign, FaDollarSign, FaYenSign } from 'react-icons/fa';
@@ -103,8 +103,9 @@ const ProductList = () => {
           }),
           axios.get('http://localhost:5000/api/attributes', {
             params: { 
-              scope: 'product',
-              sortOrder: 'asc'
+              sortOrder: 'asc',
+              is_active: true,  // Only get active attributes
+              scope: 'product'
             }
           }),
           axios.get('http://localhost:5000/api/ratings', {
@@ -243,19 +244,21 @@ const ProductList = () => {
 
   return (
     <div className="page-container">
-      <PageHeader>
+      <PageHeader color="#66BB6A">
         <PageHeader.Icon>
-          <FaBox />
+          <FaDatabase />
         </PageHeader.Icon>
         <PageHeader.Title>
           Products
         </PageHeader.Title>
         <PageHeader.Actions>
-          <Button variant="light" onClick={handleAddClick}>
-            <FaPlus className="me-2" />
-            Add Product
+          <Button variant="light" onClick={() => setShowAddModal(true)}>
+            <FaPlus className="me-2" /> Add Product
           </Button>
         </PageHeader.Actions>
+        <PageHeader.TitleSmall>
+          Manage your product catalog and their attributes
+        </PageHeader.TitleSmall>
       </PageHeader>
 
       {/* Filters Section */}
@@ -464,39 +467,21 @@ const ProductList = () => {
                     ) : '-'}
                   </td>
                   <td>
-                    {product.attributes && Object.entries(product.attributes).length > 0 ? (
-                      <div className="attributes-container">
-                        {/* Text attributes */}
-                        <div className="flex-grow-1">
-                          {Object.entries(product.attributes).map(([key, value]) => {
-                            const attribute = attributes.find(a => a.name === key);
-                            if (!attribute || attribute.use_image) return null;
-                            
-                            return (
-                              <div key={key} className="attribute-row">
-                                <AttributeDisplay 
-                                  attribute={attribute} 
-                                  value={value} 
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                        {/* Image attributes in vertical stack */}
-                        <div className="attribute-images">
-                          {Object.entries(product.attributes).map(([key, value]) => {
-                            const attribute = attributes.find(a => a.name === key);
-                            if (!attribute || !attribute.use_image) return null;
-                            
-                            return (
-                              <AttributeDisplay 
-                                key={key}
-                                attribute={attribute} 
-                                value={value} 
-                              />
-                            );
-                          })}
-                        </div>
+                    {product.attributes ? (
+                      <div className="d-flex flex-column gap-2">
+                        {Object.entries(product.attributes).map(([key, value]) => {
+                          const attribute = attributes.find(a => a.name === key);
+                          // Skip if attribute not found or not active
+                          if (!attribute || !attribute.is_active) return null;
+                          
+                          return (
+                            <AttributeDisplay 
+                              key={key}
+                              attribute={attribute} 
+                              value={value} 
+                            />
+                          );
+                        })}
                       </div>
                     ) : '-'}
                   </td>

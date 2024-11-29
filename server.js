@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json');
+//const swaggerUi = require('swagger-ui-express');
+//const swaggerDocument = require('./swagger.json');
 const db = require('./db');
 
 const app = express();
@@ -15,11 +15,11 @@ app.use(express.json());
 app.use('/assets', express.static('public/assets'));
 
 // Swagger UI setup
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-  explorer: true,
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: "Collecty API Documentation"
-}));
+//app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+//  explorer: true,
+//  customCss: '.swagger-ui .topbar { display: none }',
+//  customSiteTitle: "Collecty API Documentation"
+//}));
 
 // Products
 app.use('/api/products', require('./api/products/get'));

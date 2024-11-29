@@ -3,70 +3,46 @@
   "info": {
     "title": "Collecty API",
     "version": "1.0.0",
-    "description": "API documentation for the Collecty project"
+    "description": "API documentation for Collecty - Collection Management System"
   },
   "servers": [
     {
       "url": "http://localhost:5000",
-      "description": "Local server"
+      "description": "Development server"
     }
   ],
   "tags": [
     {
+      "name": "Products",
+      "description": "Product management endpoints"
+    },
+    {
       "name": "Product Groups",
-      "description": "Operations about product groups"
+      "description": "Product group management endpoints"
     },
     {
       "name": "Product Types",
-      "description": "Operations about product types"
+      "description": "Product type management endpoints"
     },
     {
       "name": "Regions",
-      "description": "Operations about regions"
-    },
-    {
-      "name": "Rating Groups",
-      "description": "Operations about rating groups"
+      "description": "Region management endpoints"
     },
     {
       "name": "Ratings",
-      "description": "Operations about ratings"
+      "description": "Rating management endpoints"
     },
     {
-      "name": "Products",
-      "description": "Operations about products"
-    },
-    {
-      "name": "Inventory",
-      "description": "Operations about inventory"
-    },
-    {
-      "name": "Product Attribute Values",
-      "description": "Operations about product attribute values"
-    },
-    {
-      "name": "Inventory Attribute Values",
-      "description": "Operations about inventory attribute values"
-    },
-    {
-      "name": "Pricecharting Prices",
-      "description": "Operations about pricecharting prices"
-    },
-    {
-      "name": "Product Sites",
-      "description": "Operations about product sites"
-    },
-    {
-      "name": "Product Site Links",
-      "description": "Operations about product site links"
+      "name": "Rating Groups",
+      "description": "Rating group management endpoints"
     },
     {
       "name": "Attributes",
-      "description": "Operations about attributes"
+      "description": "Attribute management endpoints"
     },
     {
-      "name": "UI",
-      "description": "Operations about Swagger UI themes"
+      "name": "Product Attributes",
+      "description": "Product attribute value management endpoints"
     }
   ],
   "paths": {
@@ -530,7 +506,6 @@
             "$ref": "#/components/responses/DatabaseError"
           }
         }
-      }
     },
     "/api/rating-groups/{id}": {
       "put": {
@@ -736,125 +711,64 @@
     "/api/products": {
       "get": {
         "tags": ["Products"],
-        "summary": "Get products with optional filters and extended information",
-        "description": "Returns a list of products or a single product with basic or extended information",
+        "summary": "Get all products",
         "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "required": false,
-            "description": "Get a specific product by ID",
-            "schema": {
-              "type": "integer"
-            }
-          },
           {
             "name": "extended",
             "in": "query",
-            "required": false,
-            "description": "Include extended product information",
             "schema": {
-              "type": "boolean",
-              "default": false
-            }
+              "type": "boolean"
+            },
+            "description": "Include extended information"
           },
           {
             "name": "groupId",
             "in": "query",
-            "required": false,
-            "description": "Filter by product group ID",
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "Filter by group ID"
           },
           {
             "name": "typeId",
             "in": "query",
-            "required": false,
-            "description": "Filter by product type ID",
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "Filter by type ID"
           },
           {
             "name": "regionId",
             "in": "query",
-            "required": false,
-            "description": "Filter by region ID",
             "schema": {
               "type": "integer"
-            }
-          },
-          {
-            "name": "sortField",
-            "in": "query",
-            "required": false,
-            "description": "Field to sort by",
-            "schema": {
-              "type": "string",
-              "enum": ["id", "title", "release_year"],
-              "default": "title"
-            }
+            },
+            "description": "Filter by region ID"
           },
           {
             "name": "sortOrder",
             "in": "query",
-            "required": false,
-            "description": "Sort direction",
             "schema": {
               "type": "string",
-              "enum": ["asc", "desc"],
-              "default": "asc"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "description": "Page number (ignored if id is provided)",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "description": "Items per page (ignored if id is provided)",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 10
-            }
+              "enum": ["asc", "desc"]
+            },
+            "description": "Sort direction"
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful operation",
+            "description": "List of products",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "success"
-                    },
+                    "message": { "type": "string" },
                     "data": {
-                      "oneOf": [
-                        {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/Product"
-                          }
-                        },
-                        {
-                          "$ref": "#/components/schemas/Product"
-                        }
-                      ]
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
                     }
                   }
                 }
@@ -862,35 +776,99 @@
             }
           },
           "400": {
-            "description": "Bad request - invalid parameters",
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Products"],
+        "summary": "Create a new product",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/api/products/{id}": {
+      "put": {
+        "tags": ["Products"],
+        "summary": "Update a product",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
                 }
               }
             }
           },
           "404": {
-            "description": "Product not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "Product not found"
-                    }
-                  }
-                }
-              }
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Products"],
+        "summary": "Delete a product",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product deleted"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           }
         }
       }
@@ -1031,30 +1009,10 @@
     "/api/product-attribute-values": {
       "get": {
         "tags": ["Product Attribute Values"],
-        "summary": "Get product attribute values with optional filters",
-        "parameters": [
-          {
-            "name": "productId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "Filter by product ID"
-          },
-          {
-            "name": "attributeId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "Filter by attribute ID"
-          }
-        ],
+        "summary": "Get all product attribute values",
         "responses": {
           "200": {
-            "description": "List of filtered product attribute values",
+            "description": "List of product attribute values",
             "content": {
               "application/json": {
                 "schema": {
@@ -1069,7 +1027,7 @@
         }
       },
       "post": {
-        "tags": ["Product Attribute Values"],
+        "tags": ["Product Attributes"],
         "summary": "Create a new product attribute value",
         "requestBody": {
           "required": true,
@@ -1083,14 +1041,7 @@
         },
         "responses": {
           "201": {
-            "description": "Product attribute value created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductAttributeValue"
-                }
-              }
-            }
+            "description": "Attribute value created"
           }
         }
       }
@@ -2423,110 +2374,104 @@
           }
         }
       }
+    },
+    "/api/product-attributes": {
+      "get": {
+        "tags": ["Product Attributes"],
+        "summary": "Get all product attribute values",
+        "responses": {
+          "200": {
+            "description": "List of product attribute values",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductAttributeValue"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Product Attributes"],
+        "summary": "Create a new product attribute value",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductAttributeValueInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Attribute value created"
+          }
+        }
+      }
+    },
+    "/api/product-attributes/cleanup": {
+      "post": {
+        "tags": ["Product Attributes"],
+        "summary": "Clean up attribute values for a product",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["product_id"],
+                "properties": {
+                  "product_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cleanup completed"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "product_group_id": { "type": "integer" },
+          "product_type_id": { "type": "integer" },
+          "region_id": { "type": "integer" },
+          "rating_id": { "type": "integer" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean" }
+        }
+      },
+      "ProductInput": {
+        "type": "object",
+        "required": ["title", "product_group_id", "product_type_id", "region_id"],
+        "properties": {
+          "title": { "type": "string" },
+          "product_group_id": { "type": "integer" },
+          "product_type_id": { "type": "integer" },
+          "region_id": { "type": "integer" },
+          "rating_id": { "type": "integer" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean", "default": true }
+        }
+      },
       "ProductGroup": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "is_active": {
-            "type": "boolean"
-          }
-        }
-      },
-      "ProductGroupInput": {
-        "type": "object",
-        "required": ["name"],
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "is_active": {
-            "type": "boolean",
-            "default": true
-          }
-        }
-      },
-      "ProductType": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "is_active": {
-            "type": "boolean"
-          }
-        }
-      },
-      "ProductTypeInput": {
-        "type": "object",
-        "required": ["name"],
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "is_active": {
-            "type": "boolean",
-            "default": true
-          }
-        }
-      },
-      "Region": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "is_active": {
-            "type": "boolean"
-          }
-        }
-      },
-      "RegionInput": {
-        "type": "object",
-        "required": ["name"],
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "is_active": {
-            "type": "boolean",
-            "default": true
-          }
-        }
-      },
-      "RatingGroup": {
         "type": "object",
         "properties": {
           "id": { "type": "integer" },
@@ -2535,7 +2480,43 @@
           "is_active": { "type": "boolean" }
         }
       },
-      "RatingGroupInput": {
+      "ProductGroupInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean", "default": true }
+        }
+      },
+      "ProductType": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean" }
+        }
+      },
+      "ProductTypeInput": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean", "default": true }
+        }
+      },
+      "Region": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean" }
+        }
+      },
+      "RegionInput": {
         "type": "object",
         "required": ["name"],
         "properties": {
@@ -2548,201 +2529,41 @@
         "type": "object",
         "properties": {
           "id": { "type": "integer" },
+          "rating_group_id": { "type": "integer" },
           "name": { "type": "string" },
+          "minimum_age": { "type": "integer" },
           "description": { "type": "string" },
           "is_active": { "type": "boolean" }
         }
       },
       "RatingInput": {
         "type": "object",
-        "required": ["name"],
+        "required": ["name", "rating_group_id"],
         "properties": {
           "name": { "type": "string" },
+          "rating_group_id": { "type": "integer" },
+          "minimum_age": { "type": "integer" },
           "description": { "type": "string" },
           "is_active": { "type": "boolean", "default": true }
         }
       },
-      "Product": {
+      "RatingGroup": {
         "type": "object",
         "properties": {
           "id": { "type": "integer" },
-          "product_group_id": { "type": "integer" },
-          "product_type_id": { "type": "integer" },
           "region_id": { "type": "integer" },
-          "rating_id": { "type": "integer", "nullable": true },
-          "pricecharting_id": { "type": "integer", "nullable": true },
-          "title": { "type": "string" },
-          "image_url": { "type": "string", "nullable": true },
-          "release_year": { "type": "integer", "nullable": true },
-          "description": { "type": "string", "nullable": true },
-          "is_active": { "type": "boolean" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
-        }
-      },
-      "ProductInput": {
-        "type": "object",
-        "required": ["name"],
-        "properties": {
           "name": { "type": "string" },
           "description": { "type": "string" },
-          "is_active": { "type": "boolean", "default": true }
+          "is_active": { "type": "boolean" }
         }
       },
-      "Inventory": {
+      "RatingGroupInput": {
         "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "product_id": { "type": "integer" },
-          "barcode": { "type": "string", "nullable": true },
-          "price_override": { "type": "number", "nullable": true },
-          "comment": { "type": "string", "nullable": true },
-          "is_active": { "type": "boolean" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
-        }
-      },
-      "InventoryInput": {
-        "type": "object",
-        "required": ["product_id"],
-        "properties": {
-          "product_id": { "type": "integer" },
-          "barcode": { "type": "string", "nullable": true },
-          "price_override": { "type": "number", "nullable": true },
-          "comment": { "type": "string", "nullable": true },
-          "is_active": { "type": "boolean", "default": true }
-        }
-      },
-      "ProductAttributeValue": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "product_id": { "type": "integer" },
-          "attribute_id": { "type": "integer" },
-          "value": { "type": "string" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
-        }
-      },
-      "ProductAttributeValueInput": {
-        "type": "object",
-        "required": ["product_id", "attribute_id", "value"],
-        "properties": {
-          "product_id": { "type": "integer" },
-          "attribute_id": { "type": "integer" },
-          "value": { "type": "string" }
-        }
-      },
-      "InventoryAttributeValue": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "inventory_id": { "type": "integer" },
-          "attribute_id": { "type": "integer" },
-          "value": { "type": "string" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
-        }
-      },
-      "InventoryAttributeValueInput": {
-        "type": "object",
-        "required": ["inventory_id", "attribute_id", "value"],
-        "properties": {
-          "inventory_id": { "type": "integer" },
-          "attribute_id": { "type": "integer" },
-          "value": { "type": "string" }
-        }
-      },
-      "PricechartingPrice": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "product_id": { "type": "integer" },
-          "loose_usd": { "type": "number", "nullable": true },
-          "cib_usd": { "type": "number", "nullable": true },
-          "new_usd": { "type": "number", "nullable": true },
-          "manual_only_usd": { "type": "number", "nullable": true },
-          "box_only_usd": { "type": "number", "nullable": true },
-          "loose_nok": { "type": "number", "nullable": true },
-          "cib_nok": { "type": "number", "nullable": true },
-          "new_nok": { "type": "number", "nullable": true },
-          "manual_only_nok": { "type": "number", "nullable": true },
-          "box_only_nok": { "type": "number", "nullable": true },
-          "loose_nok_fixed": { "type": "number", "nullable": true },
-          "cib_nok_fixed": { "type": "number", "nullable": true },
-          "new_nok_fixed": { "type": "number", "nullable": true },
-          "manual_only_nok_fixed": { "type": "number", "nullable": true },
-          "box_only_nok_fixed": { "type": "number", "nullable": true },
-          "usd_nok_rate": { "type": "number" },
-          "is_active": { "type": "boolean" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
-        }
-      },
-      "PricechartingPriceInput": {
-        "type": "object",
-        "required": ["product_id", "usd_nok_rate"],
-        "properties": {
-          "product_id": { "type": "integer" },
-          "loose_usd": { "type": "number", "nullable": true },
-          "cib_usd": { "type": "number", "nullable": true },
-          "new_usd": { "type": "number", "nullable": true },
-          "manual_only_usd": { "type": "number", "nullable": true },
-          "box_only_usd": { "type": "number", "nullable": true },
-          "loose_nok": { "type": "number", "nullable": true },
-          "cib_nok": { "type": "number", "nullable": true },
-          "new_nok": { "type": "number", "nullable": true },
-          "manual_only_nok": { "type": "number", "nullable": true },
-          "box_only_nok": { "type": "number", "nullable": true },
-          "loose_nok_fixed": { "type": "number", "nullable": true },
-          "cib_nok_fixed": { "type": "number", "nullable": true },
-          "new_nok_fixed": { "type": "number", "nullable": true },
-          "manual_only_nok_fixed": { "type": "number", "nullable": true },
-          "box_only_nok_fixed": { "type": "number", "nullable": true },
-          "usd_nok_rate": { "type": "number" },
-          "is_active": { "type": "boolean", "default": true }
-        }
-      },
-      "ProductSite": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "name": { "type": "string" },
-          "base_url": { "type": "string" },
-          "description": { "type": "string", "nullable": true },
-          "is_active": { "type": "boolean" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
-        }
-      },
-      "ProductSiteInput": {
-        "type": "object",
-        "required": ["name"],
+        "required": ["name", "region_id"],
         "properties": {
           "name": { "type": "string" },
+          "region_id": { "type": "integer" },
           "description": { "type": "string" },
-          "is_active": { "type": "boolean", "default": true }
-        }
-      },
-      "ProductSiteLink": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "product_id": { "type": "integer" },
-          "site_id": { "type": "integer" },
-          "url_path": { "type": "string" },
-          "is_active": { "type": "boolean" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
-        }
-      },
-      "ProductSiteLinkInput": {
-        "type": "object",
-        "required": ["product_id", "site_id", "url_path"],
-        "properties": {
-          "product_id": { "type": "integer" },
-          "site_id": { "type": "integer" },
-          "url_path": { "type": "string" },
           "is_active": { "type": "boolean", "default": true }
         }
       },
@@ -2760,45 +2581,54 @@
             "type": "string",
             "enum": ["product", "inventory"]
           },
-          "allowed_values": { "type": "string", "nullable": true },
-          "product_type_ids": { "type": "string", "nullable": true },
-          "product_group_ids": { "type": "string", "nullable": true },
+          "allowed_values": { "type": "string" },
+          "product_type_ids": { "type": "string" },
+          "product_group_ids": { "type": "string" },
           "is_required": { "type": "boolean" },
-          "default_value": { "type": "string", "nullable": true },
-          "description": { "type": "string", "nullable": true },
-          "is_active": { "type": "boolean" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
+          "default_value": { "type": "string" },
+          "description": { "type": "string" },
+          "is_active": { "type": "boolean" }
         }
       },
       "AttributeInput": {
         "type": "object",
-        "required": ["name"],
+        "required": ["name", "ui_name", "type", "scope"],
         "properties": {
           "name": { "type": "string" },
+          "ui_name": { "type": "string" },
+          "type": { 
+            "type": "string",
+            "enum": ["boolean", "string", "number", "set"]
+          },
+          "scope": {
+            "type": "string",
+            "enum": ["product", "inventory"]
+          },
+          "allowed_values": { "type": "string" },
+          "product_type_ids": { "type": "string" },
+          "product_group_ids": { "type": "string" },
+          "is_required": { "type": "boolean" },
+          "default_value": { "type": "string" },
           "description": { "type": "string" },
           "is_active": { "type": "boolean", "default": true }
         }
       },
-      "ExtendedProduct": {
+      "ProductAttributeValue": {
         "type": "object",
         "properties": {
           "id": { "type": "integer" },
-          "title": { "type": "string" },
-          "description": { "type": "string", "nullable": true },
-          "product_group_name": { "type": "string" },
-          "product_type_name": { "type": "string" },
-          "region_name": { "type": "string" },
-          "rating_name": { "type": "string", "nullable": true },
-          "rating_group_name": { "type": "string", "nullable": true },
-          "release_year": { "type": "integer", "nullable": true },
-          "attributes": {
-            "type": "object",
-            "additionalProperties": { "type": "string" }
-          },
-          "siteLinks": {
-            "type": "object"
-          }
+          "product_id": { "type": "integer" },
+          "attribute_id": { "type": "integer" },
+          "value": { "type": "string" }
+        }
+      },
+      "ProductAttributeValueInput": {
+        "type": "object",
+        "required": ["product_id", "attribute_id", "value"],
+        "properties": {
+          "product_id": { "type": "integer" },
+          "attribute_id": { "type": "integer" },
+          "value": { "type": "string" }
         }
       }
     },
@@ -2810,10 +2640,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "error": {
-                  "type": "string",
-                  "example": "Invalid input data"
-                }
+                "error": { "type": "string" }
               }
             }
           }
@@ -2826,10 +2653,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "error": {
-                  "type": "string",
-                  "example": "Resource not found"
-                }
+                "error": { "type": "string" }
               }
             }
           }
@@ -2842,10 +2666,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "error": {
-                  "type": "string",
-                  "example": "Database operation failed"
-                }
+                "error": { "type": "string" }
               }
             }
           }

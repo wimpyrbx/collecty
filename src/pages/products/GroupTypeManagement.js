@@ -321,15 +321,18 @@ const GroupTypeManagement = () => {
       <Toaster position="top-right" />
       
       <PageHeader>
-        <PageHeader.Icon color="#ffc107">
+        <PageHeader.Icon color="#64B5F6">
           <FaTags />
         </PageHeader.Icon>
         <PageHeader.Title>
           Groups/Types
         </PageHeader.Title>
         <PageHeader.Actions>
-          {/* Add actions if needed */}
+          {/* Actions are in the sections below */}
         </PageHeader.Actions>
+        <PageHeader.TitleSmall>
+          Manage product categorization with groups and types
+        </PageHeader.TitleSmall>
       </PageHeader>
 
       <Row className="g-4">

@@ -161,7 +161,7 @@ const Attributes = () => {
       />
 
       <PageHeader>
-        <PageHeader.Icon color="#ffc107">
+        <PageHeader.Icon color="#42A5F5">
           <FaCog />
         </PageHeader.Icon>
         <PageHeader.Title>
@@ -170,12 +170,16 @@ const Attributes = () => {
         <PageHeader.Actions>
           <Button 
             variant="light" 
+            className="btn-sm"
             onClick={() => setShowAddModal(true)}
-          >
+            >
             <FaPlus className="me-2" />
             Add Attribute
           </Button>
         </PageHeader.Actions>
+        <PageHeader.TitleSmall>
+          Manage custom attributes for products and inventory items
+        </PageHeader.TitleSmall>
       </PageHeader>
 
       <div className="mb-4">

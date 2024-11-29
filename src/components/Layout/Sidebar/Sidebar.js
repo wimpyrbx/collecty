@@ -1,27 +1,21 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
 import { 
-  FaHome, 
   FaBox, 
   FaTags, 
   FaWarehouse, 
   FaGlobe, 
-  FaStar, 
   FaChartLine, 
   FaTools,
   FaBook,
   FaDatabase,
   FaCog,
-  FaQuestion
+  FaList
 } from 'react-icons/fa';
 import SidebarItem from './SidebarItem';
 import './Sidebar.css';
-import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../BaseModal';
 import ThemeSwitcher from '../../ThemeSwitcher/ThemeSwitcher';
 
 const Sidebar = () => {
-  const [showTestModal, setShowTestModal] = useState(false);
-
   const openSwagger = () => {
     window.open('http://localhost:5000/api-docs', '_blank');
   };
@@ -33,113 +27,62 @@ const Sidebar = () => {
         <ThemeSwitcher />
       </div>
 
-      {/* Test Modal Button */}
-      <button 
-        className="btn btn-link text-white w-100 text-start px-3 py-2"
-        onClick={() => setShowTestModal(true)}
-      >
-        <FaQuestion className="me-2" /> Test Modal
-      </button>
-
-      {/* Test Modal */}
-      <BaseModal 
-        show={showTestModal} 
-        onHide={() => setShowTestModal(false)}
-      >
-        <BaseModalHeader 
-          icon={<FaQuestion />}
-          onHide={() => setShowTestModal(false)}
-        >
-          Test Modal
-        </BaseModalHeader>
-        <BaseModalBody>
-          <p>This is a test modal using the new BaseModal components.</p>
-        </BaseModalBody>
-        <BaseModalFooter
-          onCancel={() => setShowTestModal(false)}
-          onConfirm={() => {
-            alert('Confirmed!');
-            setShowTestModal(false);
-          }}
-        />
-      </BaseModal>
-
       <ul className="sidebar-menu">
-        <SidebarItem to="/" icon={<FaHome />} label="Dashboard" />
-        
-        {/* Products Group */}
+        {/* Dashboard Group */}
         <li className="menu-group">
           <div className="menu-group-title">
-            <FaBox /> Products
+            <FaBox style={{color: '#4CAF50'}} /> Dashboard
           </div>
           <ul>
-            <SidebarItem to="/products" icon={<FaDatabase />} label="List" />
-            <SidebarItem 
-              to="/products/groups-types" 
-              icon={<FaTags />} 
-              label="Groups/Types" 
-            />
-          </ul>
-        </li>
-
-        {/* Inventory Group */}
-        <li className="menu-group">
-          <div className="menu-group-title">
-            <FaWarehouse /> Inventory
-          </div>
-          <ul>
-            <SidebarItem to="/inventory" icon={<FaDatabase />} label="List" />
-          </ul>
-        </li>
-
-        {/* Reference Data Group */}
-        <li className="menu-group">
-          <div className="menu-group-title">
-            <FaCog /> Reference
-          </div>
-          <ul>
-            <SidebarItem 
-              to="/reference/region-ratings" 
-              icon={<FaGlobe />} 
-              label="Regions/Ratings" 
-            />
-            <SidebarItem to="/sites" icon={<FaGlobe />} label="Sites" />
-          </ul>
-        </li>
-
-        {/* Statistics Group */}
-        <li className="menu-group">
-          <div className="menu-group-title">
-            <FaChartLine /> Statistics
-          </div>
-          <ul>
-            <SidebarItem to="/statistics/completion" icon={<FaChartLine />} label="Completion" />
-            <SidebarItem to="/statistics/value" icon={<FaChartLine />} label="Value" />
-          </ul>
-        </li>
-
-        {/* Development Group */}
-        <li className="menu-group">
-          <div className="menu-group-title">
-            <FaTools /> Development
-          </div>
-          <ul>
-            <SidebarItem to="/ui-test" icon={<FaTools />} label="UI Test" />
-            <li>
-              <a href="#" onClick={openSwagger}>
-                <FaBook /> API Docs
-              </a>
-            </li>
+            <SidebarItem to="/products" icon={<FaDatabase style={{color: '#66BB6A'}} />} label="Products" />
+            <SidebarItem to="/inventory" icon={<FaList style={{color: '#81C784'}} />} label="Inventory" />
           </ul>
         </li>
 
         {/* Admin Group */}
         <li className="menu-group">
           <div className="menu-group-title">
-            <FaCog /> Admin
+            <FaCog style={{color: '#2196F3'}} /> Admin
           </div>
           <ul>
-            <SidebarItem to="/attributes" icon={<FaTags />} label="Attributes" />
+            <SidebarItem to="/attributes" icon={<FaTags style={{color: '#42A5F5'}} />} label="Attributes" />
+            <SidebarItem 
+              to="/products/groups-types" 
+              icon={<FaTags style={{color: '#64B5F6'}} />} 
+              label="Groups/Types" 
+            />
+            <SidebarItem 
+              to="/reference/region-ratings" 
+              icon={<FaGlobe style={{color: '#90CAF9'}} />} 
+              label="Regions/Ratings" 
+            />
+            <SidebarItem to="/sites" icon={<FaGlobe style={{color: '#BBDEFB'}} />} label="Sites" />
+          </ul>
+        </li>
+
+        {/* Statistics Group */}
+        <li className="menu-group">
+          <div className="menu-group-title">
+            <FaChartLine style={{color: '#FF9800'}} /> Statistics
+          </div>
+          <ul>
+            <SidebarItem to="/statistics/completion" icon={<FaChartLine style={{color: '#FFA726'}} />} label="Completion" />
+            <SidebarItem to="/statistics/value" icon={<FaChartLine style={{color: '#FFB74D'}} />} label="Value" />
+          </ul>
+        </li>
+
+        {/* Development Group */}
+        <li className="menu-group">
+          <div className="menu-group-title">
+            <FaTools style={{color: '#9C27B0'}} /> Development
+          </div>
+          <ul>
+            <SidebarItem to="/ui-test" icon={<FaTools style={{color: '#AB47BC'}} />} label="UI Test" />
+            <li>
+              <a href="#" onClick={openSwagger}>
+                <FaBook style={{color: '#BA68C8'}} /> API Docs
+              </a>
+            </li>
           </ul>
         </li>
       </ul>

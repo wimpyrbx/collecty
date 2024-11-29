@@ -18,9 +18,11 @@ import {
   FaLightbulb,
   FaMoon,
   FaToggleOn,
-  FaToggleOff
+  FaToggleOff,
+  FaTools
 } from 'react-icons/fa';
 import { Modal, OverlayTrigger, Tooltip as BSTooltip, Popover as BSPopover, Accordion, Carousel } from 'react-bootstrap';
+import PageHeader from '../components/common/PageHeader/PageHeader';
 
 const UITest = () => {
   const [toastVisible, setToastVisible] = useState(false);
@@ -113,6 +115,18 @@ const UITest = () => {
 
   return (
     <div className="container-fluid py-4">
+      <PageHeader>
+        <PageHeader.Icon color="#AB47BC">
+          <FaTools />
+        </PageHeader.Icon>
+        <PageHeader.Title>
+          UI Test
+        </PageHeader.Title>
+        <PageHeader.TitleSmall>
+          Test and preview UI components and features
+        </PageHeader.TitleSmall>
+      </PageHeader>
+      
       <ToastContainer /> {/* Required for react-toastify */}
       
       <h1>UI Components Test Page</h1>

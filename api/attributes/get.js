@@ -3,63 +3,34 @@ const router = express.Router();
 const db = require('../../db');
 
 router.get('/', (req, res) => {
-  const { type, scope, isActive, productTypeId, productGroupId, sortOrder = 'asc' } = req.query;
+  const { sortOrder = 'asc', is_active, scope } = req.query;
+  
   let sql = 'SELECT * FROM attributes WHERE 1=1';
   const params = [];
 
-  if (type) {
-    sql += ' AND type = ?';
-    params.push(type);
+  if (is_active !== undefined) {
+    sql += ' AND is_active = ?';
+    params.push(is_active === 'true' ? 1 : 0);
   }
 
   if (scope) {
     sql += ' AND scope = ?';
     params.push(scope);
   }
-
-  if (isActive !== undefined) {
-    sql += ' AND is_active = ?';
-    params.push(isActive);
-  }
-
-  if (productTypeId) {
-    sql += " AND json_array_length(product_type_ids) > 0 AND product_type_ids LIKE '%' || ? || '%'";
-    params.push(productTypeId);
-  }
-
-  if (productGroupId) {
-    sql += " AND json_array_length(product_group_ids) > 0 AND product_group_ids LIKE '%' || ? || '%'";
-    params.push(productGroupId);
-  }
-
+  
   sql += ` ORDER BY name ${sortOrder.toUpperCase()}`;
+
+  console.log('Attributes Query:', sql, params);  // Debug log
 
   db.all(sql, params, (err, rows) => {
     if (err) {
       res.status(400).json({ error: err.message });
       return;
     }
+    console.log(`Found ${rows.length} attributes`);  // Debug log
     res.json({
       message: 'success',
       data: rows
-    });
-  });
-});
-
-router.get('/:id', (req, res) => {
-  const id = req.params.id;
-  db.get('SELECT * FROM attributes WHERE id = ?', [id], (err, row) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
-    }
-    if (!row) {
-      res.status(404).json({ error: 'Attribute not found' });
-      return;
-    }
-    res.json({
-      message: 'success',
-      data: row
     });
   });
 });

@@ -2,6 +2,11 @@ import React from 'react';
 import './AttributeDisplay.css';
 
 const AttributeDisplay = ({ attribute, value }) => {
+  // If attribute is not active, don't render anything
+  if (!attribute?.is_active) {
+    return null;
+  }
+
   // Don't render if show_in_ui is false
   if (!attribute.show_in_ui) {
     return null;

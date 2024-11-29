@@ -1,16 +1,14 @@
 .attributes-section {
-  max-height: 0;
+  display: none;
   opacity: 0;
-  overflow: hidden;
-  transition: all 0.3s ease-in-out;
-  transform-origin: top;
-  transform: scaleY(0);
+  transition: opacity 0.3s ease-out;
+  border: 1px solid transparent;
 }
 
 .attributes-section.show {
-  max-height: 2000px;
+  display: block;
   opacity: 1;
-  transform: scaleY(1);
+  border-color: #ddd;
 }
 
 .attribute-card {
