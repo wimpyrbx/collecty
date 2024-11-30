@@ -1,0 +1,15 @@
+.inventory-attribute-box {
+  margin-bottom: 1rem;
+}
+
+.inventory-attribute-box .form-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.inventory-attribute-box .form-text {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+} 

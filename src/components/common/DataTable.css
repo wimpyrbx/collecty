@@ -1,0 +1,12 @@
+.data-table-wrapper {
+  overflow-x: auto;
+}
+
+.data-table-wrapper table {
+  margin-bottom: 0;
+}
+
+.data-table-wrapper th {
+  white-space: nowrap;
+  background: var(--bs-gray-100);
+} 
