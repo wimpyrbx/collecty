@@ -575,7 +575,7 @@ const NewAddProductModal = ({
                             : JSON.parse(attribute.product_type_ids || '[]');
 
                           return (
-                            <Col md={4} key={attribute.id} className="mb-3">
+                            <Col md={4} key={attribute.id}>
                               <AttributeBox
                                 attribute={{
                                   ...attribute,

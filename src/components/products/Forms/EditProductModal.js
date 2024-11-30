@@ -50,6 +50,17 @@ const NewEditProductModal = ({
   const fileInputRef = useRef(null);
   const [formRef] = useState(React.createRef());
 
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!show) {
+      setFormData(initialFormState);
+      setFilteredAttributes([]);
+      setPreviewUrl('');
+      setHasSubmitted(false);
+      setWarning('');
+    }
+  }, [show]);
+
   // Fetch product data when modal opens
   useEffect(() => {
     const fetchProduct = async () => {
@@ -111,23 +122,17 @@ const NewEditProductModal = ({
   }, [show, productId, availableRatings]);
 
   // Modified fetchAttributes to accept saved attribute values
-  const fetchAttributes = async (groupId, typeId, savedValues = {}) => {
-    if (!groupId || !typeId) {
-      setFilteredAttributes([]);
-      return;
-    }
-
+  const fetchAttributes = async (groupId, typeId, existingValues = {}) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/attributes', {
-        params: { 
-          scope: 'product',
-          is_active: true
-        }
-      });
-      
-      const filteredAttrs = (response.data.data || []).filter(attr => {
-        const groupIds = JSON.parse(attr.product_group_ids || '[]');
-        const typeIds = JSON.parse(attr.product_type_ids || '[]');
+      // Filter attributes based on group and type
+      const filtered = attributes.filter(attr => {
+        const groupIds = Array.isArray(attr.product_group_ids) 
+          ? attr.product_group_ids 
+          : JSON.parse(attr.product_group_ids || '[]');
+        
+        const typeIds = Array.isArray(attr.product_type_ids)
+          ? attr.product_type_ids
+          : JSON.parse(attr.product_type_ids || '[]');
 
         const matchesGroup = groupIds.length === 0 || 
           groupIds.includes(Number(groupId));
@@ -135,33 +140,32 @@ const NewEditProductModal = ({
         const matchesType = typeIds.length === 0 || 
           typeIds.includes(Number(typeId));
 
-        return matchesGroup && matchesType && attr.is_active === 1;
+        return matchesGroup && matchesType;
       });
 
-      setFilteredAttributes(filteredAttrs);
+      setFilteredAttributes(filtered);
 
-      // Map the saved values to the filtered attributes
-      const attributeValues = {};
-      filteredAttrs.forEach(attr => {
-        // Map attribute names to their IDs
-        if (attr.name === 'developerName' && savedValues.developerName) {
-          attributeValues[attr.id] = savedValues.developerName;
+      // Preserve existing values for attributes that are still valid
+      const updatedAttributes = {};
+      filtered.forEach(attr => {
+        // First check if there's an existing value in the current form
+        if (formData.attributes && formData.attributes[attr.id] !== undefined) {
+          updatedAttributes[attr.id] = formData.attributes[attr.id];
         }
-        if (attr.name === 'publisherName' && savedValues.publisherName) {
-          attributeValues[attr.id] = savedValues.publisherName;
+        // Then check if there's a value in the existingValues parameter
+        else if (existingValues[attr.id] !== undefined) {
+          updatedAttributes[attr.id] = existingValues[attr.id];
         }
-        if (attr.name === 'gameGenre' && savedValues.gameGenre) {
-          attributeValues[attr.id] = savedValues.gameGenre;
-        }
-        if (attr.name === 'isKinect' && savedValues.isKinect) {
-          attributeValues[attr.id] = savedValues.isKinect;
+        // Finally check if there's a value in the attributeValues prop
+        else if (attributeValues[attr.id] !== undefined) {
+          updatedAttributes[attr.id] = attributeValues[attr.id];
         }
       });
-      
-      // Update form data with the mapped attribute values
+
+      // Update form data with the preserved attribute values
       setFormData(prev => ({
         ...prev,
-        attributes: attributeValues
+        attributes: updatedAttributes
       }));
 
     } catch (err) {
@@ -386,6 +390,17 @@ const NewEditProductModal = ({
   const handleProductGroupChange = (e) => {
     const groupId = e.target.value;
     
+    if (!groupId) {
+      // Clear attributes if group is cleared
+      setFormData(prev => ({
+        ...prev,
+        product_group_id: '',
+        attributes: {}
+      }));
+      setFilteredAttributes([]);
+      return;
+    }
+
     // Keep only the attributes that are still valid for the new group
     const validAttributeIds = filteredAttributes
       .filter(attr => {
@@ -407,10 +422,26 @@ const NewEditProductModal = ({
       product_group_id: groupId,
       attributes: updatedAttributes
     }));
+
+    // Fetch new attributes if we have both group and type
+    if (groupId && formData.product_type_id) {
+      fetchAttributes(groupId, formData.product_type_id, updatedAttributes);
+    }
   };
 
   const handleProductTypeChange = (e) => {
     const typeId = e.target.value;
+    
+    if (!typeId) {
+      // Clear attributes if type is cleared
+      setFormData(prev => ({
+        ...prev,
+        product_type_id: '',
+        attributes: {}
+      }));
+      setFilteredAttributes([]);
+      return;
+    }
     
     // Keep only the attributes that are still valid for the new type
     const validAttributeIds = filteredAttributes
@@ -433,6 +464,11 @@ const NewEditProductModal = ({
       product_type_id: typeId,
       attributes: updatedAttributes
     }));
+
+    // Fetch new attributes if we have both group and type
+    if (typeId && formData.product_group_id) {
+      fetchAttributes(formData.product_group_id, typeId, updatedAttributes);
+    }
   };
 
   const handleDrag = (e) => {
@@ -548,7 +584,7 @@ const NewEditProductModal = ({
           icon={<FaEdit />}
           onHide={onHide}
         >
-          Edit Product
+          Edit: {formData.title}
         </BaseModalHeader>
 
         <BaseModalBody>
@@ -727,7 +763,7 @@ const NewEditProductModal = ({
                           : JSON.parse(attribute.product_type_ids || '[]');
 
                         return (
-                          <Col md={4} key={attribute.id} className="mb-3">
+                          <Col md={4} key={attribute.id}>
                             <AttributeBox
                               attribute={{
                                 ...attribute,

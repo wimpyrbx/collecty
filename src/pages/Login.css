@@ -1,11 +1,16 @@
 .login-wrapper {
+    --login-bg-color: #1a1a1a;
+    --login-text-color: #ffffff;
+    --login-link-color: #61dafb;
+    
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     padding: 20px;
-    background-color: #1a1a1a;
+    background-color: var(--login-bg-color);
+    color: var(--login-text-color);
     overflow: hidden;
   }
   
@@ -71,11 +76,11 @@
     margin-top: 30px;
   }
   
-  .form-group {
+  .login-form .form-group {
     margin-bottom: 20px;
   }
   
-  .input-group {
+  .login-form .input-group {
     border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     overflow: hidden;
@@ -83,12 +88,12 @@
     background: rgba(0, 0, 0, 0.2);
   }
   
-  .input-group:focus-within {
+  .login-form .input-group:focus-within {
     border-color: var(--bs-primary);
     box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), 0.15);
   }
   
-  .input-group-text {
+  .login-form .input-group-text {
     background: transparent;
     border: none;
     color: #adb5bd;
@@ -96,7 +101,7 @@
     font-size: 1.1rem;
   }
   
-  .form-control {
+  .login-form .form-control {
     border: none;
     padding: 15px;
     background: transparent;
@@ -105,13 +110,13 @@
     height: auto;
   }
   
-  .form-control:focus {
+  .login-form .form-control:focus {
     background: transparent;
     color: #fff;
     box-shadow: none;
   }
   
-  .form-control::placeholder {
+  .login-form .form-control::placeholder {
     color: #6c757d;
   }
   

@@ -1,12 +1,14 @@
 .base-modal .modal-content {
   border: none;
+  border-radius: 0;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
 .base-modal .modal-header {
   background-color: var(--bs-primary);
   color: white;
-  border-bottom: none;
+  border: none;
+  border-radius: 0;
   padding: 1rem 1.5rem;
   display: flex;
   justify-content: space-between;
@@ -62,7 +64,8 @@
 
 .base-modal .modal-footer {
   background-color: var(--bs-primary);
-  border-top: none;
+  border: none;
+  border-radius: 0;
   padding: 1rem 1.5rem;
 }
 

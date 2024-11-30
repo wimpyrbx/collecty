@@ -4,10 +4,12 @@
 
 .new-product-modal .section-title {
   font-weight: 600;
-  color: var(--bs-primary);
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--bs-gray-200);
+  color: white;
+  margin: 0;
+  padding: 0.4rem 0.75rem;
+  background-color: var(--bs-primary);
+  border-radius: 0;
+  font-size: 0.8rem;
 }
 
 .new-product-modal .image-section {
@@ -152,14 +154,30 @@
 }
 
 .attributes-section {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: all 0.3s ease-in-out;
+  display: none;
 }
 
 .attributes-section.show {
-  max-height: 1000px;
-  opacity: 1;
-  margin-top: 1rem;
-} 
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.new-product-modal .attribute-card {
+  background-color: var(--bs-gray-100);
+  border: 1px solid var(--bs-gray-300);
+  border-top: none;
+  padding: 0.75rem;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.new-product-modal .attribute-card:first-child {
+  margin-top: 0;
+}
+
+.attributes-section .section-title h5 {
+  font-size: 0.8rem;
+  margin: 0;
+  font-weight: 600;
+}
+ 

@@ -1,19 +1,4 @@
 BEGIN TRANSACTION;
-CREATE TABLE IF NOT EXISTS "users" (
-	"id"	INTEGER,
-	"username"	TEXT NOT NULL CHECK(length("username") > 0) UNIQUE,
-	"password"	TEXT NOT NULL CHECK(length("password") > 0),
-	"is_active"	BOOLEAN NOT NULL DEFAULT 1,
-	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	PRIMARY KEY("id" AUTOINCREMENT)
-);
-CREATE TRIGGER update_users_timestamp 
-   AFTER UPDATE ON users
-BEGIN
-   UPDATE users SET updated_at = CURRENT_TIMESTAMP
-   WHERE id = NEW.id;
-END;
 CREATE TABLE IF NOT EXISTS "product_groups" (
 	"id"	INTEGER,
 	"name"	TEXT NOT NULL CHECK(length("name") > 0) UNIQUE,
@@ -74,6 +59,7 @@ CREATE TABLE IF NOT EXISTS "products" (
 	"rating_id"	INTEGER,
 	"pricecharting_id"	INTEGER,
 	"title"	TEXT NOT NULL CHECK(length("title") > 0),
+	"variant"	TEXT,
 	"release_year"	INTEGER CHECK("release_year" BETWEEN 1950 AND 2050),
 	"description"	TEXT,
 	"is_active"	BOOLEAN NOT NULL DEFAULT 1,
@@ -83,7 +69,7 @@ CREATE TABLE IF NOT EXISTS "products" (
 	FOREIGN KEY("rating_id") REFERENCES "ratings"("id") ON DELETE RESTRICT,
 	FOREIGN KEY("product_group_id") REFERENCES "product_groups"("id") ON DELETE RESTRICT,
 	FOREIGN KEY("product_type_id") REFERENCES "product_types"("id") ON DELETE RESTRICT,
-	UNIQUE("title","product_group_id","region_id"),
+	UNIQUE("title","variant","product_group_id","region_id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 CREATE TABLE IF NOT EXISTS "inventory" (
@@ -106,8 +92,8 @@ CREATE TABLE IF NOT EXISTS "product_attribute_values" (
 	"value"	TEXT NOT NULL,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY("attribute_id") REFERENCES "attributes"("id") ON DELETE RESTRICT,
 	FOREIGN KEY("product_id") REFERENCES "products"("id") ON DELETE RESTRICT,
+	FOREIGN KEY("attribute_id") REFERENCES "attributes"("id") ON DELETE RESTRICT,
 	UNIQUE("product_id","attribute_id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
@@ -118,8 +104,8 @@ CREATE TABLE IF NOT EXISTS "inventory_attribute_values" (
 	"value"	TEXT NOT NULL,
 	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY("inventory_id") REFERENCES "inventory"("id") ON DELETE RESTRICT,
 	FOREIGN KEY("attribute_id") REFERENCES "attributes"("id") ON DELETE RESTRICT,
+	FOREIGN KEY("inventory_id") REFERENCES "inventory"("id") ON DELETE RESTRICT,
 	UNIQUE("inventory_id","attribute_id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
@@ -191,6 +177,13 @@ CREATE TABLE IF NOT EXISTS "attributes" (
 	"use_image"	BOOLEAN NOT NULL DEFAULT 0,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
+CREATE TABLE IF NOT EXISTS "users" (
+	"id"	INTEGER,
+	"username"	TEXT NOT NULL UNIQUE,
+	"password"	TEXT NOT NULL,
+	"created_at"	DATETIME DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
 INSERT INTO "product_groups" VALUES (1,'Xbox 360','Microsoft Xbox 360 gaming console and related items',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "product_groups" VALUES (2,'PlayStation 3','Sony Playstation 3 gaming console and related items',1,'2024-11-23 13:26:58','2024-11-29 01:44:42');
 INSERT INTO "product_groups" VALUES (3,'PlayStation 4','Sony PlayStation 4 gaming console and related items',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
@@ -238,42 +231,15 @@ INSERT INTO "ratings" VALUES (32,2,'ESRB EC',NULL,NULL,1,'2024-11-29 01:31:49','
 INSERT INTO "ratings" VALUES (33,2,'ESRB E10',NULL,NULL,1,'2024-11-29 01:31:55','2024-11-29 01:37:23');
 INSERT INTO "ratings" VALUES (34,2,'ESRB M',NULL,NULL,1,'2024-11-29 01:32:01','2024-11-29 01:32:01');
 INSERT INTO "ratings" VALUES (35,1,'PEGI 7',NULL,NULL,1,'2024-11-29 01:32:37','2024-11-29 01:32:37');
-INSERT INTO "products" VALUES (48,1,1,1,3,NULL,'Air Conflicts: Secret Wars',2011,NULL,1,'2024-11-29 23:52:04','2024-11-29 23:59:20');
-INSERT INTO "products" VALUES (49,1,1,1,1,NULL,'2014 FIFA World Cup: Brazil',2013,NULL,1,'2024-11-30 00:34:53','2024-11-30 01:14:53');
-INSERT INTO "products" VALUES (50,1,1,1,5,NULL,'Afro Samurai',2009,NULL,1,'2024-11-30 00:37:25','2024-11-30 01:13:46');
-INSERT INTO "product_attribute_values" VALUES (233,48,46,'Games Farm','2024-11-29 23:59:20','2024-11-29 23:59:20');
-INSERT INTO "product_attribute_values" VALUES (234,48,47,'bitComposer','2024-11-29 23:59:20','2024-11-29 23:59:20');
-INSERT INTO "product_attribute_values" VALUES (235,48,48,'0','2024-11-29 23:59:20','2024-11-29 23:59:20');
-INSERT INTO "product_attribute_values" VALUES (236,48,49,' Aircraft','2024-11-29 23:59:20','2024-11-29 23:59:20');
-INSERT INTO "product_attribute_values" VALUES (269,50,46,'Namco Bandai Games','2024-11-30 01:13:46','2024-11-30 01:13:46');
-INSERT INTO "product_attribute_values" VALUES (270,50,47,'Namco Bandai Games','2024-11-30 01:13:46','2024-11-30 01:13:46');
-INSERT INTO "product_attribute_values" VALUES (271,50,48,'0','2024-11-30 01:13:46','2024-11-30 01:13:46');
-INSERT INTO "product_attribute_values" VALUES (272,50,49,' Adventure','2024-11-30 01:13:46','2024-11-30 01:13:46');
-INSERT INTO "product_attribute_values" VALUES (273,49,46,'Electronic Arts','2024-11-30 01:14:53','2024-11-30 01:14:53');
-INSERT INTO "product_attribute_values" VALUES (274,49,47,'Electronic Arts','2024-11-30 01:14:53','2024-11-30 01:14:53');
-INSERT INTO "product_attribute_values" VALUES (275,49,48,'0','2024-11-30 01:14:53','2024-11-30 01:14:53');
-INSERT INTO "product_attribute_values" VALUES (276,49,49,' Soccer','2024-11-30 01:14:53','2024-11-30 01:14:53');
-INSERT INTO "pricecharting_prices" VALUES (1,1,10.0,20.0,100.0,5.0,5.0,100.0,200.0,1000.0,50.0,50.0,99.0,199.0,999.0,49.0,49.0,10.0,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "pricecharting_prices" VALUES (2,2,10.0,20.0,100.0,5.0,5.0,100.0,200.0,1000.0,50.0,50.0,99.0,199.0,999.0,49.0,49.0,10.0,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "pricecharting_prices" VALUES (3,3,20.0,30.0,60.0,NULL,5.0,200.0,300.0,600.0,NULL,50.0,199.0,299.0,599.0,NULL,49.0,10.0,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "pricecharting_prices" VALUES (4,4,15.0,25.0,80.0,5.0,5.0,150.0,250.0,800.0,50.0,50.0,149.0,249.0,799.0,49.0,49.0,10.0,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "pricecharting_prices" VALUES (5,7,50.0,100.0,200.0,10.0,20.0,500.0,1000.0,2000.0,100.0,200.0,499.0,999.0,1999.0,99.0,199.0,10.0,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "pricecharting_prices" VALUES (6,8,60.0,120.0,250.0,10.0,20.0,600.0,1200.0,2500.0,100.0,200.0,599.0,1199.0,2499.0,99.0,199.0,10.0,1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "product_sites" VALUES (1,'PriceCharting','https://www.pricecharting.com','Video game price tracking website',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "product_sites" VALUES (2,'MobyGames','https://www.mobygames.com','Video game database',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "product_sites" VALUES (3,'GameFAQs','https://gamefaqs.gamespot.com','Video game guides and community',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "product_site_links" VALUES (1,1,1,'/xbox-360/halo-3-pal',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "product_site_links" VALUES (2,1,2,'/game/4923/halo-3',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "product_site_links" VALUES (3,2,1,'/xbox-360/halo-3-ntsc',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "product_site_links" VALUES (4,2,2,'/game/4923/halo-3',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "product_site_links" VALUES (5,4,1,'/wii/wii-sports-pal',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "product_site_links" VALUES (6,4,2,'/game/3847/wii-sports',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "product_site_links" VALUES (7,7,1,'/xbox-360/elite-console',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
-INSERT INTO "product_site_links" VALUES (8,8,1,'/playstation-3/slim-console',1,'2024-11-23 13:26:58','2024-11-23 13:26:58');
 INSERT INTO "attributes" VALUES (46,'developerName','Developer','string','product','','[1]','[4,5,2,3,1]',0,'',NULL,1,'2024-11-29 13:16:25','2024-11-29 13:16:25',1,0,0);
 INSERT INTO "attributes" VALUES (47,'publisherName','Publisher','string','product','','[1]','[4,5,2,3,1]',0,'',NULL,1,'2024-11-29 13:16:40','2024-11-29 13:16:40',1,0,0);
 INSERT INTO "attributes" VALUES (48,'isKinect','Kinect','boolean','product','','[1]','[1]',1,'0',NULL,1,'2024-11-29 13:17:06','2024-11-29 23:59:12',1,0,0);
 INSERT INTO "attributes" VALUES (49,'gameGenre','Genre','string','product','','[1]','[4,5,2,3,1]',1,'',NULL,1,'2024-11-29 13:17:37','2024-11-29 14:11:35',1,0,0);
+INSERT INTO "users" VALUES (1,'ltg','$2b$10$kllPpEdLlvn9nAT4Otb7qO3D9eJ7yWnvAFRDNi6NN.DmZqBeAr4hq','2024-11-30 04:15:14');
+INSERT INTO "users" VALUES (2,'guyra','$2b$10$US79s0yn2Wl5Hd5QuwIM1OwpyA.dUr16SedvlCHa7NxEu5OHcDb1a','2024-11-30 04:15:14');
 CREATE INDEX IF NOT EXISTS "idx_product_groups_active" ON "product_groups" (
 	"is_active"
 );

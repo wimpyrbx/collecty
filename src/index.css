@@ -1,7 +1,5 @@
 :root {
-  --background-color: #282c34;
-  --text-color: #ffffff;
-  --link-color: #61dafb;
+  /* Theme colors moved to Login.css */
 }
 
 body {
@@ -11,8 +9,6 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--background-color);
-  color: var(--text-color);
 }
 
 code {
