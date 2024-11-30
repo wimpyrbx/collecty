@@ -3,10 +3,10 @@ import { Button, Form, Row, Col } from 'react-bootstrap';
 import { FaTags, FaPlus, FaEdit, FaTrash, FaLayerGroup } from 'react-icons/fa';
 import axios from 'axios';
 import { toast, Toaster } from 'react-hot-toast';
-import PageHeader from '../../components/common/PageHeader/PageHeader';
+import PageHeader from '../../components/layout/PageHeader/PageHeader';
 import './GroupTypeManagement.css';
-import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../components/BaseModal';
-import DeleteModal from '../../components/common/DeleteModal/DeleteModal';
+import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../components/common/Modal';
+import DeleteModal from '../../components/common/Modal/DeleteModal';
 
 const GroupTypeManagement = () => {
   // State for each section

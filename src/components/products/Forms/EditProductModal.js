@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Form, Row, Col } from 'react-bootstrap';
 import { FaEdit, FaImage, FaUpload, FaTrashAlt } from 'react-icons/fa';
-import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../BaseModal';
+import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../common/Modal';
+import DeleteModal from '../../common/Modal/DeleteModal';
+import ChainedSelect from '../../common/Forms/ChainedSelect';
 import ProductBasicInfo from './ProductBasicInfo';
-import ProductAdditionalInfo from './ProductAdditionalInfo';
-import ProductAttributeBox from './ProductAttributeBox';
-import './NewAddProductModal.css';
-import ChainedSelect from '../common/ChainedSelect';
+import AttributeBox from '../../attributes/AttributeBox';
+import './AddProductModal.css';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
@@ -728,7 +728,7 @@ const NewEditProductModal = ({
 
                         return (
                           <Col md={4} key={attribute.id} className="mb-3">
-                            <ProductAttributeBox
+                            <AttributeBox
                               attribute={{
                                 ...attribute,
                                 product_group_ids: groupIds,

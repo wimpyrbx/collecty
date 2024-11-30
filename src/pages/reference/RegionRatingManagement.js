@@ -3,10 +3,10 @@ import { Button, Form, InputGroup, Row, Col } from 'react-bootstrap';
 import { FaGlobe, FaPlus, FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
 import axios from 'axios';
 import { toast, Toaster } from 'react-hot-toast';
-import PageHeader from '../../components/common/PageHeader/PageHeader';
+import PageHeader from '../../components/layout/PageHeader/PageHeader';
 import './RegionRatingManagement.css';
-import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../components/BaseModal';
-import DeleteModal from '../../components/common/DeleteModal/DeleteModal';
+import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../components/common/Modal';
+import DeleteModal from '../../components/common/Modal/DeleteModal';
 
 const RegionRatingManagement = () => {
   // State for each section

@@ -1,13 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Form, Row, Col, Button } from 'react-bootstrap';
 import { FaPlus, FaImage, FaUpload, FaTrashAlt } from 'react-icons/fa';
-import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../BaseModal';
+import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../common/Modal';
+import DeleteModal from '../../common/Modal/DeleteModal';
+import ChainedSelect from '../../common/Forms/ChainedSelect';
 import ProductBasicInfo from './ProductBasicInfo';
-import ProductAdditionalInfo from './ProductAdditionalInfo';
-import ProductAttributeBox from './ProductAttributeBox';
-import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
-import './NewAddProductModal.css';
-import ChainedSelect from '../common/ChainedSelect';
+import AttributeBox from '../../attributes/AttributeBox';
+import './AddProductModal.css';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
@@ -577,7 +576,7 @@ const NewAddProductModal = ({
 
                           return (
                             <Col md={4} key={attribute.id} className="mb-3">
-                              <ProductAttributeBox
+                              <AttributeBox
                                 attribute={{
                                   ...attribute,
                                   product_group_ids: groupIds,
@@ -624,7 +623,7 @@ const NewAddProductModal = ({
         </Form>
       </BaseModal>
 
-      <DeleteConfirmationModal
+      <DeleteModal
         show={showDeleteConfirm}
         onHide={() => setShowDeleteConfirm(false)}
         onConfirm={handleDeleteImage}

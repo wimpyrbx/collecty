@@ -1,5 +1,5 @@
 import React from 'react';
-import PageHeader from '../components/common/PageHeader/PageHeader';
+import PageHeader from '../components/layout/PageHeader/PageHeader';
 import { FaHome } from 'react-icons/fa';
 
 const Dashboard = () => {

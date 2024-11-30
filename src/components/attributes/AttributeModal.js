@@ -2,11 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Form, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { FaPlus, FaEdit, FaAsterisk, FaImage, FaTimesCircle, FaCheck, FaTimes } from 'react-icons/fa';
-import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../BaseModal';
+import { FaPlus, FaEdit, FaAsterisk, FaImage, FaTimesCircle } from 'react-icons/fa';
+import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../common/Modal';
 import './AttributeModal.css';
-import ToggleButton from '../common/ToggleButton';
-import ToggleButtonContainer from '../common/ToggleButtonContainer';
 
 const initialFormState = {
   ui_name: '',
@@ -498,37 +496,41 @@ const AttributeModal = ({
             </Col>
           </Row>
 
-          <ToggleButtonContainer title="Settings">
+          <Row className="mb-3">
             <Col md={4}>
-              <ToggleButton
-                label="Required"
-                name="is_required"
-                value={formData.is_required}
-                onChange={handleInputChange}
-                useIcons={true}
-              />
+              <Form.Group>
+                <Form.Label>Required</Form.Label>
+                <Form.Check
+                  type="checkbox"
+                  name="is_required"
+                  checked={formData.is_required}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
             </Col>
             <Col md={4}>
-              <ToggleButton
-                label="Use Image"
-                name="use_image"
-                value={formData.use_image}
-                onChange={handleInputChange}
-                useIcons={true}
-                yesIcon={<FaCheck />}
-                noIcon={<FaTimes />}
-              />
+              <Form.Group>
+                <Form.Label>Use Image</Form.Label>
+                <Form.Check
+                  type="checkbox"
+                  name="use_image"
+                  checked={formData.use_image}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
             </Col>
             <Col md={4}>
-              <ToggleButton
-                label="Active"
-                name="is_active"
-                value={formData.is_active}
-                onChange={handleInputChange}
-                useIcons={true}
-              />
+              <Form.Group>
+                <Form.Label>Active</Form.Label>
+                <Form.Check
+                  type="checkbox"
+                  name="is_active"
+                  checked={formData.is_active}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
             </Col>
-          </ToggleButtonContainer>
+          </Row>
         </BaseModalBody>
 
         <BaseModalFooter

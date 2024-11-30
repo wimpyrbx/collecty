@@ -13,7 +13,7 @@ import {
 } from 'react-icons/fa';
 import SidebarItem from './SidebarItem';
 import './Sidebar.css';
-import ThemeSwitcher from '../../ThemeSwitcher/ThemeSwitcher';
+import ThemeSwitcher from '../../common/Utils/ThemeSwitcher';
 
 const Sidebar = () => {
   const openSwagger = () => {

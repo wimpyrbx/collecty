@@ -4,9 +4,9 @@ import { FaPlus, FaSearch, FaCheck, FaTimes, FaEdit, FaTrash, FaCog, FaTags } fr
 import axios from 'axios';
 import { toast, Toaster } from 'react-hot-toast';
 import AttributeModal from '../../components/attributes/AttributeModal';
-import DeleteModal from '../../components/common/DeleteModal/DeleteModal';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import PageHeader from '../../components/common/PageHeader/PageHeader';
+import DeleteModal from '../../components/common/Modal/DeleteModal';
+import LoadingSpinner from '../../components/common/Utils/LoadingSpinner';
+import PageHeader from '../../components/layout/PageHeader/PageHeader';
 import './Attributes.css';
 
 const Attributes = () => {

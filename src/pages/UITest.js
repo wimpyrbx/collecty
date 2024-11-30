@@ -23,7 +23,7 @@ import {
   FaPalette
 } from 'react-icons/fa';
 import { Modal, OverlayTrigger, Tooltip as BSTooltip, Popover as BSPopover, Accordion, Carousel } from 'react-bootstrap';
-import PageHeader from '../components/common/PageHeader/PageHeader';
+import PageHeader from '../components/layout/PageHeader/PageHeader';
 
 const UITest = () => {
   const [toastVisible, setToastVisible] = useState(false);

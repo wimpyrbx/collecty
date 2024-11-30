@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
-import Sidebar from './components/Layout/Sidebar/Sidebar';
+import Sidebar from './components/layout/Sidebar/Sidebar';
 import './styles/layout.css';
 import './styles/custom.css';
-import ThemeSwitcher from './components/ThemeSwitcher/ThemeSwitcher';
+import ThemeSwitcher from './components/common/Utils/ThemeSwitcher';
 import { Toaster } from 'react-hot-toast';
 
 // Pages

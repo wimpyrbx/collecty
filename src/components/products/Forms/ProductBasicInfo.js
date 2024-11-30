@@ -1,8 +1,7 @@
 import React from 'react';
 import { Row, Col, Form } from 'react-bootstrap';
-import ChainedSelect from '../common/ChainedSelect';
-import ProductImagePreview from './ProductImagePreview';
-import AttributesSection from './AttributesSection';
+import ChainedSelect from '../../common/Forms/ChainedSelect';
+import ProductImagePreview from '../../common/Images/ProductImagePreview';
 import './ProductBasicInfo.css';
 
 const ProductBasicInfo = ({
@@ -87,15 +86,6 @@ const ProductBasicInfo = ({
             />
           </Col>
         </Row>
-
-        {/* Attributes Section */}
-        <AttributesSection 
-          show={!!(formData.product_group_id && formData.product_type_id && attributes?.length > 0)}
-          attributes={attributes || []}
-          attributeValues={attributeValues}
-          handleAttributeChange={handleAttributeChange}
-          hasSubmitted={hasSubmitted}
-        />
 
         <Row className="row-no-border">
           <Col md={4}>

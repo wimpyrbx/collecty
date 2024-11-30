@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../db');
-const { processImage, deleteProductImages } = require('./imageUtils');
+const { processImage, deleteProductImages, getImagePaths } = require('./imageUtils');
+const path = require('path');
 
 // Add endpoint for deleting image
 router.delete('/:id/image', async (req, res) => {
@@ -123,10 +124,35 @@ router.put('/:id', async (req, res) => {
       WHERE pav.product_id = ?
     `, [productId]);
 
+    // Get image paths
+    const imagePaths = getImagePaths(productId);
+    const fs = require('fs').promises;
+
+    // Check if image files exist
+    let productImageOriginal = null;
+    let productImageThumb = null;
+
+    try {
+      await fs.access(imagePaths.originalPath);
+      productImageOriginal = `/assets/images/products/original/${imagePaths.x}/${imagePaths.y}/${imagePaths.filename}`;
+      
+      await fs.access(imagePaths.thumbPath);
+      productImageThumb = `/assets/images/products/thumb/${imagePaths.x}/${imagePaths.y}/${imagePaths.filename}`;
+    } catch (err) {
+      console.log('No image files found:', err.message);
+    }
+
+    console.log('=== Response Data Debug ===');
+    console.log('Product image URLs in response:');
+    console.log('Original:', productImageOriginal);
+    console.log('Thumbnail:', productImageThumb);
+
     const response = {
       message: 'Product updated successfully',
       data: {
         ...product,
+        productImageOriginal,
+        productImageThumb,
         attributes: updatedAttributes.reduce((acc, curr) => ({
           ...acc,
           [curr.name]: curr.value

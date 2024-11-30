@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PageHeader from '../../components/common/PageHeader/PageHeader';
+import PageHeader from '../../components/layout/PageHeader/PageHeader';
 import { FaGlobe, FaPlus } from 'react-icons/fa';
 import { Button } from 'react-bootstrap';
 

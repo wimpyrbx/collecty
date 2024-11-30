@@ -1,16 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Container, Row, Col, Button, Form, Badge, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { 
+  FaPlus, 
+  FaEdit, 
+  FaTrashAlt, 
+  FaBox, 
+  FaTable, 
+  FaThLarge, 
+  FaList, 
+  FaGamepad, 
+  FaImage, 
+  FaSort, 
+  FaUsers 
+} from 'react-icons/fa';
 import axios from 'axios';
-import { FaTable, FaThLarge, FaSearch, FaSort, FaGamepad, FaDesktop, FaKeyboard, FaFlag, FaCompactDisc, FaEdit, FaTrashAlt, FaBox, FaPlus, FaDatabase, FaImage, FaList, FaEuroSign, FaDollarSign, FaYenSign, FaUsers } from 'react-icons/fa';
-import { Badge, OverlayTrigger, Tooltip, Button, Form } from 'react-bootstrap';
-import CustomTableCell from '../../components/Table/CustomTableCell';
 import { toast } from 'react-hot-toast';
-import NewAddProductModal from '../../components/products/NewAddProductModal';
-import NewEditProductModal from '../../components/products/NewEditProductModal';
+import CustomTableCell from '../../components/common/Table/CustomTableCell';
+import AddProductModal from '../../components/products/Forms/AddProductModal';
+import EditProductModal from '../../components/products/Forms/EditProductModal';
 import AttributeDisplay from '../../components/attributes/AttributeDisplay';
-import RegionImage from '../../components/common/RegionImage';
-import ProductTypeImage from '../../components/common/ProductTypeImage';
-import PageHeader from '../../components/common/PageHeader/PageHeader';
-import DeleteModal from '../../components/common/DeleteModal/DeleteModal';
+import RegionImage from '../../components/common/Images/RegionImage';
+import ProductTypeImage from '../../components/common/Images/ProductTypeImage';
+import PageHeader from '../../components/layout/PageHeader/PageHeader';
+import DeleteModal from '../../components/common/Modal/DeleteModal';
 import './ProductList.css';
 
 const IMAGE_SIZE = {
@@ -811,7 +823,7 @@ const ProductList = () => {
       {viewMode === 'compact' && renderCompactView()}
       {viewMode === 'showcase' && renderShowcaseView()}
 
-      <NewAddProductModal
+      <AddProductModal
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
         onSuccess={() => {
@@ -865,7 +877,7 @@ const ProductList = () => {
       </div>
 
       {/* Add Product Modal */}
-      <NewAddProductModal
+      <AddProductModal
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
         onProductAdded={fetchProducts}
@@ -884,7 +896,7 @@ const ProductList = () => {
       />
 
       {/* Edit Product Modal */}
-      <NewEditProductModal
+      <EditProductModal
         show={showEditModal}
         onHide={() => setShowEditModal(false)}
         onProductUpdated={handleProductUpdated}

@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../db');
+const { processImage, getImagePaths } = require('./imageUtils');
+const path = require('path');
 
 router.post('/', async (req, res) => {
   const {
@@ -9,6 +11,7 @@ router.post('/', async (req, res) => {
     product_type_id,
     region_id,
     rating_id,
+    product_image,
     release_year,
     description,
     is_active,
@@ -77,6 +80,18 @@ router.post('/', async (req, res) => {
 
     const productId = result.lastID;
 
+    // Handle image if provided
+    if (product_image && product_image.startsWith('data:image')) {
+      console.log('Processing new image...');
+      try {
+        await processImage(product_image, productId);
+        console.log('Image processing complete');
+      } catch (error) {
+        console.error('Failed to process image:', error);
+        throw new Error('Failed to process image: ' + error.message);
+      }
+    }
+
     // Insert attributes if any
     if (attributes && attributes.length > 0) {
       // First, validate that all attributes exist
@@ -134,9 +149,60 @@ router.post('/', async (req, res) => {
       });
     });
 
+    // Get image paths
+    const imagePaths = getImagePaths(productId);
+    const fs = require('fs').promises;
+
+    // Check if image files exist
+    let productImageOriginal = null;
+    let productImageThumb = null;
+
+    try {
+      await fs.access(imagePaths.originalPath);
+      productImageOriginal = `/assets/images/products/original/${imagePaths.x}/${imagePaths.y}/${imagePaths.filename}`;
+      
+      await fs.access(imagePaths.thumbPath);
+      productImageThumb = `/assets/images/products/thumb/${imagePaths.x}/${imagePaths.y}/${imagePaths.filename}`;
+    } catch (err) {
+      console.log('No image files found:', err.message);
+    }
+
+    console.log('=== Response Data Debug ===');
+    console.log('Product image URLs in response:');
+    console.log('Original:', productImageOriginal);
+    console.log('Thumbnail:', productImageThumb);
+
+    // Get the full product data for response
+    const product = await new Promise((resolve, reject) => {
+      db.get(`
+        SELECT 
+          p.*,
+          pg.name as product_group_name,
+          pt.name as product_type_name,
+          r.name as region_name,
+          rt.name as rating_name,
+          rtg.name as rating_group_name
+        FROM products p
+        LEFT JOIN product_groups pg ON p.product_group_id = pg.id
+        LEFT JOIN product_types pt ON p.product_type_id = pt.id
+        LEFT JOIN regions r ON p.region_id = r.id
+        LEFT JOIN ratings rt ON p.rating_id = rt.id
+        LEFT JOIN rating_groups rtg ON rt.rating_group_id = rtg.id
+        WHERE p.id = ?
+      `, [productId], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+
     res.status(201).json({
       message: 'Product created successfully',
-      data: { id: productId }
+      data: {
+        ...product,
+        productImageOriginal,
+        productImageThumb,
+        id: productId
+      }
     });
 
   } catch (err) {

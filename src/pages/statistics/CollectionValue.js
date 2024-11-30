@@ -1,5 +1,5 @@
 import React from 'react';
-import PageHeader from '../../components/common/PageHeader/PageHeader';
+import PageHeader from '../../components/layout/PageHeader/PageHeader';
 import { FaChartLine } from 'react-icons/fa';
 
 const CollectionValue = () => {

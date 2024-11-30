@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Form } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
-import './ProductAttributeBox.css';
+import './AttributeBox.css';
 
 const ProductAttributeBox = ({ attribute, value, onChange, touched, isInvalid }) => {
   const inputRef = useRef(null);
