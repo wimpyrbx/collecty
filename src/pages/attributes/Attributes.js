@@ -185,13 +185,12 @@ const Attributes = () => {
           <thead>
             <tr>
               <th>Scope</th>
-              <th>Internal Name</th>
-              <th>Display Name</th>
+              <th>Name</th>
               <th>Type</th>
               <th>Required</th>
-              <th>Use Image</th>
-              <th>Show in UI</th>
-              <th>Show if Empty</th>
+              <th>Image</th>
+              <th>Show UI</th>
+              <th>Show Empty</th>
               <th>Product Groups</th>
               <th>Product Types</th>
               <th>Allowed Values</th>
@@ -204,8 +203,7 @@ const Attributes = () => {
             {filteredAttributes.map(attribute => (
               <tr key={attribute.id}>
                 <td>{attribute.scope === 'product' ? 'Product' : 'Inventory'}</td>
-                <td>{attribute.name}</td>
-                <td>{attribute.ui_name}</td>
+                <td>{attribute.ui_name} ({attribute.name})</td>
                 <td>{attribute.type}</td>
                 <td>{renderBooleanValue(attribute.is_required)}</td>
                 <td>{renderBooleanValue(attribute.use_image)}</td>
