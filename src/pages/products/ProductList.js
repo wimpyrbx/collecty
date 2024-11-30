@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaTable, FaThLarge, FaSearch, FaSort, FaGamepad, FaDesktop, FaKeyboard, FaFlag, FaCompactDisc, FaEdit, FaTrashAlt, FaBox, FaPlus, FaDatabase } from 'react-icons/fa';
+import { FaTable, FaThLarge, FaSearch, FaSort, FaGamepad, FaDesktop, FaKeyboard, FaFlag, FaCompactDisc, FaEdit, FaTrashAlt, FaBox, FaPlus, FaDatabase, FaImage, FaList, FaEuroSign, FaDollarSign, FaYenSign, FaUsers } from 'react-icons/fa';
 import { Badge, OverlayTrigger, Tooltip, Button, Form } from 'react-bootstrap';
 import CustomTableCell from '../../components/Table/CustomTableCell';
-import { FaEuroSign, FaDollarSign, FaYenSign } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import NewAddProductModal from '../../components/products/NewAddProductModal';
 import NewEditProductModal from '../../components/products/NewEditProductModal';
@@ -12,6 +11,7 @@ import RegionImage from '../../components/common/RegionImage';
 import ProductTypeImage from '../../components/common/ProductTypeImage';
 import PageHeader from '../../components/common/PageHeader/PageHeader';
 import DeleteModal from '../../components/common/DeleteModal/DeleteModal';
+import './ProductList.css';
 
 const IMAGE_SIZE = {
   width: 60,  // DVD case proportions (approximately 7.5:11)
@@ -22,7 +22,7 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewMode, setViewMode] = useState('table'); // 'table' or 'grid'
+  const [viewMode, setViewMode] = useState('table'); // 'table', 'grid', 'compact', or 'showcase'
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [sortField, setSortField] = useState('title');
@@ -258,342 +258,525 @@ const ProductList = () => {
     </div>
   );
 
-  return (
-    <div className="page-container">
-      <PageHeader color="#66BB6A">
-        <PageHeader.Icon>
-          <FaDatabase />
-        </PageHeader.Icon>
-        <PageHeader.Title>
-          Products
-        </PageHeader.Title>
-        <PageHeader.Actions>
+  const renderFilters = () => (
+    <div className="filter-section">
+      <div className="filter-controls">
+        <div className="filter-group">
+          <Form.Control
+            type="text"
+            placeholder="Search products..."
+            name="searchTerm"
+            value={filters.searchTerm}
+            onChange={handleFilterChange}
+          />
+        </div>
+        <div className="filter-group">
           <Form.Select
-            className="me-2"
-            style={{ width: 'auto', display: 'inline-block' }}
-            value={preselectedFilters.product_group_id}
-            onChange={(e) => setPreselectedFilters(prev => ({ ...prev, product_group_id: e.target.value }))}
+            name="productGroup"
+            value={filters.productGroup}
+            onChange={handleFilterChange}
           >
-            <option value="">Select Group</option>
+            <option value="">All Groups</option>
             {productGroups.map(group => (
               <option key={group.id} value={group.id}>{group.name}</option>
             ))}
           </Form.Select>
+        </div>
+        <div className="filter-group">
           <Form.Select
-            className="me-2"
-            style={{ width: 'auto', display: 'inline-block' }}
-            value={preselectedFilters.product_type_id}
-            onChange={(e) => setPreselectedFilters(prev => ({ ...prev, product_type_id: e.target.value }))}
+            name="productType"
+            value={filters.productType}
+            onChange={handleFilterChange}
           >
-            <option value="">Select Type</option>
+            <option value="">All Types</option>
             {productTypes.map(type => (
               <option key={type.id} value={type.id}>{type.name}</option>
             ))}
           </Form.Select>
+        </div>
+        <div className="filter-group">
           <Form.Select
-            className="me-2"
-            style={{ width: 'auto', display: 'inline-block' }}
-            value={preselectedFilters.region_id}
-            onChange={(e) => setPreselectedFilters(prev => ({ ...prev, region_id: e.target.value }))}
+            name="region"
+            value={filters.region}
+            onChange={handleFilterChange}
           >
-            <option value="">Select Region</option>
+            <option value="">All Regions</option>
             {regions.map(region => (
               <option key={region.id} value={region.id}>{region.name}</option>
             ))}
           </Form.Select>
-          <Button variant="light" onClick={() => setShowAddModal(true)}>
-            <FaPlus className="me-2" /> Add Product
+        </div>
+        <div className="view-mode-group">
+          <Button
+            variant={viewMode === 'table' ? 'secondary' : 'outline-secondary'}
+            onClick={() => setViewMode('table')}
+            title="Table View"
+          >
+            <FaTable />
           </Button>
-        </PageHeader.Actions>
-        <PageHeader.TitleSmall>
-          Manage your product catalog and their attributes
-        </PageHeader.TitleSmall>
-      </PageHeader>
-
-      {/* Filters Section */}
-      <div className="card mb-4">
-        <div className="card-body">
-          <div className="row g-3">
-            <div className="col-12">
-              <div className="input-group">
-                <span className="input-group-text">
-                  <FaSearch />
-                </span>
-                <input
-                  type="text"
-                  name="searchTerm"
-                  placeholder="Search products..."
-                  value={filters.searchTerm}
-                  onChange={handleFilterChange}
-                  className="form-control"
-                />
-              </div>
-            </div>
-            <div className="col-md-3">
-              <select
-                name="entriesPerPage"
-                value={entriesPerPage}
-                onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                className="form-select"
-              >
-                <option value={10}>10 entries</option>
-                <option value={25}>25 entries</option>
-                <option value={50}>50 entries</option>
-                <option value={100}>100 entries</option>
-              </select>
-            </div>
-            <div className="col-md-3">
-              <select
-                name="productGroup"
-                value={filters.productGroup}
-                onChange={handleFilterChange}
-                className="form-select"
-              >
-                <option value="">All Product Groups</option>
-                {productGroups.map(group => (
-                  <option key={group.id} value={group.id}>
-                    {group.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="col-md-3">
-              <select
-                name="productType"
-                value={filters.productType}
-                onChange={handleFilterChange}
-                className="form-select"
-              >
-                <option value="">All Product Types</option>
-                {productTypes.map(type => (
-                  <option key={type.id} value={type.id}>
-                    {type.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="col-md-3">
-              <select
-                name="region"
-                value={filters.region}
-                onChange={handleFilterChange}
-                className="form-select"
-              >
-                <option value="">All Regions</option>
-                {regions.map(region => (
-                  <option key={region.id} value={region.id}>
-                    {region.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <Button
+            variant={viewMode === 'grid' ? 'secondary' : 'outline-secondary'}
+            onClick={() => setViewMode('grid')}
+            title="Grid View"
+          >
+            <FaThLarge />
+          </Button>
+          <Button
+            variant={viewMode === 'compact' ? 'secondary' : 'outline-secondary'}
+            onClick={() => setViewMode('compact')}
+            title="Compact View"
+          >
+            <FaList />
+          </Button>
+          <Button
+            variant={viewMode === 'showcase' ? 'secondary' : 'outline-secondary'}
+            onClick={() => setViewMode('showcase')}
+            title="Showcase View"
+          >
+            <FaGamepad />
+          </Button>
         </div>
       </div>
+    </div>
+  );
 
-      {/* Error Message */}
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      )}
-
-      {/* Loading State */}
-      {loading ? (
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+  const renderGridView = () => (
+    <div className="product-grid">
+      {currentProducts.map(product => (
+        <div key={product.id} className="product-card">
+          <div className="product-card-image-container">
+            {product.productImageOriginal ? (
+              <img 
+                src={product.productImageOriginal} 
+                alt={product.title}
+                className="product-card-image"
+              />
+            ) : (
+              <div className="product-card-placeholder">
+                <FaImage />
+              </div>
+            )}
           </div>
-        </div>
-      ) : viewMode === 'table' ? (
-        /* Table View */
-        <div className="card">
-          <div className="card-header d-flex justify-content-between align-items-center">
-            <div className="d-flex align-items-center">
-              <button
-                className={`btn btn-sm me-2 ${viewMode === 'table' ? 'btn-primary' : 'btn-outline-primary'}`}
-                onClick={() => setViewMode('table')}
-              >
-                <FaTable /> Table
-              </button>
-              <button
-                className={`btn btn-sm ${viewMode === 'grid' ? 'btn-primary' : 'btn-outline-primary'}`}
-                onClick={() => setViewMode('grid')}
-              >
-                <FaThLarge /> Grid
-              </button>
+          <div className="product-card-content">
+            <h3 className="product-card-title">{product.title}</h3>
+            <div className="product-card-badges">
+              <RegionImage region={product.region_name} size={20} />
+              <ProductTypeImage type={product.product_type_name} size={20} />
+              {product.rating_name && (
+                <Badge bg="secondary">{product.rating_name}</Badge>
+              )}
+            </div>
+            <div className="product-card-info">
+              {product.release_year && (
+                <span>Released: {product.release_year}</span>
+              )}
+              {product.attributes?.developerName && (
+                <span>Developer: {product.attributes.developerName}</span>
+              )}
+              {product.attributes?.publisherName && (
+                <span>Publisher: {product.attributes.publisherName}</span>
+              )}
+            </div>
+            <div className="product-card-attributes">
+              {product.attributes?.gameGenre && (
+                <span className="product-card-attribute">
+                  Genre: {product.attributes.gameGenre}
+                </span>
+              )}
+              {product.attributes?.isKinect === "1" && (
+                <Badge bg="purple">Kinect</Badge>
+              )}
             </div>
           </div>
-          <div className="table-responsive">
-            <table className="table table-bordered mb-0 table-hover">
-              <thead className="table-light">
-                <tr>
-                  <th onClick={() => handleSort('id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-                    ID <FaSort className={sortField === 'id' ? 'text-primary' : ''} />
-                  </th>
-                  <th onClick={() => handleSort('title')} style={{cursor: 'pointer'}}>
-                    Information <FaSort className={sortField === 'title' ? 'text-primary' : ''} />
-                  </th>
-                  <th style={{width: `${IMAGE_SIZE.width}px`, padding: 0}}>Image</th>
-                  <th onClick={() => handleSort('rating')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-                    Rating <FaSort className={sortField === 'rating' ? 'text-primary' : ''} />
-                  </th>
-                  <th style={{cursor: 'pointer'}}>
-                    Attributes
-                  </th>
-                  <th onClick={() => handleSort('product_type_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-                    Type <FaSort className={sortField === 'product_type_id' ? 'text-primary' : ''} />
-                  </th>
-                  <th onClick={() => handleSort('region_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-                    Region <FaSort className={sortField === 'region_id' ? 'text-primary' : ''} />
-                  </th>
-                  <th style={{width: '1%', whiteSpace: 'nowrap'}}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentProducts.map(product => (
-                  <tr key={product.id}>
-                    <td className="text-center">
-                      <OverlayTrigger
-                        placement="right"
-                        overlay={
-                          <Tooltip id={`tooltip-${product.id}`}>
-                            <pre style={{ margin: 0, textAlign: 'left', fontSize: '0.8rem' }}>
-                              {JSON.stringify(product, null, 2)}
-                            </pre>
-                          </Tooltip>
-                        }
-                      >
-                        <span className="text-muted" style={{ cursor: 'help' }}>
-                          {product.id}
-                        </span>
-                      </OverlayTrigger>
-                    </td>
-                    <CustomTableCell>
-                      <div className="d-flex flex-column">
-                        <div>
-                          <strong>{product.title}</strong>
-                          {product.release_year && (
-                            <span className="text-muted ms-2">
-                              ({product.release_year})
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-muted small">
-                          {product.product_group_name || '-'}
-                        </div>
-                      </div>
-                    </CustomTableCell>
-                    <td style={{width: `${IMAGE_SIZE.width}px`, padding: '4px'}}>
-                      {product.productImageThumb ? (
-                        <img 
-                          src={product.productImageThumb} 
-                          alt={product.title} 
-                          className="rounded shadow-sm"
-                          style={{
-                            maxHeight: '70px',
-                            width: 'auto',
-                            objectFit: 'contain'
-                          }}
-                        />
-                      ) : (
-                        <div 
-                          className="d-flex flex-column align-items-center justify-content-center rounded shadow-sm image-placeholder"
-                          style={{
-                            height: '70px',
-                            width: 'auto',
-                            background: 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)',
-                            border: '1px solid #dee2e6'
-                          }}
-                        >
-                          <FaGamepad 
-                            className="text-secondary"
-                            style={{opacity: 0.5}}
-                            size={16}
-                          />
-                        </div>
-                      )}
-                    </td>
-                    <td className="text-center">
-                      {product.rating_name ? (
-                        <Badge 
-                          bg={
-                            product.rating_name === 'E' ? 'success' :
-                            product.rating_name === 'T' ? 'warning' :
-                            product.rating_name === 'M' ? 'danger' :
-                            'secondary'
-                          }
-                        >
-                          {product.rating_name}
-                        </Badge>
-                      ) : '-'}
-                    </td>
-                    <td>
-                      {product.attributes ? (
-                        <div className="d-flex flex-column gap-2">
-                          {Object.entries(product.attributes).map(([key, value]) => {
-                            const attribute = attributes.find(a => a.name === key);
-                            // Skip if attribute not found or not active
-                            if (!attribute || !attribute.is_active) return null;
-                            
-                            return (
-                              <AttributeDisplay 
-                                key={key}
-                                attribute={attribute} 
-                                value={value} 
-                              />
-                            );
-                          })}
-                        </div>
-                      ) : '-'}
-                    </td>
-                    <td className="text-center">
-                      <ProductTypeImage typeName={product.product_type_name} />
-                    </td>
-                    <td className="text-center">
-                      <RegionImage regionName={product.region_name} />
-                    </td>
-                    <td className="text-center">
-                      {renderActionButtons(product)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="product-card-footer">
+            <Button
+              variant="outline-warning"
+              size="sm"
+              onClick={() => handleEditClick(product.id)}
+            >
+              <FaEdit />
+            </Button>
+            <Button
+              variant="outline-danger"
+              size="sm"
+              onClick={() => showDeleteModal(product)}
+            >
+              <FaTrashAlt />
+            </Button>
           </div>
         </div>
-      ) : (
-        /* Grid View */
-        <div className="row g-4">
+      ))}
+    </div>
+  );
+
+  const renderTableView = () => (
+    <div className="table-responsive">
+      <table className="table table-bordered mb-0 table-hover">
+        <thead className="table-light">
+          <tr>
+            <th onClick={() => handleSort('id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+              ID <FaSort className={sortField === 'id' ? 'text-primary' : ''} />
+            </th>
+            <th onClick={() => handleSort('title')} style={{cursor: 'pointer'}}>
+              Information <FaSort className={sortField === 'title' ? 'text-primary' : ''} />
+            </th>
+            <th style={{width: `${IMAGE_SIZE.width}px`, padding: 0}}>Image</th>
+            <th onClick={() => handleSort('rating')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+              Rating <FaSort className={sortField === 'rating' ? 'text-primary' : ''} />
+            </th>
+            <th style={{cursor: 'pointer'}}>
+              Attributes
+            </th>
+            <th onClick={() => handleSort('product_type_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+              Type <FaSort className={sortField === 'product_type_id' ? 'text-primary' : ''} />
+            </th>
+            <th onClick={() => handleSort('region_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
+              Region <FaSort className={sortField === 'region_id' ? 'text-primary' : ''} />
+            </th>
+            <th style={{width: '1%', whiteSpace: 'nowrap'}}></th>
+          </tr>
+        </thead>
+        <tbody>
           {currentProducts.map(product => (
-            <div key={product.id} className="col-sm-6 col-md-4 col-lg-3">
-              <div className="card h-100">
-                <div className="card-img-top" style={{height: '200px'}}>
-                  {product.image_url ? (
-                    <img 
-                      src={product.image_url} 
-                      alt={product.title}
-                      className="w-100 h-100 object-fit-cover"
+            <tr key={product.id}>
+              <td className="text-center">
+                <OverlayTrigger
+                  placement="right"
+                  overlay={
+                    <Tooltip id={`tooltip-${product.id}`}>
+                      <pre style={{ margin: 0, textAlign: 'left', fontSize: '0.8rem' }}>
+                        {JSON.stringify(product, null, 2)}
+                      </pre>
+                    </Tooltip>
+                  }
+                >
+                  <span className="text-muted" style={{ cursor: 'help' }}>
+                    {product.id}
+                  </span>
+                </OverlayTrigger>
+              </td>
+              <CustomTableCell>
+                <div className="d-flex flex-column">
+                  <div>
+                    <strong>{product.title}</strong>
+                    {product.release_year && (
+                      <span className="text-muted ms-2">
+                        ({product.release_year})
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-muted small">
+                    {product.product_group_name || '-'}
+                  </div>
+                </div>
+              </CustomTableCell>
+              <td style={{width: `${IMAGE_SIZE.width}px`, padding: '4px'}}>
+                {product.productImageThumb ? (
+                  <img 
+                    src={product.productImageThumb} 
+                    alt={product.title}
+                    className="rounded shadow-sm"
+                    style={{
+                      maxHeight: '70px',
+                      width: 'auto',
+                      objectFit: 'contain'
+                    }}
+                  />
+                ) : (
+                  <div 
+                    className="d-flex flex-column align-items-center justify-content-center rounded shadow-sm image-placeholder"
+                    style={{
+                      height: '70px',
+                      width: 'auto',
+                      background: 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)',
+                      border: '1px solid #dee2e6'
+                    }}
+                  >
+                    <FaImage 
+                      className="text-secondary"
+                      style={{opacity: 0.5}}
+                      size={16}
                     />
-                  ) : (
-                    <div className="w-100 h-100 d-flex align-items-center justify-content-center">
-                      No Image
+                  </div>
+                )}
+              </td>
+              <td className="text-center">
+                {product.rating_name ? (
+                  <Badge 
+                    bg={
+                      product.rating_name === 'E' ? 'success' :
+                      product.rating_name === 'T' ? 'warning' :
+                      product.rating_name === 'M' ? 'danger' :
+                      'secondary'
+                    }
+                  >
+                    {product.rating_name}
+                  </Badge>
+                ) : '-'}
+              </td>
+              <td>
+                {product.attributes ? (
+                  <div className="d-flex flex-column gap-2">
+                    {Object.entries(product.attributes).map(([key, value]) => {
+                      const attribute = attributes.find(a => a.name === key);
+                      if (!attribute || !attribute.is_active) return null;
+                      
+                      return (
+                        <AttributeDisplay 
+                          key={key}
+                          attribute={attribute} 
+                          value={value} 
+                        />
+                      );
+                    })}
+                  </div>
+                ) : '-'}
+              </td>
+              <td className="text-center">
+                <ProductTypeImage type={product.product_type_name} size={20} />
+              </td>
+              <td className="text-center">
+                <RegionImage region={product.region_name} size={20} />
+              </td>
+              <td className="text-center">
+                <div className="d-flex gap-2 justify-content-center">
+                  <Button 
+                    variant="outline-warning"
+                    size="sm"
+                    onClick={() => handleEditClick(product.id)}
+                  >
+                    <FaEdit />
+                  </Button>
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    onClick={() => showDeleteModal(product)}
+                  >
+                    <FaTrashAlt />
+                  </Button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  // Compact card view - two per row with enhanced layout
+  const renderCompactView = () => (
+    <div className="product-compact">
+      {currentProducts.map(product => {
+        // Generate a random rotation between -15 and 15 degrees
+        const rotation = Math.random() * 30 - 15;
+        const scale = 1.2 + (Math.random() * 0.4); // Random scale between 1.2 and 1.6
+        
+        return (
+          <div key={product.id} className="product-compact-card">
+            {product.productImageOriginal && (
+              <div 
+                className="product-compact-background" 
+                style={{
+                  backgroundImage: `url(${product.productImageOriginal})`,
+                  transform: `rotate(${rotation}deg) scale(${scale})`,
+                }}
+              />
+            )}
+            <div className="product-compact-inner">
+              <div className="product-compact-image">
+                {product.productImageOriginal ? (
+                  <img 
+                    src={product.productImageOriginal} 
+                    alt={product.title}
+                  />
+                ) : (
+                  <div className="product-compact-placeholder">
+                    <FaImage />
+                  </div>
+                )}
+              </div>
+              <div className="product-compact-content">
+                <div className="product-compact-header">
+                  <div className="product-compact-title-group">
+                    <h3>{product.title}</h3>
+                    <div className="product-compact-meta">
+                      {product.release_year && (
+                        <span className="product-compact-year">{product.release_year}</span>
+                      )}
+                      <div className="product-compact-badges">
+                        <RegionImage region={product.region_name} size={16} />
+                        <ProductTypeImage type={product.product_type_name} size={16} />
+                        {product.rating_name && (
+                          <Badge bg="secondary" className="product-compact-badge">{product.rating_name}</Badge>
+                        )}
+                        {product.attributes?.isKinect === "1" && (
+                          <Badge bg="purple" className="product-compact-badge">Kinect</Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="product-compact-details">
+                  <div className="product-compact-main-info">
+                    {product.attributes?.developerName && (
+                      <div className="product-compact-info-item">
+                        <span className="info-label">Developer</span>
+                        <span className="info-value">{product.attributes.developerName}</span>
+                      </div>
+                    )}
+                    {product.attributes?.publisherName && (
+                      <div className="product-compact-info-item">
+                        <span className="info-label">Publisher</span>
+                        <span className="info-value">{product.attributes.publisherName}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="product-compact-secondary-info">
+                    {product.attributes?.gameGenre && (
+                      <div className="product-compact-tag">
+                        <FaGamepad className="tag-icon" />
+                        {product.attributes.gameGenre}
+                      </div>
+                    )}
+                    {product.product_group_name && (
+                      <div className="product-compact-tag">
+                        <FaBox className="tag-icon" />
+                        {product.product_group_name}
+                      </div>
+                    )}
+                    {product.attributes?.numberOfPlayers && (
+                      <div className="product-compact-tag">
+                        <FaUsers className="tag-icon" />
+                        {product.attributes.numberOfPlayers} Players
+                      </div>
+                    )}
+                  </div>
+                  
+                  {product.attributes?.gameFeatures && (
+                    <div className="product-compact-features">
+                      <span className="info-label">Features</span>
+                      <div className="features-list">
+                        {product.attributes.gameFeatures.split(',').map((feature, index) => (
+                          <span key={index} className="feature-tag">
+                            {feature.trim()}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
-                <div className="card-body">
-                  <h5 className="card-title">{product.title}</h5>
-                  <p className="card-text">{product.developer}</p>
-                  <p className="card-text"><small className="text-muted">{product.release_year}</small></p>
-                </div>
-                <div className="card-footer">
-                  {renderActionButtons(product)}
+                
+                <div className="product-compact-actions">
+                  <Button variant="outline-warning" size="sm" onClick={() => handleEditClick(product.id)}>
+                    <FaEdit /> Edit
+                  </Button>
+                  <Button variant="outline-danger" size="sm" onClick={() => showDeleteModal(product)}>
+                    <FaTrashAlt /> Delete
+                  </Button>
                 </div>
               </div>
             </div>
-          ))}
+          </div>
+        );
+      })}
+    </div>
+  );
+
+  // Showcase view - immersive gallery with original images
+  const renderShowcaseView = () => (
+    <div className="product-showcase">
+      {currentProducts.map(product => (
+        <div key={product.id} className="product-showcase-item">
+          <div className="product-showcase-image">
+            {product.productImageOriginal ? (
+              <img 
+                src={product.productImageOriginal} 
+                alt={product.title}
+              />
+            ) : (
+              <div className="product-showcase-placeholder">
+                <FaImage />
+              </div>
+            )}
+            <div className="product-showcase-overlay">
+              <div className="product-showcase-header">
+                <h3>{product.title}</h3>
+                <div className="product-showcase-meta">
+                  {product.release_year && (
+                    <span className="product-showcase-year">{product.release_year}</span>
+                  )}
+                  <div className="product-showcase-badges">
+                    <RegionImage region={product.region_name} size={24} />
+                    <ProductTypeImage type={product.product_type_name} size={24} />
+                    {product.rating_name && (
+                      <Badge bg="secondary">{product.rating_name}</Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="product-showcase-details">
+                {product.attributes?.developerName && (
+                  <div className="product-showcase-detail">
+                    <strong>Developer:</strong> {product.attributes.developerName}
+                  </div>
+                )}
+                {product.attributes?.publisherName && (
+                  <div className="product-showcase-detail">
+                    <strong>Publisher:</strong> {product.attributes.publisherName}
+                  </div>
+                )}
+                {product.attributes?.gameGenre && (
+                  <div className="product-showcase-detail">
+                    <strong>Genre:</strong> {product.attributes.gameGenre}
+                  </div>
+                )}
+                {product.attributes?.isKinect === "1" && (
+                  <Badge bg="purple" className="product-showcase-kinect">Kinect</Badge>
+                )}
+              </div>
+              <div className="product-showcase-actions">
+                <Button variant="light" onClick={() => handleEditClick(product.id)}>
+                  <FaEdit /> Edit
+                </Button>
+                <Button variant="danger" onClick={() => showDeleteModal(product)}>
+                  <FaTrashAlt /> Delete
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="container-fluid">
+      <PageHeader bgClass="bg-dark" textClass="text-white">
+        <PageHeader.Icon>
+          <FaDatabase />
+        </PageHeader.Icon>
+        <PageHeader.Title>
+          Inventory
+        </PageHeader.Title>
+        <PageHeader.Actions>
+          <Button variant="light" onClick={handleAddClick}>
+            <FaPlus className="me-2" />
+            Add Item
+          </Button>
+        </PageHeader.Actions>
+        <PageHeader.TitleSmall>
+          Manage your inventory items and their attributes
+        </PageHeader.TitleSmall>
+      </PageHeader>
+
+      {renderFilters()}
+
+      {viewMode === 'table' && renderTableView()}
+      {viewMode === 'grid' && renderGridView()}
+      {viewMode === 'compact' && renderCompactView()}
+      {viewMode === 'showcase' && renderShowcaseView()}
 
       {/* Pagination */}
       <div className="card mt-4">

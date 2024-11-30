@@ -115,16 +115,6 @@ const NewAddProductModal = ({
     }));
   }, [formData.product_group_id, formData.product_type_id, attributes]);
 
-  useEffect(() => {
-    if (show) {
-      console.log('=== ADD PRODUCT MODAL DEBUG ===');
-      console.log('Filtered Attributes:', filteredAttributes);
-      console.log('Form Data:', formData);
-      console.log('Required Attributes:', filteredAttributes.filter(attr => attr.is_required === 1));
-      console.log('Attribute Values:', formData.attributes);
-    }
-  }, [show, filteredAttributes, formData]);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -262,7 +252,6 @@ const NewAddProductModal = ({
       toast.success('Image deleted successfully');
       setShowDeleteConfirm(false);
     } catch (error) {
-      console.error('Error deleting image:', error);
       toast.error('Failed to delete image');
     }
   };

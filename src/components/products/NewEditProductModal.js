@@ -53,17 +53,7 @@ const NewEditProductModal = ({
   // Fetch product data when modal opens
   useEffect(() => {
     const fetchProduct = async () => {
-      console.log('=== EDIT PRODUCT MODAL DEBUG ===');
-      console.log('Modal State:', { show, productId });
-      console.log('Modal Props:', { 
-        productId, 
-        hasProductGroups: productGroups.length > 0,
-        hasProductTypes: productTypes.length > 0
-      });
-  
       if (show && productId) {
-        console.log('Attempting to fetch product with ID:', productId);
-        
         try {
           const response = await axios.get(`http://localhost:5000/api/products`, {
             params: {
@@ -73,9 +63,6 @@ const NewEditProductModal = ({
           });
           
           const productData = response.data.data;
-          console.log('Raw Product Data:', productData);
-          
-          // Store the attribute values temporarily
           const savedAttributes = productData.attributes || {};
           
           // Find the rating group for the selected rating
@@ -94,7 +81,6 @@ const NewEditProductModal = ({
             rating_group_id: ratingGroupId // Set the rating group ID
           };
           
-          console.log('Setting Initial Form Data:', formDataToSet);
           setFormData(formDataToSet);
           
           // After setting initial form data, fetch and set attributes
@@ -132,11 +118,6 @@ const NewEditProductModal = ({
     }
 
     try {
-      console.log('=== FETCHING ATTRIBUTES ===');
-      console.log('Group ID:', groupId);
-      console.log('Type ID:', typeId);
-      console.log('Saved Attribute Values:', savedValues);
-
       const response = await axios.get('http://localhost:5000/api/attributes', {
         params: { 
           scope: 'product',
@@ -157,7 +138,6 @@ const NewEditProductModal = ({
         return matchesGroup && matchesType && attr.is_active === 1;
       });
 
-      console.log('Filtered Attributes:', filteredAttrs);
       setFilteredAttributes(filteredAttrs);
 
       // Map the saved values to the filtered attributes
@@ -177,18 +157,12 @@ const NewEditProductModal = ({
           attributeValues[attr.id] = savedValues.isKinect;
         }
       });
-
-      console.log('Mapped Attribute Values:', attributeValues);
       
       // Update form data with the mapped attribute values
-      setFormData(prev => {
-        const newState = {
-          ...prev,
-          attributes: attributeValues
-        };
-        console.log('New Form State with Attributes:', newState);
-        return newState;
-      });
+      setFormData(prev => ({
+        ...prev,
+        attributes: attributeValues
+      }));
 
     } catch (err) {
       console.error('Failed to fetch attributes:', err);
@@ -205,18 +179,13 @@ const NewEditProductModal = ({
   };
 
   const handleAttributeChange = (attributeId, value) => {
-    console.log('Attribute Change:', { attributeId, value });
-    setFormData(prev => {
-      const newFormData = {
-        ...prev,
-        attributes: {
-          ...prev.attributes,
-          [attributeId]: value
-        }
-      };
-      console.log('Updated Form Data:', newFormData);
-      return newFormData;
-    });
+    setFormData(prev => ({
+      ...prev,
+      attributes: {
+        ...prev.attributes,
+        [attributeId]: value
+      }
+    }));
   };
 
   const validateForm = () => {
@@ -314,7 +283,7 @@ const NewEditProductModal = ({
         release_year: formData.release_year || null,
         description: formData.description || null,
         is_active: 1,
-        image_url: formData.image_url || null  // Include the base64 image data
+        image_url: formData.image_url || null
       };
 
       // Prepare attribute values
@@ -337,22 +306,12 @@ const NewEditProductModal = ({
         attributes: attributeValues
       };
 
-      // Debug log what we're sending
-      console.log('Form Data State:', formData);
-      console.log('Image URL in form data:', formData.image_url ? 'Present (base64)' : 'Not present');
-      console.log('Submitting product data:', {
-        ...requestData,
-        image_url: requestData.image_url ? 'Present (base64)' : 'Not present'
-      });
-
       // Send to single endpoint that handles both product and attribute update
       const response = await axios.put(`http://localhost:5000/api/products/${productId}`, requestData, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
-
-      console.log('Server response:', response.data);
 
       toast.success(`Product "${formData.title}" Updated.`);
       if (onProductUpdated) {
@@ -362,7 +321,6 @@ const NewEditProductModal = ({
     } catch (error) {
       console.error('Error updating product:', error);
       if (error.response) {
-        console.error('Error response:', error.response.data);
         toast.error(error.response.data.error || 'Failed to update product');
       } else {
         toast.error(error.message || 'Failed to update product');
@@ -427,7 +385,6 @@ const NewEditProductModal = ({
 
   const handleProductGroupChange = (e) => {
     const groupId = e.target.value;
-    console.log('Group Change:', { groupId });
     
     // Keep only the attributes that are still valid for the new group
     const validAttributeIds = filteredAttributes
@@ -439,15 +396,11 @@ const NewEditProductModal = ({
       })
       .map(attr => attr.id);
 
-    console.log('Valid Attributes for new group:', validAttributeIds);
-    
     const currentAttributes = formData.attributes || {};
     const updatedAttributes = Object.fromEntries(
       Object.entries(currentAttributes)
         .filter(([key]) => validAttributeIds.includes(Number(key)))
     );
-
-    console.log('Updated Attributes after group change:', updatedAttributes);
 
     setFormData(prev => ({
       ...prev,
@@ -458,7 +411,6 @@ const NewEditProductModal = ({
 
   const handleProductTypeChange = (e) => {
     const typeId = e.target.value;
-    console.log('Type Change:', { typeId });
     
     // Keep only the attributes that are still valid for the new type
     const validAttributeIds = filteredAttributes
@@ -470,15 +422,11 @@ const NewEditProductModal = ({
       })
       .map(attr => attr.id);
 
-    console.log('Valid Attributes for new type:', validAttributeIds);
-    
     const currentAttributes = formData.attributes || {};
     const updatedAttributes = Object.fromEntries(
       Object.entries(currentAttributes)
         .filter(([key]) => validAttributeIds.includes(Number(key)))
     );
-
-    console.log('Updated Attributes after type change:', updatedAttributes);
 
     setFormData(prev => ({
       ...prev,
@@ -549,10 +497,8 @@ const NewEditProductModal = ({
 
   const handleFile = (file) => {
     if (file.type.startsWith('image/')) {
-      console.log('Processing image file:', file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        console.log('Image converted to base64');
         setPreviewUrl(reader.result);
         setFormData(prev => ({
           ...prev,
