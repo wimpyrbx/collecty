@@ -33,6 +33,11 @@ const ProductList = () => {
     region: '',
     searchTerm: '',
   });
+  const [preselectedFilters, setPreselectedFilters] = useState({
+    product_group_id: '',
+    product_type_id: '',
+    region_id: ''
+  });
   const [productGroups, setProductGroups] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
   const [regions, setRegions] = useState([]);
@@ -47,11 +52,6 @@ const ProductList = () => {
     show: false,
     item: null,
     isDeleting: false
-  });
-  const [preselectedFilters, setPreselectedFilters] = useState({
-    product_group_id: '',
-    product_type_id: '',
-    region_id: ''
   });
 
   // Define fetchProducts as a function reference
@@ -753,21 +753,54 @@ const ProductList = () => {
 
   return (
     <div className="container-fluid">
-      <PageHeader bgClass="bg-dark" textClass="text-white">
-        <PageHeader.Icon>
-          <FaDatabase />
+      <PageHeader bgClass="bg-primary" textClass="text-white">
+        <PageHeader.Icon color="#66BB6A">
+          <FaBox />
         </PageHeader.Icon>
         <PageHeader.Title>
-          Inventory
+          Products
         </PageHeader.Title>
         <PageHeader.Actions>
+          <Form.Select
+            className="me-2"
+            style={{ width: 'auto', display: 'inline-block' }}
+            value={preselectedFilters.product_group_id}
+            onChange={(e) => setPreselectedFilters(prev => ({ ...prev, product_group_id: e.target.value }))}
+          >
+            <option value="">Select Group</option>
+            {productGroups.map(group => (
+              <option key={group.id} value={group.id}>{group.name}</option>
+            ))}
+          </Form.Select>
+          <Form.Select
+            className="me-2"
+            style={{ width: 'auto', display: 'inline-block' }}
+            value={preselectedFilters.product_type_id}
+            onChange={(e) => setPreselectedFilters(prev => ({ ...prev, product_type_id: e.target.value }))}
+          >
+            <option value="">Select Type</option>
+            {productTypes.map(type => (
+              <option key={type.id} value={type.id}>{type.name}</option>
+            ))}
+          </Form.Select>
+          <Form.Select
+            className="me-2"
+            style={{ width: 'auto', display: 'inline-block' }}
+            value={preselectedFilters.region_id}
+            onChange={(e) => setPreselectedFilters(prev => ({ ...prev, region_id: e.target.value }))}
+          >
+            <option value="">Select Region</option>
+            {regions.map(region => (
+              <option key={region.id} value={region.id}>{region.name}</option>
+            ))}
+          </Form.Select>
           <Button variant="light" onClick={handleAddClick}>
             <FaPlus className="me-2" />
-            Add Item
+            Add Product
           </Button>
         </PageHeader.Actions>
         <PageHeader.TitleSmall>
-          Manage your inventory items and their attributes
+          Manage your product catalog
         </PageHeader.TitleSmall>
       </PageHeader>
 
@@ -777,6 +810,24 @@ const ProductList = () => {
       {viewMode === 'grid' && renderGridView()}
       {viewMode === 'compact' && renderCompactView()}
       {viewMode === 'showcase' && renderShowcaseView()}
+
+      <NewAddProductModal
+        show={showAddModal}
+        onHide={() => setShowAddModal(false)}
+        onSuccess={() => {
+          setShowAddModal(false);
+          fetchProducts();
+        }}
+        preselectedGroup={preselectedFilters.product_group_id}
+        preselectedType={preselectedFilters.product_type_id}
+        preselectedRegion={preselectedFilters.region_id}
+        productGroups={productGroups}
+        productTypes={productTypes}
+        regions={regions}
+        attributes={attributes}
+        availableRatingGroups={availableRatingGroups}
+        availableRatings={availableRatings}
+      />
 
       {/* Pagination */}
       <div className="card mt-4">
