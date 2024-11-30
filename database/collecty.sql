@@ -1,4 +1,19 @@
 BEGIN TRANSACTION;
+CREATE TABLE IF NOT EXISTS "users" (
+	"id"	INTEGER,
+	"username"	TEXT NOT NULL CHECK(length("username") > 0) UNIQUE,
+	"password"	TEXT NOT NULL CHECK(length("password") > 0),
+	"is_active"	BOOLEAN NOT NULL DEFAULT 1,
+	"created_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"updated_at"	DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+CREATE TRIGGER update_users_timestamp 
+   AFTER UPDATE ON users
+BEGIN
+   UPDATE users SET updated_at = CURRENT_TIMESTAMP
+   WHERE id = NEW.id;
+END;
 CREATE TABLE IF NOT EXISTS "product_groups" (
 	"id"	INTEGER,
 	"name"	TEXT NOT NULL CHECK(length("name") > 0) UNIQUE,

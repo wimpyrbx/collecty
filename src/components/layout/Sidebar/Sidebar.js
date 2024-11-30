@@ -9,15 +9,22 @@ import {
   FaBook,
   FaDatabase,
   FaCog,
-  FaList
+  FaList,
+  FaSignOutAlt
 } from 'react-icons/fa';
 import SidebarItem from './SidebarItem';
 import './Sidebar.css';
 import ThemeSwitcher from '../../common/Utils/ThemeSwitcher';
 
-const Sidebar = () => {
+const Sidebar = ({ onLogout }) => {
   const openSwagger = () => {
     window.open('http://localhost:5000/api-docs', '_blank');
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to log out?')) {
+      onLogout();
+    }
   };
 
   return (
@@ -81,6 +88,17 @@ const Sidebar = () => {
             <li>
               <a href="#" onClick={openSwagger}>
                 <FaBook style={{color: '#BA68C8'}} /> API Docs
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        {/* Logout at bottom */}
+        <li className="menu-group mt-auto">
+          <ul>
+            <li>
+              <a href="#" onClick={handleLogout} className="logout-link">
+                <FaSignOutAlt style={{color: '#f44336'}} /> Logout
               </a>
             </li>
           </ul>
