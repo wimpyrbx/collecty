@@ -4,7 +4,6 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import Sidebar from './components/layout/Sidebar/Sidebar';
 import './styles/layout.css';
 import './styles/custom.css';
-import ThemeSwitcher from './components/common/Utils/ThemeSwitcher';
 import { Toaster } from 'react-hot-toast';
 import Login from './pages/Login';
 import axios from 'axios';
@@ -12,17 +11,15 @@ import axios from 'axios';
 // Pages
 import Dashboard from './pages/Dashboard';
 import ProductList from './pages/products/ProductList';
-import ProductGroups from './pages/products/ProductGroups';
-import ProductTypes from './pages/products/ProductTypes';
-import InventoryList from './pages/inventory/InventoryList';
-import RegionRatingManagement from './pages/reference/RegionRatingManagement';
-import ProductSites from './pages/reference/ProductSites';
+import RegionRatingManagement from './pages/admin/RegionRatingManagement';
+import ProductSites from './pages/admin/ProductSites';
 import CollectionCompletion from './pages/statistics/CollectionCompletion';
 import CollectionValue from './pages/statistics/CollectionValue';
 import UITest from './pages/UITest';
 import StatsTest from './pages/StatsTest';
 import Attributes from './pages/attributes/Attributes';
-import GroupTypeManagement from './pages/products/GroupTypeManagement';
+import GroupTypeManagement from './pages/admin/GroupTypeManagement';
+import InventoryList from './pages/inventory/InventoryList';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -99,9 +96,9 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/ui-test" element={<UITest />} />
               <Route path="/products" element={<ProductList />} />
+              <Route path="/inventory" element={<InventoryList />} />
               <Route path="/products/groups-types" element={<GroupTypeManagement />} />
               <Route path="/attributes" element={<Attributes />} />
-              <Route path="/inventory" element={<InventoryList />} />
               <Route path="/reference/region-ratings" element={<RegionRatingManagement />} />
               <Route path="/sites" element={<ProductSites />} />
               <Route path="/statistics/completion" element={<CollectionCompletion />} />

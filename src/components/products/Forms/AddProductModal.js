@@ -294,6 +294,7 @@ const NewAddProductModal = ({
       // Prepare the product data
       const productData = {
         title: formData.title,
+        variant: formData.variant || null,
         product_group_id: formData.product_group_id,
         product_type_id: formData.product_type_id,
         region_id: formData.region_id,
@@ -447,23 +448,6 @@ const NewAddProductModal = ({
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Product Name *</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="title"
-                        required
-                        ref={nameInputRef}
-                        value={formData.title || ''}
-                        onChange={handleInputChange}
-                        isInvalid={hasSubmitted && !formData.title}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        Product Name is required
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Col>
-                  <Col md={3}>
-                    <Form.Group className="mb-3">
                       <Form.Label>Product Group *</Form.Label>
                       <Form.Select
                         name="product_group_id"
@@ -484,7 +468,7 @@ const NewAddProductModal = ({
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
-                  <Col md={3}>
+                  <Col md={6}>
                     <Form.Group className="mb-3">
                       <Form.Label>Product Type *</Form.Label>
                       <Form.Select
@@ -508,22 +492,52 @@ const NewAddProductModal = ({
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={3}>
+                  <Col md={5}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Release Year</Form.Label>
+                      <Form.Label>Product Name *</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="title"
+                        required
+                        ref={nameInputRef}
+                        value={formData.title || ''}
+                        onChange={handleInputChange}
+                        isInvalid={hasSubmitted && !formData.title}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        Product Name is required
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                  <Col md={5}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Variant</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="variant"
+                        value={formData.variant || ''}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={2}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Year</Form.Label>
                       <Form.Select
                         name="release_year"
                         value={formData.release_year || ''}
                         onChange={handleInputChange}
                       >
-                        <option value="">Select Year</option>
+                        <option value=""></option>
                         {Array.from({ length: new Date().getFullYear() - 1949 }, (_, i) => 1950 + i).map(year => (
                           <option key={year} value={year}>{year}</option>
                         ))}
                       </Form.Select>
                     </Form.Group>
                   </Col>
-                  <Col md={3}>
+                </Row>
+                <Row>
+                  <Col md={4}>
                     <ChainedSelect
                       name="region_id"
                       label="Region *"
@@ -535,7 +549,7 @@ const NewAddProductModal = ({
                       feedback="Region is required"
                     />
                   </Col>
-                  <Col md={3}>
+                  <Col md={4}>
                     <ChainedSelect
                       name="rating_group_id"
                       label="Rating Group"
@@ -545,7 +559,7 @@ const NewAddProductModal = ({
                       disabled={!formData.region_id}
                     />
                   </Col>
-                  <Col md={3}>
+                  <Col md={4}>
                     <ChainedSelect
                       name="rating_id"
                       label="Rating"

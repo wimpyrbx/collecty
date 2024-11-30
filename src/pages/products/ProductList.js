@@ -23,6 +23,7 @@ import RegionImage from '../../components/common/Images/RegionImage';
 import ProductTypeImage from '../../components/common/Images/ProductTypeImage';
 import PageHeader from '../../components/layout/PageHeader/PageHeader';
 import DeleteModal from '../../components/common/Modal/DeleteModal';
+import SimplePagination from '../../components/common/SimplePagination';
 import './ProductList.css';
 
 const IMAGE_SIZE = {
@@ -823,6 +824,14 @@ const ProductList = () => {
       {viewMode === 'compact' && renderCompactView()}
       {viewMode === 'showcase' && renderShowcaseView()}
 
+      {/* Pagination */}
+      <SimplePagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+
+      {/* Add Product Modal */}
       <AddProductModal
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
@@ -839,60 +848,6 @@ const ProductList = () => {
         attributes={attributes}
         availableRatingGroups={availableRatingGroups}
         availableRatings={availableRatings}
-      />
-
-      {/* Pagination */}
-      <div className="card mt-4">
-        <div className="card-body d-flex justify-content-between align-items-center">
-          <div>
-            Showing {indexOfFirstProduct + 1} to {Math.min(indexOfLastProduct, filteredProducts.length)} of {filteredProducts.length} entries
-          </div>
-          <nav>
-            <ul className="pagination mb-0">
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => setCurrentPage(1)}>First</button>
-              </li>
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => setCurrentPage(prev => prev - 1)}>Previous</button>
-              </li>
-              {[...Array(totalPages)].map((_, i) => (
-                <li key={i + 1} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
-                  <button 
-                    className="page-link"
-                    onClick={() => setCurrentPage(i + 1)}
-                  >
-                    {i + 1}
-                  </button>
-                </li>
-              )).slice(Math.max(0, currentPage - 3), Math.min(totalPages, currentPage + 2))}
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => setCurrentPage(prev => prev + 1)}>Next</button>
-              </li>
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => setCurrentPage(totalPages)}>Last</button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-
-      {/* Add Product Modal */}
-      <AddProductModal
-        show={showAddModal}
-        onHide={() => setShowAddModal(false)}
-        onProductAdded={fetchProducts}
-        productGroups={productGroups}
-        productTypes={productTypes}
-        regions={regions}
-        availableRatingGroups={availableRatingGroups}
-        availableRatings={availableRatings}
-        attributes={attributes}
-        attributeValues={attributeValues}
-        initialData={{
-          product_group_id: preselectedFilters.product_group_id || '',
-          product_type_id: preselectedFilters.product_type_id || '',
-          region_id: preselectedFilters.region_id || ''
-        }}
       />
 
       {/* Edit Product Modal */}

@@ -38,56 +38,56 @@ const Sidebar = ({ onLogout }) => {
         {/* Dashboard Group */}
         <li className="menu-group">
           <div className="menu-group-title">
-            <FaBox style={{color: '#4CAF50'}} /> Dashboard
+            <FaBox /> Dashboard
           </div>
           <ul>
-            <SidebarItem to="/products" icon={<FaDatabase style={{color: '#66BB6A'}} />} label="Products" />
-            <SidebarItem to="/inventory" icon={<FaList style={{color: '#81C784'}} />} label="Inventory" />
+            <SidebarItem to="/products" icon={<FaDatabase />} label="Products" />
+            <SidebarItem to="/inventory" icon={<FaList />} label="Inventory" />
           </ul>
         </li>
 
         {/* Admin Group */}
         <li className="menu-group">
           <div className="menu-group-title">
-            <FaCog style={{color: '#2196F3'}} /> Admin
+            <FaCog /> Admin
           </div>
           <ul>
-            <SidebarItem to="/attributes" icon={<FaTags style={{color: '#42A5F5'}} />} label="Attributes" />
+            <SidebarItem to="/attributes" icon={<FaTags />} label="Attributes" />
             <SidebarItem 
               to="/products/groups-types" 
-              icon={<FaTags style={{color: '#64B5F6'}} />} 
+              icon={<FaTags />} 
               label="Groups/Types" 
             />
             <SidebarItem 
               to="/reference/region-ratings" 
-              icon={<FaGlobe style={{color: '#90CAF9'}} />} 
+              icon={<FaGlobe />} 
               label="Regions/Ratings" 
             />
-            <SidebarItem to="/sites" icon={<FaGlobe style={{color: '#BBDEFB'}} />} label="Sites" />
+            <SidebarItem to="/sites" icon={<FaGlobe />} label="Sites" />
           </ul>
         </li>
 
         {/* Statistics Group */}
         <li className="menu-group">
           <div className="menu-group-title">
-            <FaChartLine style={{color: '#FF9800'}} /> Statistics
+            <FaChartLine /> Statistics
           </div>
           <ul>
-            <SidebarItem to="/statistics/completion" icon={<FaChartLine style={{color: '#FFA726'}} />} label="Completion" />
-            <SidebarItem to="/statistics/value" icon={<FaChartLine style={{color: '#FFB74D'}} />} label="Value" />
+            <SidebarItem to="/statistics/completion" icon={<FaChartLine />} label="Completion" />
+            <SidebarItem to="/statistics/value" icon={<FaChartLine />} label="Value" />
           </ul>
         </li>
 
         {/* Development Group */}
         <li className="menu-group">
           <div className="menu-group-title">
-            <FaTools style={{color: '#9C27B0'}} /> Development
+            <FaTools /> Development
           </div>
           <ul>
-            <SidebarItem to="/ui-test" icon={<FaTools style={{color: '#AB47BC'}} />} label="UI Test" />
+            <SidebarItem to="/ui-test" icon={<FaTools />} label="UI Test" />
             <li>
               <a href="#" onClick={openSwagger}>
-                <FaBook style={{color: '#BA68C8'}} /> API Docs
+                <FaBook /> API Docs
               </a>
             </li>
           </ul>
@@ -98,7 +98,7 @@ const Sidebar = ({ onLogout }) => {
           <ul>
             <li>
               <a href="#" onClick={handleLogout} className="logout-link">
-                <FaSignOutAlt style={{color: '#f44336'}} /> Logout
+                <FaSignOutAlt /> Logout
               </a>
             </li>
           </ul>

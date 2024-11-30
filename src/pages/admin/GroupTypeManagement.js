@@ -4,7 +4,6 @@ import { FaTags, FaPlus, FaEdit, FaTrash, FaLayerGroup } from 'react-icons/fa';
 import axios from 'axios';
 import { toast, Toaster } from 'react-hot-toast';
 import PageHeader from '../../components/layout/PageHeader/PageHeader';
-import './GroupTypeManagement.css';
 import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../components/common/Modal';
 import DeleteModal from '../../components/common/Modal/DeleteModal';
 
@@ -29,6 +28,15 @@ const GroupTypeManagement = () => {
   
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
+
+  // Add handleAddClick function
+  const handleAddClick = (type) => {
+    if (type === 'group') {
+      handleModalShow('addGroup');
+    } else if (type === 'type') {
+      handleModalShow('addType');
+    }
+  };
 
   // Add state for delete modal
   const [deleteModal, setDeleteModal] = useState({
@@ -149,7 +157,7 @@ const GroupTypeManagement = () => {
   };
 
   const renderGroupsList = () => (
-    <div className="section-content">
+    <div>
       {loading.groups ? (
         <div className="text-center py-3">
           <div className="spinner-border spinner-border-sm" role="status">
@@ -157,27 +165,40 @@ const GroupTypeManagement = () => {
           </div>
         </div>
       ) : (
-        <div className="list-group">
-          {groups.map(group => (
-            <div
-              key={group.id}
-              className="list-group-item d-flex justify-content-between align-items-center"
-            >
-              <span>{group.name}</span>
-              <div>
-                <FaEdit 
-                  className="me-2" 
-                  role="button" 
-                  onClick={() => handleModalShow('editGroup', group)}
-                />
-                <FaTrash 
-                  className="text-danger" 
-                  role="button" 
-                  onClick={() => showDeleteModal('product-groups', group)}
-                />
-              </div>
-            </div>
-          ))}
+        <div className="table-responsive">
+          <table className="table table-striped table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th style={{width: '1%'}}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {groups.map(group => (
+                <tr key={group.id}>
+                  <td>{group.name}</td>
+                  <td>{group.description || '-'}</td>
+                  <td>
+                    <div className="d-flex gap-2">
+                      <FaEdit 
+                        className="text-primary cursor-pointer" 
+                        role="button"
+                        onClick={() => handleModalShow('editGroup', group)}
+                        title="Edit"
+                      />
+                      <FaTrash 
+                        className="text-danger cursor-pointer" 
+                        role="button"
+                        onClick={() => showDeleteModal('product-groups', group)}
+                        title="Delete"
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
@@ -192,27 +213,40 @@ const GroupTypeManagement = () => {
           </div>
         </div>
       ) : (
-        <div className="list-group">
-          {types.map(type => (
-            <div
-              key={type.id}
-              className="list-group-item d-flex justify-content-between align-items-center"
-            >
-              <span>{type.name}</span>
-              <div>
-                <FaEdit 
-                  className="me-2" 
-                  role="button" 
-                  onClick={() => handleModalShow('editType', type)}
-                />
-                <FaTrash 
-                  className="text-danger" 
-                  role="button" 
-                  onClick={() => showDeleteModal('product-types', type)}
-                />
-              </div>
-            </div>
-          ))}
+        <div className="table-responsive">
+          <table className="table table-striped table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th style={{width: '1%'}}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {types.map(type => (
+                <tr key={type.id}>
+                  <td>{type.name}</td>
+                  <td>{type.description || '-'}</td>
+                  <td>
+                    <div className="d-flex gap-2">
+                      <FaEdit 
+                        className="text-primary cursor-pointer" 
+                        role="button"
+                        onClick={() => handleModalShow('editType', type)}
+                        title="Edit"
+                      />
+                      <FaTrash 
+                        className="text-danger cursor-pointer" 
+                        role="button"
+                        onClick={() => showDeleteModal('product-types', type)}
+                        title="Delete"
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
@@ -318,59 +352,54 @@ const GroupTypeManagement = () => {
 
   return (
     <div className="container-fluid">
-      <PageHeader bgClass="bg-primary" textClass="text-white">
-        <PageHeader.Icon color="#66BB6A">
-          <FaLayerGroup />
-        </PageHeader.Icon>
-        <PageHeader.Title>
-          Groups & Types
-        </PageHeader.Title>
-        <PageHeader.Actions>
-          <Button variant="light" onClick={() => handleAddClick('group')}>
-            <FaPlus className="me-2" />
-            Add Group
-          </Button>
-          <Button variant="light" className="ms-2" onClick={() => handleAddClick('type')}>
-            <FaPlus className="me-2" />
-            Add Type
-          </Button>
-        </PageHeader.Actions>
-        <PageHeader.TitleSmall>
-          Manage product groups and types
-        </PageHeader.TitleSmall>
-      </PageHeader>
+      <Row>
+        <Col md={6}>
+          <PageHeader bgClass="bg-primary" textClass="text-white">
+            <PageHeader.Icon color="#66BB6A">
+              <FaLayerGroup />
+            </PageHeader.Icon>
+            <PageHeader.Title>
+              Groups
+            </PageHeader.Title>
+            <PageHeader.Actions>
+              <Button variant="light" onClick={() => handleAddClick('group')}>
+                <FaPlus className="me-2" />
+                Add Group
+              </Button>
+            </PageHeader.Actions>
+            <PageHeader.TitleSmall>
+              Manage product groups
+            </PageHeader.TitleSmall>
+          </PageHeader>
+        </Col>
+        <Col md={6}>
+          <PageHeader bgClass="bg-primary" textClass="text-white">
+            <PageHeader.Icon color="#66BB6A">
+              <FaTags />
+            </PageHeader.Icon>
+            <PageHeader.Title>
+              Types
+            </PageHeader.Title>
+            <PageHeader.Actions>
+              <Button variant="light" onClick={() => handleAddClick('type')}>
+                <FaPlus className="me-2" />
+                Add Type
+              </Button>
+            </PageHeader.Actions>
+            <PageHeader.TitleSmall>
+              Manage product types
+            </PageHeader.TitleSmall>
+          </PageHeader>
+        </Col>
+      </Row>
 
       <Row className="g-4">
         <Col md={6}>
-          <div className="section-container">
-            <div className="section-header bg-primary text-white">
-              <h5 className="mb-0">Groups</h5>
-              <Button 
-                size="sm" 
-                variant="light"
-                onClick={() => handleModalShow('addGroup')}
-              >
-                <FaPlus className="me-1" /> Add Group
-              </Button>
-            </div>
-            {renderGroupsList()}
-          </div>
+          {renderGroupsList()}
         </Col>
 
         <Col md={6}>
-          <div className="section-container">
-            <div className="section-header bg-primary text-white">
-              <h5 className="mb-0">Types</h5>
-              <Button 
-                size="sm" 
-                variant="light"
-                onClick={() => handleModalShow('addType')}
-              >
-                <FaPlus className="me-1" /> Add Type
-              </Button>
-            </div>
-            {renderTypesList()}
-          </div>
+          {renderTypesList()}
         </Col>
       </Row>
 

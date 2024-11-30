@@ -1,0 +1,47 @@
+.search-results {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--bs-gray-300);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.search-results > div {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--bs-gray-200);
+}
+
+.search-results > div:hover {
+  background-color: var(--bs-gray-100);
+}
+
+.search-results > div:last-child {
+  border-bottom: none;
+}
+
+.selected-product-info {
+  background-color: var(--bs-gray-100);
+  border-color: var(--bs-gray-300) !important;
+}
+
+.selected-product-info h6 {
+  color: var(--bs-gray-700);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.selected-product-info p {
+  margin-bottom: 0.5rem;
+  color: var(--bs-gray-700);
+}
+
+.selected-product-info p strong {
+  color: var(--bs-gray-900);
+  margin-right: 0.5rem;
+}
+
+.search-results .badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+} 

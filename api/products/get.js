@@ -39,7 +39,8 @@ router.get('/', async (req, res) => {
     extended,
     groupId, 
     typeId, 
-    regionId, 
+    regionId,
+    search,
     sortField = 'title', 
     sortOrder = 'asc',
     page = 1,
@@ -76,6 +77,12 @@ router.get('/', async (req, res) => {
         LEFT JOIN pricecharting_prices pp ON p.id = pp.product_id
         WHERE 1=1`;
 
+      // Add search condition
+      if (search) {
+        sql += ' AND p.title LIKE ?';
+        params.push(`%${search}%`);
+      }
+
       // Add filters for extended query
       if (id) {
         sql += ' AND p.id = ?';
@@ -98,6 +105,12 @@ router.get('/', async (req, res) => {
     } else {
       // Basic query without joins
       sql = 'SELECT * FROM products WHERE 1=1';
+
+      // Add search condition
+      if (search) {
+        sql += ' AND title LIKE ?';
+        params.push(`%${search}%`);
+      }
 
       // Add filters for basic query
       if (id) {

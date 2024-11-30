@@ -155,11 +155,11 @@
 
 .attributes-section {
   display: none;
+  margin-top: 1.5rem;
 }
 
 .attributes-section.show {
   display: block;
-  margin-top: 0.25rem;
 }
 
 .new-product-modal .attribute-card {

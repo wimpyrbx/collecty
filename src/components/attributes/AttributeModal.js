@@ -496,38 +496,83 @@ const AttributeModal = ({
             </Col>
           </Row>
 
-          <Row className="mb-3">
+          <Row>
             <Col md={4}>
               <Form.Group>
-                <Form.Label>Required</Form.Label>
-                <Form.Check
-                  type="checkbox"
-                  name="is_required"
-                  checked={formData.is_required}
-                  onChange={handleInputChange}
-                />
+                <div 
+                  className="custom-checkbox-container"
+                  onClick={() => handleInputChange({
+                    target: {
+                      name: 'is_required',
+                      type: 'checkbox',
+                      checked: !formData.is_required
+                    }
+                  })}
+                >
+                  <Form.Check
+                    type="checkbox"
+                    id="is_required"
+                    name="is_required"
+                    checked={formData.is_required}
+                    onChange={handleInputChange}
+                    className="custom-checkbox"
+                  />
+                  <label htmlFor="is_required" className="custom-checkbox-label">
+                    Required
+                  </label>
+                </div>
               </Form.Group>
             </Col>
             <Col md={4}>
               <Form.Group>
-                <Form.Label>Use Image</Form.Label>
-                <Form.Check
-                  type="checkbox"
-                  name="use_image"
-                  checked={formData.use_image}
-                  onChange={handleInputChange}
-                />
+                <div 
+                  className="custom-checkbox-container"
+                  onClick={() => handleInputChange({
+                    target: {
+                      name: 'use_image',
+                      type: 'checkbox',
+                      checked: !formData.use_image
+                    }
+                  })}
+                >
+                  <Form.Check
+                    type="checkbox"
+                    id="use_image"
+                    name="use_image"
+                    checked={formData.use_image}
+                    onChange={handleInputChange}
+                    className="custom-checkbox"
+                  />
+                  <label htmlFor="use_image" className="custom-checkbox-label">
+                    Use Image
+                  </label>
+                </div>
               </Form.Group>
             </Col>
             <Col md={4}>
               <Form.Group>
-                <Form.Label>Active</Form.Label>
-                <Form.Check
-                  type="checkbox"
-                  name="is_active"
-                  checked={formData.is_active}
-                  onChange={handleInputChange}
-                />
+                <div 
+                  className="custom-checkbox-container"
+                  onClick={() => handleInputChange({
+                    target: {
+                      name: 'is_active',
+                      type: 'checkbox',
+                      checked: !formData.is_active
+                    }
+                  })}
+                >
+                  <Form.Check
+                    type="checkbox"
+                    id="is_active"
+                    name="is_active"
+                    checked={formData.is_active}
+                    onChange={handleInputChange}
+                    className="custom-checkbox"
+                  />
+                  <label htmlFor="is_active" className="custom-checkbox-label">
+                    Active
+                  </label>
+                </div>
               </Form.Group>
             </Col>
           </Row>

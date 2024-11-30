@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, InputGroup, Row, Col } from 'react-bootstrap';
-import { FaGlobe, FaPlus, FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaGlobe, FaPlus, FaSearch, FaEdit, FaTrash, FaLayerGroup, FaTags } from 'react-icons/fa';
 import axios from 'axios';
 import { toast, Toaster } from 'react-hot-toast';
 import PageHeader from '../../components/layout/PageHeader/PageHeader';
-import './RegionRatingManagement.css';
 import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../components/common/Modal';
 import DeleteModal from '../../components/common/Modal/DeleteModal';
 
@@ -268,147 +267,6 @@ const RegionRatingManagement = () => {
     }
   };
 
-  const renderRegionsList = () => (
-    <div className="section-content">
-      {loading.regions ? (
-        <div className="text-center py-3">
-          <div className="spinner-border spinner-border-sm" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      ) : (
-        <div className="list-group">
-          {regions.map(region => (
-            <button
-              key={region.id}
-              className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${
-                selectedRegion?.id === region.id ? 'active' : ''
-              }`}
-              onClick={() => handleRegionSelect(region)}
-            >
-              <span>{region.name}</span>
-              <div>
-                <FaEdit 
-                  className="me-2" 
-                  role="button" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleModalShow('editRegion', region);
-                  }}
-                />
-                <FaTrash 
-                  className="text-danger" 
-                  role="button" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    showDeleteModal('regions', region);
-                  }}
-                />
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-
-  const renderRatingGroupsList = () => (
-    <div className="section-content">
-      {loading.groups ? (
-        <div className="text-center py-3">
-          <div className="spinner-border spinner-border-sm" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      ) : selectedRegion ? (
-        <div className="list-group">
-          {ratingGroups
-            .filter(group => group.region_id === selectedRegion.id)
-            .map(group => (
-              <button
-                key={group.id}
-                className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${
-                  selectedRatingGroup?.id === group.id ? 'active' : ''
-                }`}
-                onClick={() => handleRatingGroupSelect(group)}
-              >
-                <span>{group.name}</span>
-                <div>
-                  <FaEdit 
-                    className="me-2" 
-                    role="button" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleModalShow('editRatingGroup', group);
-                    }}
-                  />
-                  <FaTrash 
-                    className="text-danger" 
-                    role="button" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      showDeleteModal('rating-groups', group);
-                    }}
-                  />
-                </div>
-              </button>
-            ))}
-        </div>
-      ) : (
-        <div className="text-center text-muted py-3">
-          Select a region to view rating groups
-        </div>
-      )}
-    </div>
-  );
-
-  const renderRatingsList = () => (
-    <div className="section-content">
-      {loading.ratings ? (
-        <div className="text-center py-3">
-          <div className="spinner-border spinner-border-sm" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      ) : selectedRatingGroup ? (
-        <div className="list-group">
-          {ratings
-            .filter(rating => rating.rating_group_id === selectedRatingGroup.id)
-            .map(rating => (
-              <div
-                key={rating.id}
-                className="list-group-item d-flex justify-content-between align-items-center"
-              >
-                <span>{rating.name}</span>
-                <div>
-                  <FaEdit 
-                    className="me-2" 
-                    role="button" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleModalShow('editRating', rating);
-                    }}
-                  />
-                  <FaTrash 
-                    className="text-danger" 
-                    role="button" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      showDeleteModal('ratings', rating);
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-        </div>
-      ) : (
-        <div className="text-center text-muted py-3">
-          Select a rating group to view ratings
-        </div>
-      )}
-    </div>
-  );
-
   // Add these modal render functions
   const renderModals = () => (
     <>
@@ -552,72 +410,256 @@ const RegionRatingManagement = () => {
 
   return (
     <div className="container-fluid">
-      <PageHeader bgClass="bg-primary" textClass="text-white">
-        <PageHeader.Icon color="#66BB6A">
-          <FaGlobe />
-        </PageHeader.Icon>
-        <PageHeader.Title>
-          Regions & Ratings
-        </PageHeader.Title>
-        <PageHeader.Actions>
-          <Button variant="light" onClick={() => handleModalShow('addRegion')}>
-            <FaPlus className="me-2" />
-            Add Region
-          </Button>
-        </PageHeader.Actions>
-        <PageHeader.TitleSmall>
-          Manage regions and rating systems
-        </PageHeader.TitleSmall>
-      </PageHeader>
+      <Row>
+        <Col md={4}>
+          <PageHeader bgClass="bg-primary" textClass="text-white">
+            <PageHeader.Icon color="#66BB6A">
+              <FaGlobe />
+            </PageHeader.Icon>
+            <PageHeader.Title>
+              Regions
+            </PageHeader.Title>
+            <PageHeader.Actions>
+              <Button variant="light" onClick={() => handleModalShow('addRegion')}>
+                <FaPlus className="me-2" />
+                Add Region
+              </Button>
+            </PageHeader.Actions>
+            <PageHeader.TitleSmall>
+              Manage regions
+            </PageHeader.TitleSmall>
+          </PageHeader>
+        </Col>
+        <Col md={4}>
+          <PageHeader bgClass="bg-primary" textClass="text-white">
+            <PageHeader.Icon color="#66BB6A">
+              <FaLayerGroup />
+            </PageHeader.Icon>
+            <PageHeader.Title>
+              Rating Groups
+            </PageHeader.Title>
+            <PageHeader.Actions>
+              <Button variant="light" disabled={!selectedRegion} onClick={() => handleModalShow('addRatingGroup')}>
+                <FaPlus className="me-2" />
+                Add Group
+              </Button>
+            </PageHeader.Actions>
+            <PageHeader.TitleSmall>
+              Manage rating groups
+            </PageHeader.TitleSmall>
+          </PageHeader>
+        </Col>
+        <Col md={4}>
+          <PageHeader bgClass="bg-primary" textClass="text-white">
+            <PageHeader.Icon color="#66BB6A">
+              <FaTags />
+            </PageHeader.Icon>
+            <PageHeader.Title>
+              Ratings
+            </PageHeader.Title>
+            <PageHeader.Actions>
+              <Button variant="light" disabled={!selectedRatingGroup} onClick={() => handleModalShow('addRating')}>
+                <FaPlus className="me-2" />
+                Add Rating
+              </Button>
+            </PageHeader.Actions>
+            <PageHeader.TitleSmall>
+              Manage ratings
+            </PageHeader.TitleSmall>
+          </PageHeader>
+        </Col>
+      </Row>
 
       <Row className="g-4">
         <Col md={4}>
-          <div className="section-container">
-            <div className="section-header bg-primary text-white">
-              <h5 className="mb-0">Regions</h5>
-              <Button 
-                size="sm" 
-                variant="light"
-                onClick={() => handleModalShow('addRegion')}
-              >
-                <FaPlus className="me-1" /> Add Region
-              </Button>
-            </div>
-            {renderRegionsList()}
+          <div>
+            {loading.regions ? (
+              <div className="text-center py-3">
+                <div className="spinner-border spinner-border-sm" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : (
+              <div className="table-responsive">
+                <table className="table table-striped table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th style={{width: '3px', padding: 0}}></th>
+                      <th>Name</th>
+                      <th style={{width: '1%'}}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {regions.map(region => (
+                      <tr 
+                        key={region.id} 
+                        className={`${selectedRegion?.id === region.id ? 'table-active' : ''}`}
+                        onClick={() => handleRegionSelect(region)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <td style={{
+                          padding: 0,
+                          background: selectedRegion?.id === region.id ? 'var(--bs-success)' : 'transparent'
+                        }}></td>
+                        <td>{region.name}</td>
+                        <td>
+                          <div className="d-flex gap-2">
+                            <FaEdit 
+                              className="text-primary cursor-pointer" 
+                              role="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleModalShow('editRegion', region);
+                              }}
+                              title="Edit"
+                            />
+                            <FaTrash 
+                              className="text-danger cursor-pointer" 
+                              role="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                showDeleteModal('regions', region);
+                              }}
+                              title="Delete"
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </Col>
 
         <Col md={4}>
-          <div className="section-container">
-            <div className="section-header bg-primary text-white">
-              <h5 className="mb-0">Rating Groups</h5>
-              <Button 
-                size="sm" 
-                variant="light"
-                disabled={!selectedRegion}
-                onClick={() => handleModalShow('addRatingGroup')}
-              >
-                <FaPlus className="me-1" /> Add Group
-              </Button>
-            </div>
-            {renderRatingGroupsList()}
+          <div>
+            {loading.groups ? (
+              <div className="text-center py-3">
+                <div className="spinner-border spinner-border-sm" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : selectedRegion ? (
+              <div className="table-responsive">
+                <table className="table table-striped table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th style={{width: '3px', padding: 0}}></th>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th style={{width: '1%'}}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ratingGroups
+                      .filter(group => group.region_id === selectedRegion.id)
+                      .map(group => (
+                        <tr 
+                          key={group.id}
+                          className={`${selectedRatingGroup?.id === group.id ? 'table-active' : ''}`}
+                          onClick={() => handleRatingGroupSelect(group)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <td style={{
+                            padding: 0,
+                            background: selectedRatingGroup?.id === group.id ? 'var(--bs-success)' : 'transparent'
+                          }}></td>
+                          <td>{group.name}</td>
+                          <td>{group.description || '-'}</td>
+                          <td>
+                            <div className="d-flex gap-2">
+                              <FaEdit 
+                                className="text-primary cursor-pointer" 
+                                role="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleModalShow('editRatingGroup', group);
+                                }}
+                                title="Edit"
+                              />
+                              <FaTrash 
+                                className="text-danger cursor-pointer" 
+                                role="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  showDeleteModal('rating-groups', group);
+                                }}
+                                title="Delete"
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center text-muted py-3">
+                Select a region to view rating groups
+              </div>
+            )}
           </div>
         </Col>
 
         <Col md={4}>
-          <div className="section-container">
-            <div className="section-header bg-primary text-white">
-              <h5 className="mb-0">Ratings</h5>
-              <Button 
-                size="sm" 
-                variant="light"
-                disabled={!selectedRatingGroup}
-                onClick={() => handleModalShow('addRating')}
-              >
-                <FaPlus className="me-1" /> Add Rating
-              </Button>
-            </div>
-            {renderRatingsList()}
+          <div>
+            {loading.ratings ? (
+              <div className="text-center py-3">
+                <div className="spinner-border spinner-border-sm" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : selectedRatingGroup ? (
+              <div className="table-responsive">
+                <table className="table table-striped table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Age</th>
+                      <th style={{width: '1%'}}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ratings
+                      .filter(rating => rating.rating_group_id === selectedRatingGroup.id)
+                      .map(rating => (
+                        <tr key={rating.id}>
+                          <td>{rating.name}</td>
+                          <td>{rating.age || '-'}</td>
+                          <td>
+                            <div className="d-flex gap-2">
+                              <FaEdit 
+                                className="text-primary cursor-pointer" 
+                                role="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleModalShow('editRating', rating);
+                                }}
+                                title="Edit"
+                              />
+                              <FaTrash 
+                                className="text-danger cursor-pointer" 
+                                role="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  showDeleteModal('ratings', rating);
+                                }}
+                                title="Delete"
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center text-muted py-3">
+                Select a rating group to view ratings
+              </div>
+            )}
           </div>
         </Col>
       </Row>
