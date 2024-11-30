@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../db');
-const { processImage } = require('./imageUtils');
 
 router.post('/', async (req, res) => {
   const {
@@ -10,7 +9,6 @@ router.post('/', async (req, res) => {
     product_type_id,
     region_id,
     rating_id,
-    image_url,
     release_year,
     description,
     is_active,
@@ -78,15 +76,6 @@ router.post('/', async (req, res) => {
     });
 
     const productId = result.lastID;
-
-    // Process image if provided
-    if (image_url && image_url.startsWith('data:image')) {
-      try {
-        await processImage(image_url, productId);
-      } catch (error) {
-        throw new Error('Failed to process image: ' + error.message);
-      }
-    }
 
     // Insert attributes if any
     if (attributes && attributes.length > 0) {

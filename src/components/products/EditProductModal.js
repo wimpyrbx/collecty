@@ -81,12 +81,12 @@ const EditProductModal = ({ show, onHide, productId, onProductUpdated }) => {
           setFormData({
             title: productData.title,
             product_group_id: productData.product_group_id.toString(),
-            product_type_id: productData.product_type_id.toString(),
-            region_id: productData.region_id.toString(),
-            rating_group_id: productData.rating_group_id?.toString() || '',
-            rating_id: productData.rating_id?.toString() || '',
-            image_url: productData.image_url || '',
-            release_year: productData.release_year?.toString() || '',
+            product_type_id: productData.product_type_id || '',
+            region_id: productData.region_id || '',
+            rating_id: productData.rating_id || '',
+            rating_group_id: '',
+            product_image: productData.product_image || '',
+            release_year: productData.release_year || '',
             description: productData.description || '',
             is_active: productData.is_active
           });

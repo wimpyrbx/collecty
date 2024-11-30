@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
         name,
         description,
         is_active,
-        '/assets/images/regions/' || LOWER(REPLACE(name, '-', '_')) || '.webp' as image_url
+        '/assets/images/regions/' || LOWER(REPLACE(name, '-', '_')) || '.webp' as region_image_path
       FROM regions 
       WHERE is_active = 1 
       ORDER BY name ${sortOrder.toUpperCase()}

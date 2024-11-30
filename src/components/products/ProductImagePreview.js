@@ -2,7 +2,7 @@ import React from 'react';
 import { FaImage } from 'react-icons/fa';
 import './ProductImagePreview.css';
 
-const ProductImagePreview = ({ imageUrl, size = 'medium' }) => {
+const ProductImagePreview = ({ imageSrc, size = 'medium' }) => {
   const [imageError, setImageError] = React.useState(false);
 
   const handleImageError = () => {
@@ -13,7 +13,7 @@ const ProductImagePreview = ({ imageUrl, size = 'medium' }) => {
     setImageError(false);
   };
 
-  if (!imageUrl) {
+  if (!imageSrc) {
     return (
       <div className={`image-preview placeholder ${size}`}>
         <FaImage />
@@ -24,7 +24,7 @@ const ProductImagePreview = ({ imageUrl, size = 'medium' }) => {
   return (
     <div className={`image-preview ${size}`}>
       <img 
-        src={imageUrl} 
+        src={imageSrc} 
         alt="Preview"
         onError={handleImageError}
         onLoad={handleImageLoad}

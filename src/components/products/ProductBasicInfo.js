@@ -24,18 +24,8 @@ const ProductBasicInfo = ({
       {/* Left Column - Image Section */}
       <Col md={3}>
         <div className="image-section">
-          <Form.Group className="mb-2">
-            <Form.Label>Image URL</Form.Label>
-            <Form.Control
-              type="url"
-              name="image_url"
-              value={formData.image_url || ''}
-              onChange={onChange}
-              placeholder="https://"
-            />
-          </Form.Group>
           <div className="image-container">
-            <ProductImagePreview imageUrl={formData.image_url} size="large" />
+            <ProductImagePreview imageSrc={formData.product_image} size="large" />
           </div>
         </div>
       </Col>

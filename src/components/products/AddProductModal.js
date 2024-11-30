@@ -16,7 +16,7 @@ const initialFormState = {
   region_id: '',
   rating_id: '',
   rating_group_id: '',
-  image_url: '',
+  product_image: '',
   release_year: '',
   description: '',
   is_active: true

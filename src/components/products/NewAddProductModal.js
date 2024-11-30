@@ -18,7 +18,7 @@ const initialFormState = {
   region_id: '',
   rating_id: '',
   rating_group_id: '',
-  image_url: '',
+  product_image: '',
   release_year: '',
   description: '',
   is_active: true,
@@ -232,7 +232,7 @@ const NewAddProductModal = ({
         setPreviewUrl(reader.result);
         setFormData(prev => ({
           ...prev,
-          image_url: reader.result
+          product_image: reader.result
         }));
       };
       reader.readAsDataURL(file);
@@ -247,7 +247,7 @@ const NewAddProductModal = ({
       setPreviewUrl('');
       setFormData(prev => ({
         ...prev,
-        image_url: null
+        product_image: null
       }));
       toast.success('Image deleted successfully');
       setShowDeleteConfirm(false);
@@ -302,7 +302,7 @@ const NewAddProductModal = ({
         release_year: formData.release_year || null,
         description: formData.description || null,
         is_active: 1,
-        image_url: formData.image_url || null
+        product_image: formData.product_image || null
       };
 
       // Prepare attribute values

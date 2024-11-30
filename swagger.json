@@ -1794,7 +1794,7 @@
                         "id": { "type": "integer" },
                         "product_id": { "type": "integer" },
                         "product_title": { "type": "string" },
-                        "product_image_url": { "type": "string", "nullable": true },
+                        "product_image": { "type": "string", "nullable": true },
                         "product_group_name": { "type": "string" },
                         "product_type_name": { "type": "string" },
                         "region_name": { "type": "string" },

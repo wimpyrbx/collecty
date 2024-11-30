@@ -24,7 +24,7 @@ router.put('/:id', async (req, res) => {
     product_type_id,
     region_id,
     rating_id,
-    image_url,
+    product_image,
     release_year,
     description,
     is_active,
@@ -33,17 +33,17 @@ router.put('/:id', async (req, res) => {
 
   console.log('=== PUT /products/:id ===');
   console.log('Product ID:', productId);
-  console.log('Image data present:', image_url ? 'Yes (base64)' : 'No');
+  console.log('Image data present:', product_image ? 'Yes (base64)' : 'No');
 
   try {
     // Start transaction
     await db.runAsync('BEGIN TRANSACTION');
 
     // Handle image if provided
-    if (image_url && image_url.startsWith('data:image')) {
+    if (product_image && product_image.startsWith('data:image')) {
       console.log('Processing new image...');
       try {
-        await processImage(image_url, productId);
+        await processImage(product_image, productId);
         console.log('Image processing complete');
       } catch (error) {
         console.error('Failed to process image:', error);

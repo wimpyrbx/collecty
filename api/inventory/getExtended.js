@@ -9,7 +9,6 @@ router.get('/:id/extended', (req, res) => {
     SELECT 
       i.*,
       p.title as product_title,
-      p.image_url as product_image_url,
       pg.name as product_group_name,
       pt.name as product_type_name,
       r.name as region_name,

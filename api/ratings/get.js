@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
           WHEN rg.name IS NOT NULL 
           THEN '/assets/images/ratings/' || LOWER(rg.name) || '/' || LOWER(r.name) || '.webp'
           ELSE NULL 
-        END as image_url
+        END as rating_image_path
       FROM ratings r
       LEFT JOIN rating_groups rg ON r.rating_group_id = rg.id
       WHERE r.is_active = 1 

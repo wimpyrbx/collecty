@@ -17,7 +17,7 @@ const initialFormState = {
   region_id: '',
   rating_id: '',
   rating_group_id: '',
-  image_url: '',
+  product_image: '',
   release_year: '',
   description: '',
   is_active: true,
@@ -283,7 +283,7 @@ const NewEditProductModal = ({
         release_year: formData.release_year || null,
         description: formData.description || null,
         is_active: 1,
-        image_url: formData.image_url || null
+        product_image: formData.product_image || null
       };
 
       // Prepare attribute values
@@ -478,7 +478,7 @@ const NewEditProductModal = ({
       setPreviewUrl('');
       setFormData(prev => ({
         ...prev,
-        image_url: null,
+        product_image: null,
         productImageOriginal: null,
         productImageThumbnail: null
       }));
@@ -502,7 +502,7 @@ const NewEditProductModal = ({
         setPreviewUrl(reader.result);
         setFormData(prev => ({
           ...prev,
-          image_url: reader.result
+          product_image: reader.result
         }));
       };
       reader.readAsDataURL(file);
