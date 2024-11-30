@@ -1,24 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Row, Col, Button } from 'react-bootstrap';
+import { Form, Row, Col } from 'react-bootstrap';
 import { FaPlus } from 'react-icons/fa';
 import ProductAttributeBox from '../../attributes/AttributeBox';
+import { BaseModal, BaseModalHeader, BaseModalBody, BaseModalFooter } from '../../common/Modal';
 import './AddInventoryModal.css';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
-// Define API base URL
 const API_BASE_URL = 'http://localhost:5000/api';
-
-// Helper function to safely parse IDs
-const parseIds = (ids) => {
-  if (Array.isArray(ids)) return ids;
-  if (!ids) return [];
-  try {
-    return JSON.parse(ids);
-  } catch {
-    return [];
-  }
-};
 
 const AddInventoryModal = ({ show, onHide, onInventoryAdded, product }) => {
   const [form, setForm] = useState({
@@ -53,9 +42,14 @@ const AddInventoryModal = ({ show, onHide, onInventoryAdded, product }) => {
               return false;
             }
 
-            // Parse IDs safely using helper function
-            const typeIds = parseIds(attr.product_type_ids);
-            const groupIds = parseIds(attr.product_group_ids);
+            // Parse IDs safely
+            const typeIds = Array.isArray(attr.product_type_ids) 
+              ? attr.product_type_ids 
+              : JSON.parse(attr.product_type_ids || '[]');
+            
+            const groupIds = Array.isArray(attr.product_group_ids)
+              ? attr.product_group_ids
+              : JSON.parse(attr.product_group_ids || '[]');
 
             // Store parsed IDs
             attr.typeIds = typeIds;
@@ -64,16 +58,6 @@ const AddInventoryModal = ({ show, onHide, onInventoryAdded, product }) => {
             const matchesType = typeIds.length === 0 || typeIds.includes(Number(product.product_type_id));
             const matchesGroup = groupIds.length === 0 || groupIds.includes(Number(product.product_group_id));
 
-            console.log('Processing attribute:', {
-              name: attr.name,
-              typeIds,
-              groupIds,
-              productTypeId: Number(product.product_type_id),
-              productGroupId: Number(product.product_group_id),
-              matchesType,
-              matchesGroup
-            });
-
             return matchesType && matchesGroup;
           } catch (error) {
             console.error('Error processing attribute:', attr.name, error);
@@ -81,8 +65,8 @@ const AddInventoryModal = ({ show, onHide, onInventoryAdded, product }) => {
           }
         });
 
-        console.log('Filtered attributes:', inventoryAttrs);
-
+        setAttributes(inventoryAttrs);
+        
         // Set initial values
         const initialValues = {};
         inventoryAttrs.forEach(attr => {
@@ -93,7 +77,6 @@ const AddInventoryModal = ({ show, onHide, onInventoryAdded, product }) => {
           }
         });
 
-        setAttributes(inventoryAttrs);
         setForm(prev => ({ ...prev, attributes: initialValues }));
       } catch (error) {
         console.error('Failed to load attributes:', error);
@@ -141,8 +124,6 @@ const AddInventoryModal = ({ show, onHide, onInventoryAdded, product }) => {
         }))
       };
 
-      console.log('Submitting inventory item:', payload);
-
       const response = await axios.post(`${API_BASE_URL}/inventory`, payload);
       
       if (response.data.success) {
@@ -161,21 +142,13 @@ const AddInventoryModal = ({ show, onHide, onInventoryAdded, product }) => {
   if (!product) return null;
 
   return (
-    <Modal 
-      show={show} 
-      onHide={onHide} 
-      size="lg"
-      backdrop="static"
-    >
+    <BaseModal show={show} onHide={onHide} size="lg">
       <Form onSubmit={handleSubmit}>
-        <Modal.Header closeButton>
-          <Modal.Title className="d-flex align-items-center">
-            <FaPlus className="me-2" />
-            Add to Inventory: {product.title}
-          </Modal.Title>
-        </Modal.Header>
+        <BaseModalHeader icon={<FaPlus />} onHide={onHide}>
+          Add to Inventory: {product.title}
+        </BaseModalHeader>
 
-        <Modal.Body>
+        <BaseModalBody>
           {/* Product Info */}
           <div className="product-info mb-4">
             <h6>Product Information</h6>
@@ -261,18 +234,17 @@ const AddInventoryModal = ({ show, onHide, onInventoryAdded, product }) => {
               Loading attributes...
             </div>
           )}
-        </Modal.Body>
+        </BaseModalBody>
 
-        <Modal.Footer>
-          <Button variant="light" onClick={onHide} disabled={loading}>
-            Cancel
-          </Button>
-          <Button variant="primary" type="submit" disabled={loading}>
-            {loading ? 'Adding...' : 'Add Item'}
-          </Button>
-        </Modal.Footer>
+        <BaseModalFooter
+          onCancel={onHide}
+          onConfirm={handleSubmit}
+          cancelText="Cancel"
+          confirmText={loading ? 'Adding...' : 'Add Item'}
+          isLoading={loading}
+        />
       </Form>
-    </Modal>
+    </BaseModal>
   );
 };
 
