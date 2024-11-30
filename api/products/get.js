@@ -51,6 +51,9 @@ router.get('/', async (req, res) => {
     let sql;
     const params = [];
 
+    // Validate search parameter
+    const searchTerm = search ? search.trim() : '';
+
     // Build the SQL query based on whether extended info is requested
     if (extended === 'true') {
       sql = `
@@ -61,7 +64,7 @@ router.get('/', async (req, res) => {
           r.name as region_name,
           rt.name as rating_name,
           rtg.name as rating_group_name,
-          GROUP_CONCAT(DISTINCT pav.value || '::' || a.name) as attribute_values,
+          GROUP_CONCAT(DISTINCT pav.value || '::' || pav.attribute_id) as attribute_values,
           GROUP_CONCAT(DISTINCT ps.name || '::' || psl.url_path) as site_links,
           pp.loose_usd, pp.cib_usd, pp.new_usd
         FROM products p
@@ -75,60 +78,39 @@ router.get('/', async (req, res) => {
         LEFT JOIN product_site_links psl ON p.id = psl.product_id
         LEFT JOIN product_sites ps ON psl.site_id = ps.id
         LEFT JOIN pricecharting_prices pp ON p.id = pp.product_id
-        WHERE 1=1`;
-
-      // Add search condition
-      if (search) {
-        sql += ' AND p.title LIKE ?';
-        params.push(`%${search}%`);
-      }
-
-      // Add filters for extended query
-      if (id) {
-        sql += ' AND p.id = ?';
-        params.push(id);
-      }
-      if (groupId) {
-        sql += ' AND p.product_group_id = ?';
-        params.push(groupId);
-      }
-      if (typeId) {
-        sql += ' AND p.product_type_id = ?';
-        params.push(typeId);
-      }
-      if (regionId) {
-        sql += ' AND p.region_id = ?';
-        params.push(regionId);
-      }
-
-      sql += ' GROUP BY p.id';
+        WHERE p.is_active = 1`;
     } else {
       // Basic query without joins
-      sql = 'SELECT * FROM products WHERE 1=1';
+      sql = 'SELECT * FROM products p WHERE p.is_active = 1';
+    }
 
-      // Add search condition
-      if (search) {
-        sql += ' AND title LIKE ?';
-        params.push(`%${search}%`);
-      }
+    // Add search condition
+    if (searchTerm) {
+      sql += ' AND p.title LIKE ?';
+      params.push(`%${searchTerm}%`);
+    }
 
-      // Add filters for basic query
-      if (id) {
-        sql += ' AND id = ?';
-        params.push(id);
-      }
-      if (groupId) {
-        sql += ' AND product_group_id = ?';
-        params.push(groupId);
-      }
-      if (typeId) {
-        sql += ' AND product_type_id = ?';
-        params.push(typeId);
-      }
-      if (regionId) {
-        sql += ' AND region_id = ?';
-        params.push(regionId);
-      }
+    // Add filters
+    if (id) {
+      sql += ' AND p.id = ?';
+      params.push(id);
+    }
+    if (groupId) {
+      sql += ' AND p.product_group_id = ?';
+      params.push(groupId);
+    }
+    if (typeId) {
+      sql += ' AND p.product_type_id = ?';
+      params.push(typeId);
+    }
+    if (regionId) {
+      sql += ' AND p.region_id = ?';
+      params.push(regionId);
+    }
+
+    // Add grouping if extended query
+    if (extended === 'true') {
+      sql += ' GROUP BY p.id';
     }
 
     // Add sorting
@@ -149,7 +131,7 @@ router.get('/', async (req, res) => {
     const results = await db.allAsync(sql, params);
 
     // Handle no results
-    if (!results || (id && results.length === 0)) {
+    if (!results || results.length === 0) {
       return res.status(404).json({ 
         error: id ? 'Product not found' : 'No products found' 
       });
@@ -162,8 +144,10 @@ router.get('/', async (req, res) => {
         const attributes = {};
         if (row.attribute_values) {
           row.attribute_values.split(',').forEach(pair => {
-            const [value, name] = pair.split('::');
-            attributes[name] = value;
+            const [value, attributeId] = pair.split('::');
+            if (attributeId) {
+              attributes[attributeId] = value;
+            }
           });
         }
         row.attributes = attributes;

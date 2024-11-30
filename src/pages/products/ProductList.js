@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Row, Col, Button, Form, Badge, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Badge, OverlayTrigger, Tooltip, Table } from 'react-bootstrap';
 import { 
   FaPlus, 
   FaEdit, 
@@ -24,6 +24,7 @@ import ProductTypeImage from '../../components/common/Images/ProductTypeImage';
 import PageHeader from '../../components/layout/PageHeader/PageHeader';
 import DeleteModal from '../../components/common/Modal/DeleteModal';
 import SimplePagination from '../../components/common/SimplePagination';
+import AddInventoryModal from '../../components/inventory/Forms/AddInventoryModal';
 import './ProductList.css';
 
 const IMAGE_SIZE = {
@@ -66,6 +67,8 @@ const ProductList = () => {
     item: null,
     isDeleting: false
   });
+  const [showAddToInventory, setShowAddToInventory] = useState(false);
+  const [selectedForInventory, setSelectedForInventory] = useState(null);
 
   // Define fetchProducts as a function reference
   const fetchProducts = async () => {
@@ -422,159 +425,114 @@ const ProductList = () => {
     </div>
   );
 
-  const renderTableView = () => (
-    <div className="table-responsive">
-      <table className="table table-bordered mb-0 table-hover">
-        <thead className="table-light">
+  const renderTableView = () => {
+    return (
+      <Table responsive hover>
+        <thead>
           <tr>
-            <th onClick={() => handleSort('id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-              ID <FaSort className={sortField === 'id' ? 'text-primary' : ''} />
-            </th>
-            <th onClick={() => handleSort('title')} style={{cursor: 'pointer'}}>
-              Information <FaSort className={sortField === 'title' ? 'text-primary' : ''} />
-            </th>
-            <th style={{width: `${IMAGE_SIZE.width}px`, padding: 0}}>Image</th>
-            <th onClick={() => handleSort('rating')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-              Rating <FaSort className={sortField === 'rating' ? 'text-primary' : ''} />
-            </th>
-            <th style={{cursor: 'pointer'}}>
-              Attributes
-            </th>
-            <th onClick={() => handleSort('product_type_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-              Type <FaSort className={sortField === 'product_type_id' ? 'text-primary' : ''} />
-            </th>
-            <th onClick={() => handleSort('region_id')} style={{cursor: 'pointer', width: '1%', whiteSpace: 'nowrap'}}>
-              Region <FaSort className={sortField === 'region_id' ? 'text-primary' : ''} />
-            </th>
-            <th style={{width: '1%', whiteSpace: 'nowrap'}}></th>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Image</th>
+            <th>Rating</th>
+            <th>Region</th>
+            <th>Attributes</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {currentProducts.map(product => (
             <tr key={product.id}>
-              <td className="text-center">
-                <OverlayTrigger
-                  placement="right"
-                  overlay={
-                    <Tooltip id={`tooltip-${product.id}`}>
-                      <pre style={{ margin: 0, textAlign: 'left', fontSize: '0.8rem' }}>
-                        {JSON.stringify(product, null, 2)}
-                      </pre>
-                    </Tooltip>
-                  }
-                >
-                  <span className="text-muted" style={{ cursor: 'help' }}>
-                    {product.id}
-                  </span>
-                </OverlayTrigger>
-              </td>
-              <CustomTableCell>
-                <div className="d-flex flex-column">
-                  <div>
-                    <strong>{product.title}</strong>
+              <td>{product.id}</td>
+              <td>
+                <div className="product-title-cell">
+                  <div className="product-title">
+                    {product.title}
                     {product.release_year && (
-                      <span className="text-muted ms-2">
-                        ({product.release_year})
-                      </span>
+                      <span className="release-year">({product.release_year})</span>
                     )}
                   </div>
-                  <div className="text-muted small">
-                    {product.product_group_name || '-'}
-                  </div>
+                  <div className="product-group">{product.product_group_name}</div>
                 </div>
-              </CustomTableCell>
-              <td style={{width: `${IMAGE_SIZE.width}px`, padding: '4px'}}>
-                {product.productImageThumb ? (
+              </td>
+              <td className="product-image-cell">
+                {product.productImageThumb && (
                   <img 
                     src={product.productImageThumb} 
                     alt={product.title}
-                    className="rounded shadow-sm"
-                    style={{
-                      maxHeight: '70px',
-                      width: 'auto',
-                      objectFit: 'contain'
-                    }}
+                    className="product-thumb"
                   />
-                ) : (
-                  <div 
-                    className="d-flex flex-column align-items-center justify-content-center rounded shadow-sm image-placeholder"
-                    style={{
-                      height: '70px',
-                      width: 'auto',
-                      background: 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)',
-                      border: '1px solid #dee2e6'
-                    }}
-                  >
-                    <FaImage 
-                      className="text-secondary"
-                      style={{opacity: 0.5}}
-                      size={16}
-                    />
-                  </div>
                 )}
               </td>
-              <td className="text-center">
-                {product.rating_name ? (
-                  <Badge 
-                    bg={
-                      product.rating_name === 'E' ? 'success' :
-                      product.rating_name === 'T' ? 'warning' :
-                      product.rating_name === 'M' ? 'danger' :
-                      'secondary'
-                    }
-                  >
-                    {product.rating_name}
-                  </Badge>
-                ) : '-'}
+              <td>
+                <img 
+                  src={`/assets/images/ratings/${product.rating_group_name.toLowerCase()}/${product.rating_name.toLowerCase().replace(' ', '_')}.webp`}
+                  alt={product.rating_name}
+                  className="rating-image"
+                />
               </td>
               <td>
-                {product.attributes ? (
-                  <div className="d-flex flex-column gap-2">
-                    {Object.entries(product.attributes).map(([key, value]) => {
-                      const attribute = attributes.find(a => a.name === key);
-                      if (!attribute || !attribute.is_active) return null;
-                      
-                      return (
-                        <AttributeDisplay 
-                          key={key}
-                          attribute={attribute} 
-                          value={value} 
-                        />
-                      );
-                    })}
-                  </div>
-                ) : '-'}
+                <img 
+                  src={`/assets/images/regions/${product.region_name.toLowerCase().replace('-', '_')}.webp`}
+                  alt={product.region_name}
+                  className="region-image"
+                />
               </td>
-              <td className="text-center">
-                <ProductTypeImage type={product.product_type_name} size={20} />
-              </td>
-              <td className="text-center">
-                <RegionImage region={product.region_name} size={20} />
-              </td>
-              <td className="text-center">
-                <div className="d-flex gap-2 justify-content-center">
-                  <Button 
-                    variant="outline-warning"
-                    size="sm"
-                    onClick={() => handleEditClick(product.id)}
-                  >
-                    <FaEdit />
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() => showDeleteModal(product)}
-                  >
-                    <FaTrashAlt />
-                  </Button>
+              <td>
+                <div className="product-attributes">
+                  {product.attributes?.developerName && (
+                    <div className="attribute-item">Developer: {product.attributes.developerName}</div>
+                  )}
+                  {product.attributes?.publisherName && (
+                    <div className="attribute-item">Publisher: {product.attributes.publisherName}</div>
+                  )}
+                  {product.attributes?.gameGenre && (
+                    <div className="attribute-item">Genre: {product.attributes.gameGenre}</div>
+                  )}
+                  {product.attributes?.isKinect === "1" && (
+                    <div className="attribute-item">
+                      <img 
+                        src="/assets/images/attributes/iskinect.webp" 
+                        alt="Kinect"
+                        className="attribute-image"
+                      />
+                    </div>
+                  )}
                 </div>
+              </td>
+              <td className="actions-cell">
+                <Button 
+                  variant="outline-primary" 
+                  size="sm"
+                  onClick={() => handleEditClick(product.id)}
+                >
+                  <FaEdit />
+                </Button>
+                <Button 
+                  variant="outline-success" 
+                  size="sm"
+                  onClick={() => handleAddToInventory(product)}
+                >
+                  <FaBox />
+                </Button>
+                <Button 
+                  variant="outline-danger" 
+                  size="sm"
+                  onClick={() => showDeleteModal(product)}
+                >
+                  <FaTrashAlt />
+                </Button>
               </td>
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
-  );
+      </Table>
+    );
+  };
+
+  const handleAddToInventory = (product) => {
+    setSelectedForInventory(product);
+    setShowAddToInventory(true);
+  };
 
   // Compact card view - two per row with enhanced layout
   const renderCompactView = () => (
@@ -873,6 +831,21 @@ const ProductList = () => {
         title="Delete Product"
         message={`Are you sure you want to delete the product "${deleteModal.item?.title}"?`}
         isDeleting={deleteModal.isDeleting}
+      />
+
+      {/* Add to Inventory Modal */}
+      <AddInventoryModal
+        show={showAddToInventory}
+        onHide={() => {
+          setShowAddToInventory(false);
+          setSelectedForInventory(null);
+        }}
+        onSuccess={() => {
+          setShowAddToInventory(false);
+          setSelectedForInventory(null);
+          toast.success('Added to inventory successfully');
+        }}
+        product={selectedForInventory}
       />
     </div>
   );

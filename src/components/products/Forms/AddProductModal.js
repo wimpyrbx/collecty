@@ -35,9 +35,17 @@ const NewAddProductModal = ({
   availableRatings = [],
   attributes = [],
   attributeValues = {},
-  initialData = {}
+  initialData = {},
+  preselectedGroup = '',
+  preselectedType = '',
+  preselectedRegion = ''
 }) => {
-  const [formData, setFormData] = useState(initialFormState);
+  const [formData, setFormData] = useState({
+    ...initialFormState,
+    product_group_id: preselectedGroup || '',
+    product_type_id: preselectedType || '',
+    region_id: preselectedRegion || ''
+  });
   const [loading, setLoading] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [warning, setWarning] = useState('');
@@ -51,30 +59,60 @@ const NewAddProductModal = ({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const formRef = useRef(null);
 
+  // Handle preselected region and rating group
+  useEffect(() => {
+    if (show && formData.region_id) {
+      const regionId = Number(formData.region_id);
+      const groupsForRegion = availableRatingGroups.filter(g => g.region_id === regionId);
+      
+      if (groupsForRegion.length === 1) {
+        const groupId = groupsForRegion[0].id;
+        const ratingsForGroup = availableRatings.filter(r => r.rating_group_id === groupId);
+        
+        setFormData(prev => {
+          const updated = {
+            ...prev,
+            rating_group_id: groupId,
+            rating_id: ratingsForGroup.length === 1 ? ratingsForGroup[0].id : ''
+          };
+          return updated;
+        });
+      }
+    }
+  }, [show, formData.region_id, availableRatingGroups, availableRatings]);
+
   useEffect(() => {
     if (show) {
-      if (Object.keys(initialData).length > 0) {
-        setFormData({
-          ...initialFormState,
-          ...initialData
-        });
-        if (initialData.productImageOriginal) {
-          setPreviewUrl(initialData.productImageOriginal);
+      if (!formData.title) {
+        if (Object.keys(initialData).length > 0) {
+          setFormData({
+            ...initialFormState,
+            ...initialData
+          });
+          if (initialData.productImageOriginal) {
+            setPreviewUrl(initialData.productImageOriginal);
+          }
+        } else {
+          const newFormData = {
+            ...initialFormState,
+            product_group_id: preselectedGroup || '',
+            product_type_id: preselectedType || '',
+            region_id: preselectedRegion || ''
+          };
+          setFormData(newFormData);
+          setPreviewUrl('');
         }
-      } else {
-        setFormData(initialFormState);
-        setPreviewUrl('');
+        setHasSubmitted(false);
+        setWarning('');
+        
+        setTimeout(() => {
+          if (nameInputRef.current) {
+            nameInputRef.current.focus();
+          }
+        }, 100);
       }
-      setHasSubmitted(false);
-      setWarning('');
-      
-      setTimeout(() => {
-        if (nameInputRef.current) {
-          nameInputRef.current.focus();
-        }
-      }, 100);
     }
-  }, [show, initialData]);
+  }, [show, preselectedGroup, preselectedType, preselectedRegion]);
 
   useEffect(() => {
     if (!formData.product_group_id || !formData.product_type_id) {
@@ -83,36 +121,42 @@ const NewAddProductModal = ({
     }
 
     const filtered = attributes.filter(attr => {
-      const groupIds = Array.isArray(attr.product_group_ids) 
-        ? attr.product_group_ids 
-        : JSON.parse(attr.product_group_ids || '[]');
-      
-      const typeIds = Array.isArray(attr.product_type_ids)
-        ? attr.product_type_ids
-        : JSON.parse(attr.product_type_ids || '[]');
+      try {
+        const groupIds = Array.isArray(attr.product_group_ids) 
+          ? attr.product_group_ids 
+          : JSON.parse(attr.product_group_ids || '[]');
+        
+        const typeIds = Array.isArray(attr.product_type_ids)
+          ? attr.product_type_ids
+          : JSON.parse(attr.product_type_ids || '[]');
 
-      const matchesGroup = groupIds.length === 0 || 
-        groupIds.includes(Number(formData.product_group_id));
+        const matchesGroup = groupIds.length === 0 || 
+          groupIds.includes(Number(formData.product_group_id));
 
-      const matchesType = typeIds.length === 0 || 
-        typeIds.includes(Number(formData.product_type_id));
+        const matchesType = typeIds.length === 0 || 
+          typeIds.includes(Number(formData.product_type_id));
 
-      return matchesGroup && matchesType;
+        return matchesGroup && matchesType;
+      } catch (error) {
+        console.error('Error parsing attribute IDs:', error);
+        return false;
+      }
     });
 
     setFilteredAttributes(filtered);
 
-    // Clean up any attributes that are no longer valid
-    const validAttributeIds = filtered.map(attr => attr.id);
-    setFormData(prev => ({
-      ...prev,
-      attributes: Object.fromEntries(
-        Object.entries(prev.attributes).filter(([key]) => 
-          validAttributeIds.includes(Number(key))
+    if (filtered.length > 0) {
+      const validAttributeIds = filtered.map(attr => attr.id);
+      setFormData(prev => ({
+        ...prev,
+        attributes: Object.fromEntries(
+          Object.entries(prev.attributes).filter(([key]) => 
+            validAttributeIds.includes(Number(key))
+          )
         )
-      )
-    }));
-  }, [formData.product_group_id, formData.product_type_id, attributes]);
+      }));
+    }
+  }, [formData.product_group_id, formData.product_type_id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -224,10 +268,8 @@ const NewAddProductModal = ({
 
   const handleFile = (file) => {
     if (file.type.startsWith('image/')) {
-      console.log('Processing image file:', file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        console.log('Image converted to base64');
         setPreviewUrl(reader.result);
         setFormData(prev => ({
           ...prev,
@@ -350,11 +392,11 @@ const NewAddProductModal = ({
   };
 
   const filteredRatingGroups = availableRatingGroups.filter(group => 
-    group.region_id === formData.region_id
+    Number(formData.region_id) === group.region_id
   );
 
   const filteredRatings = availableRatings.filter(rating => 
-    rating.rating_group_id === formData.rating_group_id
+    Number(formData.rating_group_id) === rating.rating_group_id
   );
 
   const hasActiveAttributes = filteredAttributes.length > 0;

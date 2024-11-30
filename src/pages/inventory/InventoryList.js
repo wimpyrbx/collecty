@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Container, Button } from 'react-bootstrap';
 import { FaBox, FaPlus } from 'react-icons/fa';
 import PageHeader from '../../components/layout/PageHeader/PageHeader';
-import AddInventoryModal from '../../components/inventory/Forms/AddInventoryModal';
+import AddToInventoryFlow from '../../components/inventory/Forms/AddToInventoryFlow';
+import './InventoryList.css';
 
 const InventoryList = () => {
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddFlow, setShowAddFlow] = useState(false);
 
   return (
     <div className="container-fluid">
@@ -17,8 +18,9 @@ const InventoryList = () => {
           Inventory
         </PageHeader.Title>
         <PageHeader.Actions>
-          <Button variant="light" onClick={() => setShowAddModal(true)}>
-            <FaPlus className="me-2" /> Add Item
+          <Button variant="light" onClick={() => setShowAddFlow(true)}>
+            <FaPlus className="me-2" />
+            Add Item
           </Button>
         </PageHeader.Actions>
         <PageHeader.TitleSmall>
@@ -27,15 +29,14 @@ const InventoryList = () => {
       </PageHeader>
 
       <Container fluid>
-        {/* Content will go here */}
+        {/* Inventory list content will go here */}
       </Container>
 
-      {/* Add Inventory Modal */}
-      <AddInventoryModal
-        show={showAddModal}
-        onHide={() => setShowAddModal(false)}
+      <AddToInventoryFlow
+        show={showAddFlow}
+        onHide={() => setShowAddFlow(false)}
         onSuccess={() => {
-          setShowAddModal(false);
+          setShowAddFlow(false);
           // We'll add a fetch function later
         }}
       />

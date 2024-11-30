@@ -44,4 +44,39 @@
 .search-results .badge {
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
+}
+
+.product-info {
+  background-color: var(--bs-gray-100);
+  border-radius: 0.375rem;
+  padding: 1rem;
+}
+
+.product-info h6 {
+  margin-bottom: 1rem;
+  color: var(--bs-gray-700);
+}
+
+.product-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.product-info-grid div {
+  color: var(--bs-gray-900);
+}
+
+.product-info-grid strong {
+  color: var(--bs-gray-600);
+  margin-right: 0.5rem;
+}
+
+.attributes-section {
+  margin-top: 1rem;
+}
+
+.attributes-section h6 {
+  color: var(--bs-gray-700);
 } 

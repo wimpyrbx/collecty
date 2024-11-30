@@ -85,11 +85,11 @@ const NewEditProductModal = ({
             }
           }
           
-          // Set initial form data with rating group
+          // Set initial form data with rating group and attributes
           const formDataToSet = {
             ...productData,
-            attributes: {}, // Start with empty attributes
-            rating_group_id: ratingGroupId // Set the rating group ID
+            attributes: savedAttributes,
+            rating_group_id: ratingGroupId
           };
           
           setFormData(formDataToSet);
@@ -126,21 +126,26 @@ const NewEditProductModal = ({
     try {
       // Filter attributes based on group and type
       const filtered = attributes.filter(attr => {
-        const groupIds = Array.isArray(attr.product_group_ids) 
-          ? attr.product_group_ids 
-          : JSON.parse(attr.product_group_ids || '[]');
-        
-        const typeIds = Array.isArray(attr.product_type_ids)
-          ? attr.product_type_ids
-          : JSON.parse(attr.product_type_ids || '[]');
+        try {
+          const groupIds = Array.isArray(attr.product_group_ids) 
+            ? attr.product_group_ids 
+            : JSON.parse(attr.product_group_ids || '[]');
+          
+          const typeIds = Array.isArray(attr.product_type_ids)
+            ? attr.product_type_ids
+            : JSON.parse(attr.product_type_ids || '[]');
 
-        const matchesGroup = groupIds.length === 0 || 
-          groupIds.includes(Number(groupId));
+          const matchesGroup = groupIds.length === 0 || 
+            groupIds.includes(Number(groupId));
 
-        const matchesType = typeIds.length === 0 || 
-          typeIds.includes(Number(typeId));
+          const matchesType = typeIds.length === 0 || 
+            typeIds.includes(Number(typeId));
 
-        return matchesGroup && matchesType;
+          return matchesGroup && matchesType;
+        } catch (error) {
+          console.error('Error parsing attribute IDs:', error);
+          return false;
+        }
       });
 
       setFilteredAttributes(filtered);
@@ -148,24 +153,30 @@ const NewEditProductModal = ({
       // Preserve existing values for attributes that are still valid
       const updatedAttributes = {};
       filtered.forEach(attr => {
-        // First check if there's an existing value in the current form
-        if (formData.attributes && formData.attributes[attr.id] !== undefined) {
-          updatedAttributes[attr.id] = formData.attributes[attr.id];
-        }
-        // Then check if there's a value in the existingValues parameter
-        else if (existingValues[attr.id] !== undefined) {
-          updatedAttributes[attr.id] = existingValues[attr.id];
-        }
-        // Finally check if there's a value in the attributeValues prop
-        else if (attributeValues[attr.id] !== undefined) {
-          updatedAttributes[attr.id] = attributeValues[attr.id];
+        const attrId = attr.id;
+        // Check sources in order of priority
+        if (existingValues[attrId] !== undefined) {
+          // Use the value from the API response
+          updatedAttributes[attrId] = existingValues[attrId];
+        } else if (formData.attributes && formData.attributes[attrId] !== undefined) {
+          // Use the current form value if it exists
+          updatedAttributes[attrId] = formData.attributes[attrId];
+        } else if (attributeValues[attrId] !== undefined) {
+          // Fall back to attributeValues prop
+          updatedAttributes[attrId] = attributeValues[attrId];
+        } else if (attr.default_value !== undefined && attr.default_value !== null) {
+          // Use default value if available
+          updatedAttributes[attrId] = attr.default_value;
         }
       });
 
       // Update form data with the preserved attribute values
       setFormData(prev => ({
         ...prev,
-        attributes: updatedAttributes
+        attributes: {
+          ...prev.attributes, // Keep any existing attributes
+          ...updatedAttributes // Add/update filtered attributes
+        }
       }));
 
     } catch (err) {
