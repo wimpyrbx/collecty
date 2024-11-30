@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
-import { FaPlus, FaSearch, FaCheck, FaTimes, FaEdit, FaTrash, FaCog } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaCheck, FaTimes, FaEdit, FaTrash, FaCog, FaTags } from 'react-icons/fa';
 import axios from 'axios';
 import { toast, Toaster } from 'react-hot-toast';
 import AttributeModal from '../../components/attributes/AttributeModal';
@@ -148,37 +148,22 @@ const Attributes = () => {
   }
 
   return (
-    <div className="page-container">
-      <Toaster 
-        position="top-right"
-        toastOptions={{
-          duration: 2000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-        }}
-      />
-
-      <PageHeader>
-        <PageHeader.Icon color="#42A5F5">
-          <FaCog />
+    <div className="container-fluid">
+      <PageHeader bgClass="bg-primary" textClass="text-white">
+        <PageHeader.Icon color="#66BB6A">
+          <FaTags />
         </PageHeader.Icon>
         <PageHeader.Title>
           Attributes
         </PageHeader.Title>
         <PageHeader.Actions>
-          <Button 
-            variant="light" 
-            className="btn-sm"
-            onClick={() => setShowAddModal(true)}
-            >
+          <Button variant="light" onClick={() => setShowAddModal(true)}>
             <FaPlus className="me-2" />
             Add Attribute
           </Button>
         </PageHeader.Actions>
         <PageHeader.TitleSmall>
-          Manage custom attributes for products and inventory items
+          Manage your product attributes
         </PageHeader.TitleSmall>
       </PageHeader>
 

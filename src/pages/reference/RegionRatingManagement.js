@@ -551,21 +551,22 @@ const RegionRatingManagement = () => {
   };
 
   return (
-    <div className="page-container">
-      <Toaster position="top-right" />
-      
-      <PageHeader>
-        <PageHeader.Icon color="#90CAF9">
+    <div className="container-fluid">
+      <PageHeader bgClass="bg-primary" textClass="text-white">
+        <PageHeader.Icon color="#66BB6A">
           <FaGlobe />
         </PageHeader.Icon>
         <PageHeader.Title>
-          Regions/Ratings
+          Regions & Ratings
         </PageHeader.Title>
         <PageHeader.Actions>
-          {/* Add actions if needed */}
+          <Button variant="light" onClick={() => handleModalShow('addRegion')}>
+            <FaPlus className="me-2" />
+            Add Region
+          </Button>
         </PageHeader.Actions>
         <PageHeader.TitleSmall>
-          Configure regions and their associated rating systems
+          Manage regions and rating systems
         </PageHeader.TitleSmall>
       </PageHeader>
 
@@ -635,6 +636,8 @@ const RegionRatingManagement = () => {
         message={`Are you sure you want to delete "${deleteModal.item?.name}"?`}
         isDeleting={deleteModal.isDeleting}
       />
+
+      <Toaster position="top-right" />
     </div>
   );
 };

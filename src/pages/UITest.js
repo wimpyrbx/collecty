@@ -19,7 +19,8 @@ import {
   FaMoon,
   FaToggleOn,
   FaToggleOff,
-  FaTools
+  FaTools,
+  FaPalette
 } from 'react-icons/fa';
 import { Modal, OverlayTrigger, Tooltip as BSTooltip, Popover as BSPopover, Accordion, Carousel } from 'react-bootstrap';
 import PageHeader from '../components/common/PageHeader/PageHeader';
@@ -114,9 +115,9 @@ const UITest = () => {
   };
 
   return (
-    <div className="container-fluid py-4">
-      <PageHeader>
-        <PageHeader.Icon color="#AB47BC">
+    <div className="container-fluid">
+      <PageHeader bgClass="bg-primary" textClass="text-white">
+        <PageHeader.Icon color="#66BB6A">
           <FaTools />
         </PageHeader.Icon>
         <PageHeader.Title>
@@ -126,7 +127,7 @@ const UITest = () => {
           Test and preview UI components and features
         </PageHeader.TitleSmall>
       </PageHeader>
-      
+
       <ToastContainer /> {/* Required for react-toastify */}
       
       <h1>UI Components Test Page</h1>
@@ -173,7 +174,6 @@ const UITest = () => {
             Progress
           </button>
         </li>
-        {/* Add more tabs as needed */}
       </ul>
 
       {/* Tab Content */}
@@ -262,7 +262,6 @@ const UITest = () => {
               <div className="alert alert-danger" role="alert">
                 This is a danger alert—check it out!
               </div>
-              {/* Add more alerts as needed */}
             </section>
           </div>
         )}
@@ -286,7 +285,6 @@ const UITest = () => {
                   </div>
                 </div>
               </div>
-              {/* Add more cards as needed */}
             </section>
           </div>
         )}
@@ -314,12 +312,9 @@ const UITest = () => {
                   <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style={{width: '75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
                 </div>
               </div>
-              {/* Add more progress bars as needed */}
             </section>
           </div>
         )}
-
-        {/* Add more tab panes with additional UI components as desired */}
       </div>
     </div>
   );

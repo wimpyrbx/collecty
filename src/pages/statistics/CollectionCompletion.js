@@ -1,19 +1,19 @@
 import React from 'react';
 import PageHeader from '../../components/common/PageHeader/PageHeader';
-import { FaChartLine } from 'react-icons/fa';
+import { FaChartPie } from 'react-icons/fa';
 
 const CollectionCompletion = () => {
   return (
-    <div className="page-container">
-      <PageHeader>
-        <PageHeader.Icon color="#FFA726">
-          <FaChartLine />
+    <div className="container-fluid">
+      <PageHeader bgClass="bg-primary" textClass="text-white">
+        <PageHeader.Icon color="#66BB6A">
+          <FaChartPie />
         </PageHeader.Icon>
         <PageHeader.Title>
           Collection Completion
         </PageHeader.Title>
         <PageHeader.TitleSmall>
-          Track your collection progress and completion rates
+          Track your collection progress
         </PageHeader.TitleSmall>
       </PageHeader>
       <p>Track your collection completion progress</p>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Row, Col } from 'react-bootstrap';
-import { FaTags, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaTags, FaPlus, FaEdit, FaTrash, FaLayerGroup } from 'react-icons/fa';
 import axios from 'axios';
 import { toast, Toaster } from 'react-hot-toast';
 import PageHeader from '../../components/common/PageHeader/PageHeader';
@@ -317,21 +317,26 @@ const GroupTypeManagement = () => {
   );
 
   return (
-    <div className="page-container">
-      <Toaster position="top-right" />
-      
-      <PageHeader>
-        <PageHeader.Icon color="#64B5F6">
-          <FaTags />
+    <div className="container-fluid">
+      <PageHeader bgClass="bg-primary" textClass="text-white">
+        <PageHeader.Icon color="#66BB6A">
+          <FaLayerGroup />
         </PageHeader.Icon>
         <PageHeader.Title>
-          Groups/Types
+          Groups & Types
         </PageHeader.Title>
         <PageHeader.Actions>
-          {/* Actions are in the sections below */}
+          <Button variant="light" onClick={() => handleAddClick('group')}>
+            <FaPlus className="me-2" />
+            Add Group
+          </Button>
+          <Button variant="light" className="ms-2" onClick={() => handleAddClick('type')}>
+            <FaPlus className="me-2" />
+            Add Type
+          </Button>
         </PageHeader.Actions>
         <PageHeader.TitleSmall>
-          Manage product categorization with groups and types
+          Manage product groups and types
         </PageHeader.TitleSmall>
       </PageHeader>
 
